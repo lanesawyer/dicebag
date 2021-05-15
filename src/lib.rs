@@ -1,6 +1,10 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
+use stat_block::StatBlock;
+
+mod stat_block;
+
 struct Model {
     link: ComponentLink<Self>,
     value: i64,
@@ -28,9 +32,6 @@ impl Component for Model {
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        // Should only return "true" if new properties are different to
-        // previously received properties.
-        // This component has no properties so we will always return "false".
         false
     }
 
@@ -39,6 +40,15 @@ impl Component for Model {
             <div>
                 <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
                 <p>{ self.value }</p>
+
+                <div class="stats">
+                    <StatBlock name="Strength" value={12} />
+                    <StatBlock name="Dexterity" value={8} />
+                    <StatBlock name="Constitution" value={14} />
+                    <StatBlock name="Intelligence" value={11} />
+                    <StatBlock name="Wisdom" value={10} />
+                    <StatBlock name="Charisma" value={9} />
+                </div>
             </div>
         }
     }
