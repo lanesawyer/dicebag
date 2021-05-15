@@ -1,4 +1,4 @@
-use yew::{Component, ComponentLink, Html, ShouldRender, html, Properties};
+use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct StatBlock {
@@ -49,7 +49,7 @@ fn calculate_modifier(stat: i32) -> i32 {
         16 | 17 => 3,
         18 | 19 => 4,
         20 => 5,
-        _ => panic!("Ability scores must be between 1 and 20")
+        _ => panic!("Ability scores must be between 1 and 20"),
     }
 }
 
