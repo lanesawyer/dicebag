@@ -1,42 +1,4 @@
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
-
-#[derive(Properties, Clone)]
-pub struct StatBlock {
-    pub name: String,
-    pub value: i32,
-}
-
-impl Component for StatBlock {
-    type Message = ();
-    type Properties = StatBlock;
-
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            name: props.name,
-            value: props.value,
-        }
-    }
-
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
-    }
-
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
-    }
-
-    fn view(&self) -> Html {
-        html! {
-            <div class="stat-block">
-                <div>{ &self.name }</div>
-                <div>{ self.value }</div>
-                <div>{ calculate_modifier(self.value) }</div>
-            </div>
-        }
-    }
-}
-
-fn calculate_modifier(stat: i32) -> i32 {
+pub fn calculate_modifier(stat: usize) -> i32 {
     match stat {
         1 => -5,
         2 | 3 => -4,
@@ -53,9 +15,13 @@ fn calculate_modifier(stat: i32) -> i32 {
     }
 }
 
+pub fn calculate_modifier_display(stat: usize) -> String {
+    format!("{:+}", calculate_modifier(stat))
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::stat_block::calculate_modifier;
+    use super::{calculate_modifier, calculate_modifier_display};
 
     #[test]
     fn calculate_modifier_works() {
@@ -79,5 +45,11 @@ mod tests {
         assert_eq!(calculate_modifier(18), 4);
         assert_eq!(calculate_modifier(19), 4);
         assert_eq!(calculate_modifier(20), 5);
+    }
+
+    #[test]
+    fn calculate_modifier_display_works() {
+        assert_eq!(calculate_modifier_display(1), "-5");
+        assert_eq!(calculate_modifier_display(20), "+5");
     }
 }
