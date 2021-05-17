@@ -33,7 +33,7 @@ impl Component for Money {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="money" class="text-block">
                 <div>{ self.copper }</div>
                 <div>{ self.silver }</div>
                 <div>{ self.electrum }</div>

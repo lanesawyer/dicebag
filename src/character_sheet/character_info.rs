@@ -37,14 +37,14 @@ impl Component for CharacterInfo {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
-                <div>{ &self.name }</div>
-                <div>{ &self.class }</div>
-                <div>{ self.level }</div>
-                <div>{ &self.background }</div>
-                <div>{ &self.race }</div>
-                <div>{ &self.alignment }</div>
-                <div>{ self.experience_points }</div>
+            <section id="character-info" class="text-block">
+                <span>{ &self.name }</span>
+                <span>{ &self.class }</span>
+                <span>{ self.level }</span>
+                <span>{ &self.background }</span>
+                <span>{ &self.race }</span>
+                <span>{ &self.alignment }</span>
+                <span>{ self.experience_points }</span>
             </section>
         }
     }

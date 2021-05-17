@@ -29,7 +29,7 @@ impl Component for HitPoints {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="hit-points" class="text-block">
                 <h2>{ "Hit Points" }</h2>
                 <div>{ self.maximum }</div>
                 <div>{ self.current }</div>

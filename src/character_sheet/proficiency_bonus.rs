@@ -28,7 +28,7 @@ impl Component for ProficiencyBonus {
 
     fn view(&self) -> Html {
         html! {
-            <div class="stat-block">
+            <div id="proficiency-bonus" class="stat-block">
                 <div class="stat-name">{ &self.name }</div>
                 <div class="stat-value">{ self.value }</div>
                 <div class="stat-modifier">{ calculate_modifier_display(self.value) }</div>

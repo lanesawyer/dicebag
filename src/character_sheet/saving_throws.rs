@@ -31,7 +31,7 @@ impl Component for SavingThrows {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="saving-throws" class="text-block">
                 <h2>{"Saving Throws"}</h2>
                 <ul>
                 { self.items.iter().map(|item| html! {

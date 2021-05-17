@@ -32,7 +32,7 @@ impl Component for Attacks {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="attacks-and-spellcasting" class="text-block">
                 <h2>{"Attacks & Spellcasting"}</h2>
                 <ul>
                 { self.attacks.iter().map(|attack| html! {

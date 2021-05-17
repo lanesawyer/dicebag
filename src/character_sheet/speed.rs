@@ -23,7 +23,7 @@ impl Component for Speed {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="speed" class="text-block">
                 <h2>{ "Speed" }</h2>
                 <div>{ self.value }</div>
             </section>

@@ -23,7 +23,7 @@ impl Component for ArmorClass {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="armor-class" class="text-block">
                 <h2>{ "Armor Class" }</h2>
                 <div>{ &self.value }</div>
             </section>

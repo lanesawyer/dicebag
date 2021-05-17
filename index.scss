@@ -1,3 +1,105 @@
+body {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 1em;
+    grid-auto-rows: minmax(100px, auto);
+}
+
+#character-info {
+    grid-column: 1 / 10;
+    grid-row: 1;
+}
+
+#stat-block {
+    grid-column: 1 / 2;
+    grid-row: 2 / 6;
+}
+
+#inspiration {
+    grid-column: 2 / 4;
+    grid-row: 2;
+}
+
+#proficiency-bonus {
+    grid-column: 2 / 4;
+    grid-row: 3;
+}
+
+#saving-throws {
+    grid-column: 2 / 4;
+    grid-row: 4;
+}
+
+#skills {
+    grid-column: 2 / 4;
+    grid-row: 5;
+}
+
+#passive-perception {
+    grid-column: 1 / 4;
+    grid-row: 6;
+}
+
+#other-proficiencies-and-languages {
+    grid-column: 1 / 4;
+    grid-row: 7;
+}
+
+#armor-class {
+    grid-column: 4 / 5;
+    grid-row: 2;
+}
+
+#initiative {
+    grid-column: 5 / 6;
+    grid-row: 2;
+}
+
+#speed {
+    grid-column: 6 / 7;
+    grid-row: 2;
+}
+
+#hit-points {
+    grid-column: 4 / 7;
+    grid-row: 3;
+}
+
+#hit-dice {
+    grid-column: 4 / 5;
+    grid-row: 4;
+}
+
+#death-saving-throws {
+    grid-column: 6 / 7;
+    grid-row: 4;
+}
+
+#attacks-and-spellcasting {
+    grid-column: 4 / 7;
+    grid-row: 5;
+}
+
+#money {
+    grid-column: 4 / 5;
+    grid-row: 6;
+}
+
+#equipment {
+    grid-column: 5 / 7;
+    grid-row: 6;
+}
+
+#character-details {
+    grid-column: 7 / 10;
+    grid-row: 2 / 7;
+}
+
+#features-traits {
+    grid-column: 7 / 10;
+    grid-row: 7;
+}
+
 .stats {
     width: 10em;
 }
@@ -7,7 +109,6 @@
     flex-direction: column;
     align-items: center;
     border: 1px solid black;
-    margin: 1em;
 }
 
 .stat-name {

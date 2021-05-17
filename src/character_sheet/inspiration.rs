@@ -27,7 +27,7 @@ impl Component for Inspiration {
 
     fn view(&self) -> Html {
         html! {
-            <div class="stat-block">
+            <div id="inspiration" class="stat-block">
                 <div class="stat-name">{ &self.name }</div>
                 <div class="stat-value">{ self.value }</div>
             </div>

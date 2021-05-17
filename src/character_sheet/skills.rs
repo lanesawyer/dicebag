@@ -27,7 +27,7 @@ impl Component for Skills {
 
     fn view(&self) -> Html {
         html! {
-            <section class="text-block">
+            <section id="skills" class="text-block">
                 <div>{ &self.name }</div>
                 <div>{ &self.value }</div>
             </section>

@@ -165,7 +165,7 @@ impl Component for CharacterSheet {
                     alignment={&self.character.alignment}
                     experience_points={self.character.experience_points}
                 />
-                <section class="stats">
+                <section id="stat-block" class="stats">
                     <StatBlock name="Strength" value={self.character.strength} />
                     <StatBlock name="Dexterity" value={self.character.dexterity} />
                     <StatBlock name="Constitution" value={self.character.constitution} />
@@ -188,14 +188,22 @@ impl Component for CharacterSheet {
                 />
                 <HitDice total=self.character.hit_dice used=self.character.used_hit_dice />
                 <DeathSavingThrows saves=self.character.saves failures=self.character.failures />
-                <TextBlock name="Personality Traits" value=&self.character.personality_traits />
-                <TextBlock name="Ideals" value=&self.character.ideals />
-                <TextBlock name="Bonds" value=&self.character.bonds />
-                <TextBlock name="Flaws" value=&self.character.flaws />
-                <TextBlock name="Features & Traits" value=&self.character.features_and_traits />
+                <div id="character-details">
+                    <TextBlock name="Personality Traits" value=&self.character.personality_traits />
+                    <TextBlock name="Ideals" value=&self.character.ideals />
+                    <TextBlock name="Bonds" value=&self.character.bonds />
+                    <TextBlock name="Flaws" value=&self.character.flaws />
+                </div>
+                <div id="features-traits">
+                    <TextBlock name="Features & Traits" value=&self.character.features_and_traits />
+                </div>
                 <Attacks attacks=Vec::new() />
-                <TextBlock name="Other Proficiencies & Languages" value=&self.character.other_proficiencies_and_languages />
-                <TextBlock name="Equipment" value=&self.character.equipment />
+                <div id="other-proficiencies-and-languages">
+                    <TextBlock name="Other Proficiencies & Languages" value=&self.character.other_proficiencies_and_languages />
+                </div>
+                <div id="equipment">
+                    <TextBlock name="Equipment" value=&self.character.equipment />
+                </div>
                 <Money
                     copper=self.character.copper
                     silver=self.character.silver
