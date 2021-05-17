@@ -28,7 +28,7 @@ impl Component for HitDice {
     fn view(&self) -> Html {
         html! {
             <section id="hit-dice" class="text-block">
-                <h2>{ "Hit Dice" }</h2>
+                <h3>{ "Hit Dice" }</h3>
                 <div>{ self.total }</div>
                 <div>{ self.used }</div>
             </section>

@@ -138,7 +138,7 @@ impl Component for CharacterSheet {
                 name: "Dexterity".to_string(),
             },
             SavingThrow {
-                has_proficiency: false,
+                has_proficiency: true,
                 ability_score: self.character.constitution,
                 name: "Constitution".to_string(),
             },
@@ -173,11 +173,14 @@ impl Component for CharacterSheet {
                     <StatBlock name="Wisdom" value={self.character.wisdom} />
                     <StatBlock name="Charisma" value={self.character.charisma} />
                 </section>
-                <Inspiration name="Inspiration" value=self.character.has_inspiration />
-                <ProficiencyBonus name="ProficiencyBonus" value=self.character.proficiency_bonus />
+                <Inspiration value=self.character.has_inspiration />
+                <ProficiencyBonus value=self.character.proficiency_bonus />
                 <SavingThrows items=saving_throws />
-                <Skills name="Skills" value="" />
-                <PassivePerception name="Passive Perception" value=1 />
+                <Skills value="" />
+                <PassivePerception value=1 />
+                <section id="other-proficiencies-and-languages">
+                    <TextBlock name="Other Proficiencies & Languages" value=&self.character.other_proficiencies_and_languages />
+                </section>
                 <ArmorClass value=self.character.armor_class />
                 <Initiative value=self.character.dexterity />
                 <Speed value=self.character.speed />
@@ -188,22 +191,7 @@ impl Component for CharacterSheet {
                 />
                 <HitDice total=self.character.hit_dice used=self.character.used_hit_dice />
                 <DeathSavingThrows saves=self.character.saves failures=self.character.failures />
-                <div id="character-details">
-                    <TextBlock name="Personality Traits" value=&self.character.personality_traits />
-                    <TextBlock name="Ideals" value=&self.character.ideals />
-                    <TextBlock name="Bonds" value=&self.character.bonds />
-                    <TextBlock name="Flaws" value=&self.character.flaws />
-                </div>
-                <div id="features-traits">
-                    <TextBlock name="Features & Traits" value=&self.character.features_and_traits />
-                </div>
                 <Attacks attacks=Vec::new() />
-                <div id="other-proficiencies-and-languages">
-                    <TextBlock name="Other Proficiencies & Languages" value=&self.character.other_proficiencies_and_languages />
-                </div>
-                <div id="equipment">
-                    <TextBlock name="Equipment" value=&self.character.equipment />
-                </div>
                 <Money
                     copper=self.character.copper
                     silver=self.character.silver
@@ -211,6 +199,19 @@ impl Component for CharacterSheet {
                     gold=self.character.gold
                     platinum=self.character.platinum
                 />
+                <section id="equipment">
+                    <TextBlock name="Equipment" value=&self.character.equipment />
+                </section>
+                <section id="character-details">
+                    <TextBlock name="Personality Traits" value=&self.character.personality_traits />
+                    <TextBlock name="Ideals" value=&self.character.ideals />
+                    <TextBlock name="Bonds" value=&self.character.bonds />
+                    <TextBlock name="Flaws" value=&self.character.flaws />
+                </section>
+                <section id="features-traits">
+                    <TextBlock name="Features & Traits" value=&self.character.features_and_traits />
+                </section>
+
             </>
         }
     }

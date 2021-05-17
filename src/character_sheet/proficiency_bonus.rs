@@ -1,9 +1,7 @@
-use crate::utils::calculate_modifier_display;
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct ProficiencyBonus {
-    pub name: String,
     pub value: usize,
 }
 
@@ -12,10 +10,7 @@ impl Component for ProficiencyBonus {
     type Properties = ProficiencyBonus;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            name: props.name,
-            value: props.value,
-        }
+        Self { value: props.value }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -28,11 +23,10 @@ impl Component for ProficiencyBonus {
 
     fn view(&self) -> Html {
         html! {
-            <div id="proficiency-bonus" class="stat-block">
-                <div class="stat-name">{ &self.name }</div>
+            <section id="proficiency-bonus" class="stat-block">
+                <div class="stat-name">{ "Proficiency Bonus" }</div>
                 <div class="stat-value">{ self.value }</div>
-                <div class="stat-modifier">{ calculate_modifier_display(self.value) }</div>
-            </div>
+            </section>
         }
     }
 }

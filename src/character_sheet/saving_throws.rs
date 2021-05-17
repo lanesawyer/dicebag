@@ -32,11 +32,11 @@ impl Component for SavingThrows {
     fn view(&self) -> Html {
         html! {
             <section id="saving-throws" class="text-block">
-                <h2>{"Saving Throws"}</h2>
+                <h3>{"Saving Throws"}</h3>
                 <ul>
                 { self.items.iter().map(|item| html! {
                     <li>
-                        <span>{item.has_proficiency}</span>
+                        <input type="checkbox" checked=item.has_proficiency />
                         <span>{calculate_modifier(item.ability_score)}</span>
                         <span>{&item.name}</span>
                     </li>

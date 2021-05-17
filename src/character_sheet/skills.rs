@@ -2,7 +2,6 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct Skills {
-    pub name: String,
     pub value: String,
 }
 
@@ -11,10 +10,7 @@ impl Component for Skills {
     type Properties = Skills;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            name: props.name,
-            value: props.value,
-        }
+        Self { value: props.value }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -28,7 +24,7 @@ impl Component for Skills {
     fn view(&self) -> Html {
         html! {
             <section id="skills" class="text-block">
-                <div>{ &self.name }</div>
+                <div>{ "Skills"}</div>
                 <div>{ &self.value }</div>
             </section>
         }

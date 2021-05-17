@@ -2,7 +2,6 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct Inspiration {
-    pub name: String,
     pub value: bool,
 }
 
@@ -11,10 +10,7 @@ impl Component for Inspiration {
     type Properties = Inspiration;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            name: props.name,
-            value: props.value,
-        }
+        Self { value: props.value }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -27,10 +23,10 @@ impl Component for Inspiration {
 
     fn view(&self) -> Html {
         html! {
-            <div id="inspiration" class="stat-block">
-                <div class="stat-name">{ &self.name }</div>
-                <div class="stat-value">{ self.value }</div>
-            </div>
+            <section id="inspiration" class="stat-block">
+                <div class="stat-name">{ "Inspiration" }</div>
+                <input type="checkbox" class="stat-value" checked=self.value />
+            </section>
         }
     }
 }

@@ -13,6 +13,9 @@ body {
 #stat-block {
     grid-column: 1 / 2;
     grid-row: 2 / 6;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #inspiration {
@@ -93,6 +96,9 @@ body {
 #character-details {
     grid-column: 7 / 10;
     grid-row: 2 / 7;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #features-traits {

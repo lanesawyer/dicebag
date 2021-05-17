@@ -25,7 +25,7 @@ impl Component for Initiative {
     fn view(&self) -> Html {
         html! {
             <section class="text-block">
-                <h2>{ "Initiative" }</h2>
+                <h3>{ "Initiative" }</h3>
                 <div>{ calculate_modifier_display(self.value) }</div>
             </section>
         }

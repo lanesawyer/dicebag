@@ -28,7 +28,7 @@ impl Component for TextBlock {
     fn view(&self) -> Html {
         html! {
             <section class="text-block">
-                <h2>{ &self.name }</h2>
+                <h3>{ &self.name }</h3>
                 <div>{ &self.value }</div>
             </section>
         }

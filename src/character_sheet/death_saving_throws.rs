@@ -28,7 +28,7 @@ impl Component for DeathSavingThrows {
     fn view(&self) -> Html {
         html! {
             <section id="death-saving-throws" class="text-block">
-                <h2>{ "Death Saving Throws" }</h2>
+                <h3>{ "Death Saving Throws" }</h3>
                 <div>{ self.saves }</div>
                 <div>{ self.failures }</div>
             </section>

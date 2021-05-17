@@ -34,11 +34,11 @@ impl Component for Money {
     fn view(&self) -> Html {
         html! {
             <section id="money" class="text-block">
-                <div>{ self.copper }</div>
-                <div>{ self.silver }</div>
-                <div>{ self.electrum }</div>
-                <div>{ self.gold }</div>
-                <div>{ self.platinum }</div>
+                <div>{ format!("Copper: {}", self.copper) }</div>
+                <div>{ format!("Silver: {}", self.silver) }</div>
+                <div>{ format!("Electrum: {}", self.electrum) }</div>
+                <div>{ format!("Gold: {}", self.gold) }</div>
+                <div>{ format!("Platinum: {}", self.platinum) }</div>
             </section>
         }
     }

@@ -38,7 +38,7 @@ impl Component for CharacterInfo {
     fn view(&self) -> Html {
         html! {
             <section id="character-info" class="text-block">
-                <span>{ &self.name }</span>
+                <h2>{ &self.name }</h2>
                 <span>{ &self.class }</span>
                 <span>{ self.level }</span>
                 <span>{ &self.background }</span>
