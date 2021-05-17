@@ -22,4 +22,4 @@ trunk serve --port:3000
 ## Technologies Used
 
 - [Yew](https://yew.rs)
-- [SaaS](https://sass-lang.com/)
+- [Sass](https://sass-lang.com/)

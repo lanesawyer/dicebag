@@ -39,12 +39,12 @@ impl Component for CharacterInfo {
         html! {
             <section id="character-info" class="text-block">
                 <h2>{ &self.name }</h2>
-                <span>{ &self.class }</span>
-                <span>{ self.level }</span>
-                <span>{ &self.background }</span>
-                <span>{ &self.race }</span>
-                <span>{ &self.alignment }</span>
-                <span>{ self.experience_points }</span>
+                <span>{ format!("Class: {}", &self.class) }</span>
+                <span>{ format!("Level: {}", self.level) }</span>
+                <span>{ format!("Background: {}", &self.background) }</span>
+                <span>{ format!("Race: {}", &self.race) }</span>
+                <span>{ format!("Alignment: {}", &self.alignment) }</span>
+                <span>{ format!("Experience Points: {}", self.experience_points) }</span>
             </section>
         }
     }

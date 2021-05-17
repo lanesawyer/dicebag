@@ -7,6 +7,7 @@ use character_sheet::character_sheet::CharacterSheet;
 
 mod character_sheet;
 mod utils;
+mod components;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {

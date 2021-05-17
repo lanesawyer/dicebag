@@ -29,8 +29,15 @@ impl Component for DeathSavingThrows {
         html! {
             <section id="death-saving-throws" class="text-block">
                 <h3>{ "Death Saving Throws" }</h3>
-                <div>{ self.saves }</div>
-                <div>{ self.failures }</div>
+                <h4>{ "Successes" }</h4>
+                <input type="checkbox" checked={self.saves >= 1} />
+                <input type="checkbox" checked={self.saves >= 2} />
+                <input type="checkbox" checked={self.saves >= 3}/>
+
+                <h4>{ "Failures" }</h4>
+                <input type="checkbox" checked={self.failures >= 1} />
+                <input type="checkbox" checked={self.failures >= 2} />
+                <input type="checkbox" checked={self.failures >= 3} />
             </section>
         }
     }

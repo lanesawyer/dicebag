@@ -1,16 +1,9 @@
-use crate::utils::calculate_modifier;
+use crate::components::{Skill, skill_display};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
-
-#[derive(Clone)]
-pub struct SavingThrow {
-    pub has_proficiency: bool,
-    pub ability_score: usize,
-    pub name: String,
-}
 
 #[derive(Properties, Clone)]
 pub struct SavingThrows {
-    pub items: Vec<SavingThrow>,
+    pub items: Vec<Skill>,
 }
 
 impl Component for SavingThrows {
@@ -34,13 +27,7 @@ impl Component for SavingThrows {
             <section id="saving-throws" class="text-block">
                 <h3>{"Saving Throws"}</h3>
                 <ul>
-                { self.items.iter().map(|item| html! {
-                    <li>
-                        <input type="checkbox" checked=item.has_proficiency />
-                        <span>{calculate_modifier(item.ability_score)}</span>
-                        <span>{&item.name}</span>
-                    </li>
-                }).collect::<Html>() }
+                { self.items.iter().map(skill_display).collect::<Html>() }
                 </ul>
             </section>
         }

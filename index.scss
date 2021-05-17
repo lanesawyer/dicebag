@@ -2,12 +2,14 @@ body {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 1em;
-    grid-auto-rows: minmax(100px, auto);
+    grid-auto-rows: minmax(50px, auto);
 }
 
 #character-info {
     grid-column: 1 / 10;
     grid-row: 1;
+    display: flex;
+    justify-content: space-between;
 }
 
 #stat-block {

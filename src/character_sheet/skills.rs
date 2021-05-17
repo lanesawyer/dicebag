@@ -1,8 +1,10 @@
+use crate::components::{Skill, skill_display};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+
 
 #[derive(Properties, Clone)]
 pub struct Skills {
-    pub value: String,
+    pub items: Vec<Skill>,
 }
 
 impl Component for Skills {
@@ -10,7 +12,7 @@ impl Component for Skills {
     type Properties = Skills;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { value: props.value }
+        Self { items: props.items }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -24,8 +26,10 @@ impl Component for Skills {
     fn view(&self) -> Html {
         html! {
             <section id="skills" class="text-block">
-                <div>{ "Skills"}</div>
-                <div>{ &self.value }</div>
+                <h3>{ "Skills"}</h3>
+                <ul>
+                { self.items.iter().map(skill_display).collect::<Html>() }
+                </ul>
             </section>
         }
     }
