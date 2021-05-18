@@ -128,44 +128,34 @@ impl Component for CharacterSheet {
     }
 
     fn view(&self) -> Html {
-        let Character { 
-            strength,
-            dexterity,
-            constitution,
-            intelligence,
-            wisdom,
-            charisma,
-            ..
-        } = self.character;
-
         let saving_throws = vec![
             Skill {
                 has_proficiency: false,
-                ability_score: strength,
+                ability_score: self.character.strength,
                 name: "Strength".to_string(),
                 related_ability: None,
             },
             Skill {
                 has_proficiency: false,
-                ability_score: dexterity,
+                ability_score: self.character.dexterity,
                 name: "Dexterity".to_string(),
                 related_ability: None,
             },
             Skill {
                 has_proficiency: true,
-                ability_score: constitution,
+                ability_score: self.character.constitution,
                 name: "Constitution".to_string(),
                 related_ability: None,
             },
             Skill {
                 has_proficiency: false,
-                ability_score: intelligence,
+                ability_score: self.character.intelligence,
                 name: "Intelligence".to_string(),
                 related_ability: None,
             },
             Skill {
                 has_proficiency: false,
-                ability_score: charisma,
+                ability_score: self.character.charisma,
                 name: "Charisma".to_string(),
                 related_ability: None,
             },
@@ -174,109 +164,109 @@ impl Component for CharacterSheet {
         let skills = vec![
             Skill {
                 has_proficiency: false,
-                ability_score: dexterity,
+                ability_score: self.character.dexterity,
                 name: "Acrobatics".to_string(),
                 related_ability: Some("Dex".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: wisdom,
+                ability_score: self.character.wisdom,
                 name: "Animal Handling".to_string(),
                 related_ability: Some("Wis".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: intelligence,
+                ability_score: self.character.intelligence,
                 name: "Arcana".to_string(),
                 related_ability: Some("Int".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: strength,
+                ability_score: self.character.strength,
                 name: "Athletics".to_string(),
                 related_ability: Some("Str".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: charisma,
+                ability_score: self.character.charisma,
                 name: "Deception".to_string(),
                 related_ability: Some("Cha".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: intelligence,
+                ability_score: self.character.intelligence,
                 name: "History".to_string(),
                 related_ability: Some("Int".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: wisdom,
+                ability_score: self.character.wisdom,
                 name: "Insight".to_string(),
                 related_ability: Some("Wis".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: charisma,
+                ability_score: self.character.charisma,
                 name: "Intimidation".to_string(),
                 related_ability: Some("Char".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: intelligence,
+                ability_score: self.character.intelligence,
                 name: "Investigation".to_string(),
                 related_ability: Some("Int".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: wisdom,
+                ability_score: self.character.wisdom,
                 name: "Medicine".to_string(),
                 related_ability: Some("Wis".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: intelligence,
+                ability_score: self.character.intelligence,
                 name: "Nature".to_string(),
                 related_ability: Some("Int".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: wisdom,
+                ability_score: self.character.wisdom,
                 name: "Perception".to_string(),
                 related_ability: Some("Wis".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: charisma,
+                ability_score: self.character.charisma,
                 name: "Performance".to_string(),
                 related_ability: Some("Cha".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: charisma,
+                ability_score: self.character.charisma,
                 name: "Persuasion".to_string(),
                 related_ability: Some("Cha".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: intelligence,
+                ability_score: self.character.intelligence,
                 name: "Religion".to_string(),
                 related_ability: Some("Int".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: dexterity,
+                ability_score: self.character.dexterity,
                 name: "Sleight of Hand".to_string(),
                 related_ability: Some("Dex".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: dexterity,
+                ability_score: self.character.dexterity,
                 name: "Stealth".to_string(),
                 related_ability: Some("Dex".to_string()),
             },
             Skill {
                 has_proficiency: false,
-                ability_score: wisdom,
+                ability_score: self.character.wisdom,
                 name: "Survival".to_string(),
                 related_ability: Some("Wis".to_string()),
             },
@@ -287,19 +277,19 @@ impl Component for CharacterSheet {
                 <CharacterInfo
                     name={&self.character.name}
                     class={&self.character.class}
-                    level={self.character.level}
+                    level={&self.character.level}
                     background={&self.character.background}
                     race={&self.character.race}
                     alignment={&self.character.alignment}
                     experience_points={self.character.experience_points}
                 />
                 <section id="stat-block" class="stats">
-                    <StatBlock name="Strength" value={strength} />
-                    <StatBlock name="Dexterity" value={dexterity} />
-                    <StatBlock name="Constitution" value={constitution} />
-                    <StatBlock name="Intelligence" value={intelligence} />
-                    <StatBlock name="Wisdom" value={wisdom} />
-                    <StatBlock name="Charisma" value={charisma} />
+                    <StatBlock name="Strength" value={self.character.strength} />
+                    <StatBlock name="Dexterity" value={self.character.dexterity} />
+                    <StatBlock name="Constitution" value={self.character.constitution} />
+                    <StatBlock name="Intelligence" value={self.character.intelligence} />
+                    <StatBlock name="Wisdom" value={self.character.wisdom} />
+                    <StatBlock name="Charisma" value={self.character.charisma} />
                 </section>
                 <Inspiration value=self.character.has_inspiration />
                 <ProficiencyBonus value=self.character.proficiency_bonus />
@@ -310,7 +300,7 @@ impl Component for CharacterSheet {
                     <TextBlock name="Other Proficiencies & Languages" value=&self.character.other_proficiencies_and_languages />
                 </section>
                 <ArmorClass value=self.character.armor_class />
-                <Initiative value=dexterity />
+                <Initiative value=self.character.dexterity />
                 <Speed value=self.character.speed />
                 <HitPoints
                     maximum=self.character.hit_points

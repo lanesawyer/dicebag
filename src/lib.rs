@@ -2,12 +2,16 @@
 
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
+use yew_router::prelude::*;
 
-use character_sheet::character_sheet::CharacterSheet;
 
 mod character_sheet;
 mod utils;
 mod components;
+// mod dicebag;
+
+use crate::character_sheet::character_sheet::CharacterSheet;
+// use crate::dicebag::Dicebag;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
