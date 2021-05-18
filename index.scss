@@ -1,4 +1,8 @@
 body {
+    background-color: antiquewhite;
+}
+
+main {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 1em;

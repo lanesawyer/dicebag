@@ -8,12 +8,11 @@ use yew_router::prelude::*;
 mod character_sheet;
 mod utils;
 mod components;
-// mod dicebag;
+mod dicebag;
 
-use crate::character_sheet::character_sheet::CharacterSheet;
-// use crate::dicebag::Dicebag;
+use crate::dicebag::Dicebag;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
-    App::<CharacterSheet>::new().mount_to_body();
+    App::<Dicebag>::new().mount_to_body();
 }

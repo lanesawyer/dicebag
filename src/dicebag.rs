@@ -1,19 +1,19 @@
-use yew::prelude::*;
-use yew_router::prelude::*;
-use yew_router::c
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::character_sheet::character_sheet::CharacterSheet;
 
-#[derive(Routable, PartialEq, Clone, Debug)]
-pub enum Route {
-    #[at("/")]
-    Home,
-    #[at("/character")]
-    CharacterSheet,
-    #[not_found]
-    #[at("/404")]
-    NotFound,
-}
+// TODO: The Router just got an update and it hasn't shipped with any versions of Yew
+// yet but this is the basic setup for when it does
+// #[derive(Routable, PartialEq, Clone, Debug)]
+// pub enum Route {
+//     #[at("/")]
+//     Home,
+//     #[at("/character")]
+//     CharacterSheet,
+//     #[not_found]
+//     #[at("/404")]
+//     NotFound,
+// }
 
 pub enum Msg {
     ToggleNavbar,
@@ -54,7 +54,8 @@ impl Component for Dicebag {
                 { self.view_nav() }
 
                 <main>
-                    <Router<Route> render=Router::render(switch) />
+                    // <Router<Route> render=Router::render(switch) />
+                    <CharacterSheet />
                 </main>
                 <footer class="footer">
                     <div class="content has-text-centered">
@@ -80,7 +81,7 @@ impl Dicebag {
         html! {
             <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand">
-                    <h1 class="navbar-item is-size-3">{ "Yew Blog" }</h1>
+                    <h1 class="navbar-item is-size-3">{ "Dicebag" }</h1>
 
                     <a role="button"
                         class={"navbar-burger burger"}
@@ -94,12 +95,12 @@ impl Dicebag {
                 </div>
                 <div class={"navbar-menu"}>
                     <div class="navbar-start">
-                        <Link<Route> classes={"navbar-item"} route=Route::Home>
-                            { "Home" }
-                        </Link<Route>>
-                        <Link<Route> classes={"navbar-item"} route=Route::CharacterSheet>
-                            { "Character Sheet" }
-                        </Link<Route>>
+                        // <Link<Route> classes={"navbar-item"} route=Route::Home>
+                        //     { "Home" }
+                        // </Link<Route>>
+                        // <Link<Route> classes={"navbar-item"} route=Route::CharacterSheet>
+                        //     { "Character Sheet" }
+                        // </Link<Route>>
                     </div>
                 </div>
             </nav>
@@ -107,16 +108,16 @@ impl Dicebag {
     }
 }
 
-fn switch(routes: &Route) -> Html {
-    match routes {
-        Route::Home => {
-            html! { <Dicebag /> }
-        }
-        Route::CharacterSheet => {
-            html! { <CharacterSheet /> }
-        }
-        Route::NotFound => {
-            html! { <>{ "NOT FOUND" }</> }
-        }
-    }
-}
+// fn switch(routes: &Route) -> Html {
+//     match routes {
+//         Route::Home => {
+//             html! { <Dicebag /> }
+//         }
+//         Route::CharacterSheet => {
+//             html! { <CharacterSheet /> }
+//         }
+//         Route::NotFound => {
+//             html! { <>{ "NOT FOUND" }</> }
+//         }
+//     }
+// }
