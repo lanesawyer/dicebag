@@ -31,9 +31,9 @@ impl Component for HitPoints {
         html! {
             <section id="hit-points" class="text-block">
                 <h3>{ "Hit Points" }</h3>
-                <div>{ self.maximum }</div>
-                <div>{ self.current }</div>
-                <div>{ self.temporary }</div>
+                <div>{ format!("Maximum: {}", self.maximum) }</div>
+                <div>{ format!("Current: {}", self.current) }</div>
+                <div>{ format!("Temporary: {}", self.temporary) }</div>
             </section>
         }
     }

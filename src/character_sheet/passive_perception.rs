@@ -23,9 +23,9 @@ impl Component for PassivePerception {
 
     fn view(&self) -> Html {
         html! {
-            <div id="passive-perception" class="stat-block">
-                <div class="stat-name">{ "Passive Perception" }</div>
+            <div id="passive-perception" class="single-value">
                 <div class="stat-value">{ self.value }</div>
+                <div class="stat-name">{ "Passive Perception" }</div>
             </div>
         }
     }

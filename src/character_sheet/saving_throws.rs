@@ -26,7 +26,7 @@ impl Component for SavingThrows {
         html! {
             <section id="saving-throws" class="text-block">
                 <h3>{"Saving Throws"}</h3>
-                <ul>
+                <ul class="skill-list">
                 { self.items.iter().map(skill_display).collect::<Html>() }
                 </ul>
             </section>

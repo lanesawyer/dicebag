@@ -5,11 +5,16 @@ body {
     grid-auto-rows: minmax(50px, auto);
 }
 
+h3 {
+    margin-top: 0;
+}
+
 #character-info {
     grid-column: 1 / 10;
     grid-row: 1;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 #stat-block {
@@ -132,5 +137,16 @@ body {
 }
 
 .text-block {
+    padding: .5em;
+    border: 1px solid black;
+}
+
+.single-value {
+    display: flex;
+    align-items: center;
+}
+
+.card {
+    padding: .5em;
     border: 1px solid black;
 }

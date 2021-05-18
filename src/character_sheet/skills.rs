@@ -27,7 +27,7 @@ impl Component for Skills {
         html! {
             <section id="skills" class="text-block">
                 <h3>{ "Skills"}</h3>
-                <ul>
+                <ul class="skill-list">
                 { self.items.iter().map(skill_display).collect::<Html>() }
                 </ul>
             </section>

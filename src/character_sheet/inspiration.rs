@@ -23,9 +23,9 @@ impl Component for Inspiration {
 
     fn view(&self) -> Html {
         html! {
-            <section id="inspiration" class="stat-block">
-                <div class="stat-name">{ "Inspiration" }</div>
+            <section id="inspiration" class="single-value card">
                 <input type="checkbox" class="stat-value" checked=self.value />
+                <div class="stat-name">{ "Inspiration" }</div>
             </section>
         }
     }
