@@ -265,12 +265,12 @@ impl Component for CharacterSheet {
         html! {
             <>
                 <CharacterInfo
-                    name={&self.character.name}
-                    class={&self.character.class}
-                    level={&self.character.level}
-                    background={&self.character.background}
-                    race={&self.character.race}
-                    alignment={&self.character.alignment}
+                    name={self.character.name.clone()}
+                    class={self.character.class.clone()}
+                    level={self.character.level}
+                    background={self.character.background.clone()}
+                    race={self.character.race.clone()}
+                    alignment={self.character.alignment.clone()}
                     experience_points={self.character.experience_points}
                 />
                 <section id="stat-block" class="stats">
@@ -287,7 +287,7 @@ impl Component for CharacterSheet {
                 <Skills items=skills />
                 <PassivePerception value=1 />
                 <section id="other-proficiencies-and-languages">
-                    <TextBlock name="Other Proficiencies & Languages" value=&self.character.other_proficiencies_and_languages />
+                    <TextBlock name="Other Proficiencies & Languages" value=self.character.other_proficiencies_and_languages.clone() />
                 </section>
                 <ArmorClass value=self.character.armor_class />
                 <Initiative value=self.character.dexterity />
@@ -308,16 +308,16 @@ impl Component for CharacterSheet {
                     platinum=self.character.platinum
                 />
                 <section id="equipment">
-                    <TextBlock name="Equipment" value=&self.character.equipment />
+                    <TextBlock name="Equipment" value=self.character.equipment.clone() />
                 </section>
                 <section id="character-details">
-                    <TextBlock name="Personality Traits" value=&self.character.personality_traits />
-                    <TextBlock name="Ideals" value=&self.character.ideals />
-                    <TextBlock name="Bonds" value=&self.character.bonds />
-                    <TextBlock name="Flaws" value=&self.character.flaws />
+                    <TextBlock name="Personality Traits" value=self.character.personality_traits.clone() />
+                    <TextBlock name="Ideals" value=self.character.ideals.clone() />
+                    <TextBlock name="Bonds" value=self.character.bonds.clone() />
+                    <TextBlock name="Flaws" value=self.character.flaws.clone() />
                 </section>
                 <section id="features-traits">
-                    <TextBlock name="Features & Traits" value=&self.character.features_and_traits />
+                    <TextBlock name="Features & Traits" value=self.character.features_and_traits.clone() />
                 </section>
 
             </>
