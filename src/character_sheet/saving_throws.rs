@@ -1,4 +1,4 @@
-use crate::components::{Skill, skill_display};
+use crate::components::{skill_display, Skill};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]

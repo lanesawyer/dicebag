@@ -76,7 +76,7 @@ impl Dicebag {
             ..
         } = *self;
 
-        let active_class = if navbar_active { "is-active" } else { "" };
+        let _active_class = if navbar_active { "is-active" } else { "" };
 
         html! {
             <nav class="navbar is-primary" role="navigation" aria-label="main navigation">

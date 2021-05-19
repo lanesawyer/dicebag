@@ -3,21 +3,11 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 use crate::components::Skill;
 
 use super::{
-    armor_class::ArmorClass,
-    attacks::Attacks,
-    character_info::CharacterInfo,
-    death_saving_throws::DeathSavingThrows,
-    hit_dice::HitDice,
-    hit_points::HitPoints,
-    initiative::Initiative,
-    inspiration::Inspiration,
-    money::Money,
-    passive_perception::PassivePerception,
-    proficiency_bonus::ProficiencyBonus,
-    saving_throws::SavingThrows,
-    skills::Skills,
-    speed::Speed,
-    stat_block::StatBlock,
+    armor_class::ArmorClass, attacks::Attacks, character_info::CharacterInfo,
+    death_saving_throws::DeathSavingThrows, hit_dice::HitDice, hit_points::HitPoints,
+    initiative::Initiative, inspiration::Inspiration, money::Money,
+    passive_perception::PassivePerception, proficiency_bonus::ProficiencyBonus,
+    saving_throws::SavingThrows, skills::Skills, speed::Speed, stat_block::StatBlock,
     text_block::TextBlock,
 };
 

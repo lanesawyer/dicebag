@@ -1,5 +1,5 @@
-use yew::{Html, html};
 use crate::utils::calculate_modifier_display;
+use yew::{html, Html};
 
 #[derive(Clone)]
 pub struct Skill {
@@ -15,7 +15,7 @@ pub fn skill_display(skill: &Skill) -> Html {
             <input type="checkbox" checked=skill.has_proficiency />
             <span>{calculate_modifier_display(skill.ability_score)}</span>
             <span>{&skill.name}</span>
-            { 
+            {
                 if let Some(related_ability) = &skill.related_ability {
                     html! { <span>{format!("({})", related_ability)}</span> }
                 } else {
