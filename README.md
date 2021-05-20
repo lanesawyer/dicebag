@@ -16,7 +16,7 @@ This is also an experiment in writing a web app using WASM and Rust.
 This project uses [Trunk](https://trunkrs.dev) for deveopment.
 
 ```
-trunk serve --port:3000
+trunk serve --port 3000
 ```
 
 ## Technologies Used

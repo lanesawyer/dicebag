@@ -7,6 +7,10 @@ edition = "2018"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[profile.release]
+# Increases execution speed at the cost of compile time
+lto = true
+
 [dependencies]
 yew = "0.18.0"
 yew-router = "0.15.0"
