@@ -5,6 +5,7 @@ use yew::prelude::*;
 
 mod character_sheet;
 mod components;
+mod dice_tower;
 mod dicebag;
 mod utils;
 

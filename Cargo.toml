@@ -12,6 +12,8 @@ crate-type = ["cdylib", "rlib"]
 lto = true
 
 [dependencies]
+getrandom = { version = "0.2.3", features = ["js"] }
+rand = "0.8.3"
 yew = "0.18.0"
 yew-router = "0.15.0"
 wasm-bindgen = "0.2.74"

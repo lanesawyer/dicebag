@@ -1,6 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 use crate::components::Skill;
+use crate::dice_tower::tower::Tower;
 
 use super::{
     armor_class::ArmorClass, attacks::Attacks, character_info::CharacterInfo,
@@ -319,7 +320,7 @@ impl Component for CharacterSheet {
                 <section id="features-traits">
                     <TextBlock name="Features & Traits" value=self.character.features_and_traits.clone() />
                 </section>
-
+                <Tower />
             </>
         }
     }
