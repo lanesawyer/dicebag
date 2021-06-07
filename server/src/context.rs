@@ -12,8 +12,9 @@ impl Context {
             characters: [(
                 1,
                 Character {
-                    id: 1,
+                    id: "guid".to_string(),
                     name: "Varis".to_string(),
+                    ..Default::default()
                 },
             )]
             .iter()

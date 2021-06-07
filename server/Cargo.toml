@@ -5,6 +5,8 @@ authors = ["Lane Sawyer <github@lanesaywer.dev>"]
 edition = "2018"
 
 [dependencies]
+# diesel = { version = "1.4.6", features = ["postgres"] }
+dotenv = "0.15.0"
 # Using master because of a rocket bugfix that hasn't made its way into the published version
 juniper = { git = "https://github.com/graphql-rust/juniper.git" }
 juniper_rocket = { git = "https://github.com/graphql-rust/juniper.git" }

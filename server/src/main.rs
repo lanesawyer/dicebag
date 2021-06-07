@@ -2,13 +2,14 @@
 
 use juniper::{EmptyMutation, EmptySubscription, RootNode};
 use rocket::{response::content, State};
+use dotenv::dotenv;
+
+use crate::context::Context;
+use crate::resolver::Query;
 
 mod context;
 mod resolver;
 mod schema;
-
-use crate::context::Context;
-use crate::resolver::Query;
 
 type Schema = RootNode<'static, Query, EmptyMutation<Context>, EmptySubscription<Context>>;
 
@@ -36,6 +37,8 @@ fn post_graphql_handler(
 }
 
 fn main() {
+    dotenv().ok();
+
     rocket::ignite()
         .manage(Context::new())
         .manage(Schema::new(

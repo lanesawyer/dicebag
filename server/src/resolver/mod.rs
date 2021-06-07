@@ -7,7 +7,7 @@ pub struct Query;
 #[graphql_object(context = Context)]
 impl Query {
     pub fn character(
-        context: &Context, /*sort: Vec<Sort>, filter: Vec<Filter>, limit: i32, offset: i32*/
+        context: &Context,
     ) -> FieldResult<Vec<Character>> {
         Ok(context.characters.values().cloned().collect::<Vec<_>>())
     }
