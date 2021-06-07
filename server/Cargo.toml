@@ -1,0 +1,11 @@
+[package]
+name = "graphql-server"
+version = "0.1.0"
+authors = ["Lane Sawyer <github@lanesaywer.dev>"]
+edition = "2018"
+
+[dependencies]
+# Using master because of a rocket bugfix that hasn't made its way into the published version
+juniper = { git = "https://github.com/graphql-rust/juniper.git" }
+juniper_rocket = { git = "https://github.com/graphql-rust/juniper.git" }
+rocket = "0.4.9"
