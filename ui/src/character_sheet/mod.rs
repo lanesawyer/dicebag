@@ -1,7 +1,6 @@
 mod armor_class;
 mod attacks;
 mod character_info;
-pub mod sheet;
 mod death_saving_throws;
 mod hit_dice;
 mod hit_points;
@@ -11,6 +10,7 @@ mod money;
 mod passive_perception;
 mod proficiency_bonus;
 mod saving_throws;
+pub mod sheet;
 mod skills;
 mod speed;
 mod stat_block;
