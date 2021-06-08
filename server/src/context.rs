@@ -1,6 +1,7 @@
 use crate::schema::character::Character;
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct Context {
     // TODO: Use a real database pool here later
     pub characters: HashMap<i32, Character>,

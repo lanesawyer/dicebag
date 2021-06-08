@@ -1,7 +1,7 @@
 mod armor_class;
 mod attacks;
 mod character_info;
-pub mod character_sheet;
+pub mod sheet;
 mod death_saving_throws;
 mod hit_dice;
 mod hit_points;

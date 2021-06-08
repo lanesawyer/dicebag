@@ -1,4 +1,4 @@
-use juniper::{GraphQLObject};
+use juniper::GraphQLObject;
 
 #[derive(Clone, Default, GraphQLObject)]
 pub struct Character {
@@ -45,7 +45,7 @@ pub struct Character {
     pub electrum: i32,
     pub platinum: i32,
     pub gold: i32,
-} 
+}
 
 impl Character {
     pub fn new() -> Self {

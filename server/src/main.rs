@@ -1,8 +1,8 @@
 #![feature(decl_macro, proc_macro_hygiene)]
 
+use dotenv::dotenv;
 use juniper::{EmptyMutation, EmptySubscription, RootNode};
 use rocket::{response::content, State};
-use dotenv::dotenv;
 
 use crate::context::Context;
 use crate::resolver::Query;

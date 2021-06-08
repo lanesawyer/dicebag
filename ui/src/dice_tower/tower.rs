@@ -1,17 +1,17 @@
 use std::num::NonZeroU8;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew::services::ConsoleService;
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::dice_tower::Roll;
 
-pub enum Msg {
-    RollD4,
-    RollD6,
-    RollD8,
-    RollD10,
-    RollD12,
-    RollD20,
-    RollD100,
+pub enum RollMsg {
+    D4,
+    D6,
+    D8,
+    D10,
+    D12,
+    D20,
+    D100,
 }
 
 pub struct Tower {
@@ -19,7 +19,7 @@ pub struct Tower {
 }
 
 impl Component for Tower {
-    type Message = Msg;
+    type Message = RollMsg;
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
@@ -28,19 +28,19 @@ impl Component for Tower {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         let (number, dice) = match msg {
-            Msg::RollD4 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D4),
-            Msg::RollD6 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D6),
-            Msg::RollD8 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D8),
-            Msg::RollD10 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D10),
-            Msg::RollD12 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D12),
-            Msg::RollD20 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D20),
-            Msg::RollD100 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D100),
+            RollMsg::D4 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D4),
+            RollMsg::D6 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D6),
+            RollMsg::D8 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D8),
+            RollMsg::D10 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D10),
+            RollMsg::D12 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D12),
+            RollMsg::D20 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D20),
+            RollMsg::D100 => (
+                NonZeroU8::new(1).unwrap(),
+                crate::dice_tower::DiceType::D100,
+            ),
         };
 
-        let result = Roll::roll(&Roll {
-            number,
-            dice
-        });
+        let result = Roll::roll(&Roll { number, dice });
 
         ConsoleService::log(&format!("{:?}", result));
 
@@ -52,13 +52,13 @@ impl Component for Tower {
     }
 
     fn view(&self) -> Html {
-        let d4_click = self.link.callback(|_| Msg::RollD4);
-        let d6_click = self.link.callback(|_| Msg::RollD6);
-        let d8_click = self.link.callback(|_| Msg::RollD8);
-        let d10_click = self.link.callback(|_| Msg::RollD10);
-        let d12_click = self.link.callback(|_| Msg::RollD12);
-        let d20_click = self.link.callback(|_| Msg::RollD20);
-        let d100_click = self.link.callback(|_| Msg::RollD100);
+        let d4_click = self.link.callback(|_| RollMsg::D4);
+        let d6_click = self.link.callback(|_| RollMsg::D6);
+        let d8_click = self.link.callback(|_| RollMsg::D8);
+        let d10_click = self.link.callback(|_| RollMsg::D10);
+        let d12_click = self.link.callback(|_| RollMsg::D12);
+        let d20_click = self.link.callback(|_| RollMsg::D20);
+        let d100_click = self.link.callback(|_| RollMsg::D100);
 
         html! {
             <section id="dice-tower" class="text-block">

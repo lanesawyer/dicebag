@@ -1,6 +1,6 @@
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
-use crate::character_sheet::character_sheet::CharacterSheet;
+use crate::character_sheet::sheet::CharacterSheet;
 
 // TODO: The Router just got an update and it hasn't shipped with any versions of Yew
 // yet but this is the basic setup for when it does
