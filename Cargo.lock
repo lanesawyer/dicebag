@@ -357,6 +357,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "dicebag-server"
+version = "0.1.0"
+dependencies = [
+ "dotenv",
+ "juniper",
+ "juniper_rocket",
+ "rocket",
+]
+
+[[package]]
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -581,16 +591,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "graphql-server"
-version = "0.1.0"
-dependencies = [
- "dotenv",
- "juniper",
- "juniper_rocket",
- "rocket",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -717,8 +717,9 @@ dependencies = [
 
 [[package]]
 name = "juniper"
-version = "0.15.5"
-source = "git+https://github.com/graphql-rust/juniper.git#84a07c4a93f96d4352a9a6a23732c46eae486be6"
+version = "0.15.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b651e0105410c712695c771658ae5fac77264ee20f10b74005bebe106ae0d24c"
 dependencies = [
  "async-trait",
  "bson",
@@ -738,8 +739,9 @@ dependencies = [
 
 [[package]]
 name = "juniper_codegen"
-version = "0.15.5"
-source = "git+https://github.com/graphql-rust/juniper.git#84a07c4a93f96d4352a9a6a23732c46eae486be6"
+version = "0.15.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e212272855a8b1a20d27c1d2e7a3fc4fe3b2f65408984b635f6626756fcd3ca7"
 dependencies = [
  "proc-macro-error",
  "proc-macro2 1.0.27",
@@ -749,8 +751,9 @@ dependencies = [
 
 [[package]]
 name = "juniper_rocket"
-version = "0.6.3"
-source = "git+https://github.com/graphql-rust/juniper.git#84a07c4a93f96d4352a9a6a23732c46eae486be6"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28d478674a3c3aa9df3ce11beac5b78d58f12d21c093a3a3e3c22dd69a0a4005"
 dependencies = [
  "juniper",
  "rocket",
