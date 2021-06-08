@@ -1,5 +1,5 @@
 [package]
-name = "graphql-server"
+name = "dicebag-server"
 version = "0.1.0"
 authors = ["Lane Sawyer <github@lanesaywer.dev>"]
 edition = "2018"
@@ -7,7 +7,6 @@ edition = "2018"
 [dependencies]
 # diesel = { version = "1.4.6", features = ["postgres"] }
 dotenv = "0.15.0"
-# Using master because of a rocket bugfix that hasn't made its way into the published version
-juniper = { git = "https://github.com/graphql-rust/juniper.git" }
-juniper_rocket = { git = "https://github.com/graphql-rust/juniper.git" }
+juniper = "0.15.6"
+juniper_rocket = "0.7.1"
 rocket = "0.4.9"
