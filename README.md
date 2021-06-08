@@ -1,25 +1,23 @@
 # dicebag
-A collection of useful tools for running or participating in D&amp;D.
+A collection of useful tools for running or participating in D&D.
 
 The idea behind this is to provide a grab bag of tooling that groups can choose to use as they see fit.
 
-This is also an experiment in writing a web app using WASM and Rust.
+This is also an experiment in writing a web app using WASM and Rust with a GraphQL-powered backend.
 
 ## Roadmap
 - Character Sheet: In Progress
-- Dice Roller: Not Started
+- Dice Roller: In Progress
 - Encounter Builder: Not Started
 - Campaign Manager: Not Started
-- Peer-to-Peer Data Sharing: Not Started
+- Server-side storage: In Progress
+- What else is missing?
 
 ## Getting Started
-This project uses [Trunk](https://trunkrs.dev) for deveopment.
+The project is split into two main sections, `ui` and `server`.
 
-```
-trunk serve
-```
+### UI
+See [the README](./ui/README.md) for more details.
 
-## Technologies Used
-
-- [Yew](https://yew.rs)
-- [Sass](https://sass-lang.com/)
+### Server
+See [the README](./server/README.md) for more details.

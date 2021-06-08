@@ -1,19 +1,6 @@
-[package]
-name = "dicebag"
-version = "0.1.0"
-authors = ["Lane Sawyer <github@lanesawyer.dev>"]
-edition = "2018"
+[workspace]
 
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[profile.release]
-# Increases execution speed at the cost of compile time
-lto = true
-
-[dependencies]
-getrandom = { version = "0.2.3", features = ["js"] }
-rand = "0.8.3"
-yew = "0.18.0"
-yew-router = "0.15.0"
-wasm-bindgen = "0.2.74"
+members = [
+    "ui",
+    "server"
+]
