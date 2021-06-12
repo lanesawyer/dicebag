@@ -7,6 +7,6 @@ edition = "2018"
 [dependencies]
 # diesel = { version = "1.4.6", features = ["postgres"] }
 dotenv = "0.15.0"
-juniper = "0.15.6"
-juniper_rocket = "0.7.1"
-rocket = "0.4.9"
+juniper = { git = "https://github.com/toxeus/juniper", branch = "rocket" }
+juniper_rocket_async = { git = "https://github.com/toxeus/juniper", branch = "rocket" }
+rocket = "0.5.0-rc.1"

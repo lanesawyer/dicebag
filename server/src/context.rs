@@ -1,13 +1,14 @@
 use crate::schema::character::Character;
+use juniper::Context;
 use std::collections::HashMap;
 
-#[derive(Default)]
-pub struct Context {
+#[derive(Default, Clone)]
+pub struct Database {
     // TODO: Use a real database pool here later
     pub characters: HashMap<i32, Character>,
 }
 
-impl Context {
+impl Database {
     pub fn new() -> Self {
         Self {
             characters: [(
@@ -26,4 +27,4 @@ impl Context {
 }
 
 // To make our context usable by Juniper, we have to implement a marker trait.
-impl juniper::Context for Context {}
+impl Context for Database {}
