@@ -1,12 +1,12 @@
-use crate::context::Context;
+use crate::context::Database;
 use crate::schema::character::Character;
 use juniper::{graphql_object, FieldResult};
 
 pub struct Query;
 
-#[graphql_object(context = Context)]
+#[graphql_object(context = Database)]
 impl Query {
-    pub fn character(context: &Context) -> FieldResult<Vec<Character>> {
+    pub fn character(context: &Database) -> FieldResult<Vec<Character>> {
         Ok(context.characters.values().cloned().collect::<Vec<_>>())
     }
 }
