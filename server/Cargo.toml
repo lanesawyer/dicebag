@@ -11,3 +11,4 @@ dotenv = "0.15.0"
 juniper = { git = "https://github.com/toxeus/juniper", branch = "rocket" }
 juniper_rocket_async = { git = "https://github.com/toxeus/juniper", branch = "rocket" }
 rocket = "0.5.0-rc.1"
+serde_json = "1.0.64"

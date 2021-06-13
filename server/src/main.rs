@@ -2,7 +2,7 @@
 extern crate rocket;
 
 use dotenv::dotenv;
-use juniper::{EmptyMutation, EmptySubscription, RootNode};
+use juniper::{EmptyMutation, EmptySubscription, IntrospectionFormat, RootNode};
 use rocket::{response::content, Build, Rocket, State};
 
 use crate::context::Database;
@@ -37,6 +37,18 @@ fn post_graphql_handler(
     request.execute_sync(&*schema, &*context)
 }
 
+#[rocket::post("/")]
+fn introspection_handler(context: &State<Database>) -> content::Json<String> {
+    let (res, _errors) = juniper::introspect(
+        &Schema::new(Query, EmptyMutation::new(), EmptySubscription::new()),
+        &context,
+        IntrospectionFormat::default(),
+    )
+    .unwrap();
+
+    content::Json(serde_json::to_string_pretty(&res).unwrap())
+}
+
 #[launch]
 async fn rocket() -> Rocket<Build> {
     dotenv().ok();
@@ -50,6 +62,11 @@ async fn rocket() -> Rocket<Build> {
         ))
         .mount(
             "/",
-            rocket::routes![graphiql, get_graphql_handler, post_graphql_handler],
+            rocket::routes![
+                graphiql,
+                get_graphql_handler,
+                post_graphql_handler,
+                introspection_handler
+            ],
         )
 }
