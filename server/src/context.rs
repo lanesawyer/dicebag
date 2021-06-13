@@ -11,14 +11,17 @@ pub struct Database {
 impl Database {
     pub fn new() -> Self {
         Self {
-            characters: [(
-                1,
-                Character {
-                    id: "guid".to_string(),
-                    name: "Varis".to_string(),
-                    ..Default::default()
-                },
-            )]
+            characters: [
+                (
+                    1,
+                    Character {
+                        id: "guid".to_string(),
+                        name: "Varis".to_string(),
+                        ..Default::default()
+                    },
+                ),
+                (2, Character::new()),
+            ]
             .iter()
             .cloned()
             .collect(),
