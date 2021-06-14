@@ -1,12 +1,22 @@
 use super::{
-    armor_class::ArmorClass, attacks::Attacks, character_info::CharacterInfo,
-    death_saving_throws::DeathSavingThrows, hit_dice::HitDice, hit_points::HitPoints,
-    initiative::Initiative, inspiration::Inspiration, money::Money,
-    passive_perception::PassivePerception, proficiency_bonus::ProficiencyBonus,
-    saving_throws::SavingThrows, skills::Skills, speed::Speed, stat_block::StatBlock,
+    armor_class::ArmorClass,
+    attacks::Attacks,
+    character_info::CharacterInfo,
+    death_saving_throws::DeathSavingThrows,
+    hit_dice::HitDice,
+    hit_points::HitPoints,
+    initiative::Initiative,
+    inspiration::Inspiration,
+    mocks::{build_bob, build_saving_throws, build_skills},
+    money::Money,
+    passive_perception::PassivePerception,
+    proficiency_bonus::ProficiencyBonus,
+    saving_throws::SavingThrows,
+    skills::Skills,
+    speed::Speed,
+    stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::components::Skill;
 use crate::dice_tower::tower::Tower;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
@@ -21,7 +31,6 @@ struct CharacterQuery;
 
 #[derive(Debug)]
 pub enum Msg {
-    GetCharacter,
     ReceiveResponse(Result<Character, anyhow::Error>),
 }
 
@@ -36,47 +45,47 @@ pub struct CharacterSheet {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Character {
     // Info
-    name: String,
-    class: String, // TODO: enum
-    level: usize,
-    background: String,
-    race: String,      // TODO: enum?
-    alignment: String, // TODO: enum
-    experience_points: usize,
+    pub name: String,
+    pub class: String, // TODO: enum
+    pub level: usize,
+    pub background: String,
+    pub race: String,      // TODO: enum?
+    pub alignment: String, // TODO: enum
+    pub experience_points: usize,
 
     // Stats
-    strength: usize,
-    dexterity: usize,
-    constitution: usize,
-    intelligence: usize,
-    wisdom: usize,
-    charisma: usize,
+    pub strength: usize,
+    pub dexterity: usize,
+    pub constitution: usize,
+    pub intelligence: usize,
+    pub wisdom: usize,
+    pub charisma: usize,
 
     // Other
-    proficiency_bonus: usize,
-    has_inspiration: bool,
-    personality_traits: String,
-    ideals: String,
-    bonds: String,
-    flaws: String,
-    features_and_traits: String,
-    other_proficiencies_and_languages: String,
-    armor_class: usize,
-    speed: usize,
-    hit_points: usize,
-    current_hit_points: usize,
-    temporary_hit_points: usize,
-    hit_dice: usize,
-    used_hit_dice: usize,
-    saves: usize,
-    failures: usize,
+    pub proficiency_bonus: usize,
+    pub has_inspiration: bool,
+    pub personality_traits: String,
+    pub ideals: String,
+    pub bonds: String,
+    pub flaws: String,
+    pub features_and_traits: String,
+    pub other_proficiencies_and_languages: String,
+    pub armor_class: usize,
+    pub speed: usize,
+    pub hit_points: usize,
+    pub current_hit_points: usize,
+    pub temporary_hit_points: usize,
+    pub hit_dice: usize,
+    pub used_hit_dice: usize,
+    pub saves: usize,
+    pub failures: usize,
 
-    equipment: String,
-    copper: usize,
-    silver: usize,
-    electrum: usize,
-    platinum: usize,
-    gold: usize,
+    pub equipment: String,
+    pub copper: usize,
+    pub silver: usize,
+    pub electrum: usize,
+    pub platinum: usize,
+    pub gold: usize,
 }
 
 impl Component for CharacterSheet {
@@ -84,86 +93,40 @@ impl Component for CharacterSheet {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.callback(|_: i32| Msg::GetCharacter);
+        let variables = character_query::Variables {};
+        let request_body = CharacterQuery::build_query(variables);
+        let request_json = &json!(request_body);
+
+        let request = Request::post("/graphql")
+            .header("Content-Type", "application/json")
+            .body(Json(request_json))
+            .expect("Could not build that request.");
+
+        let callback = link.callback(
+            |response: Response<Json<Result<Character, anyhow::Error>>>| {
+                let Json(data) = response.into_body();
+                Msg::ReceiveResponse(data)
+            },
+        );
+
+        let task = FetchService::fetch(request, callback).expect("failed to start request");
 
         Self {
-            character: Some(Character {
-                name: "Bob the Builder".to_string(),
-                class: "Artificer".to_string(),
-                level: 3,
-                background: "Construction worker".to_string(),
-                race: "Human".to_string(),
-                alignment: "Lawful Good".to_string(),
-                experience_points: 100,
-                strength: 12,
-                dexterity: 8,
-                constitution: 14,
-                intelligence: 10,
-                wisdom: 12,
-                charisma: 8,
-                proficiency_bonus: 1,
-                has_inspiration: false,
-                personality_traits: "Happy go lucky".to_string(),
-                ideals: "A clean site is a safe site".to_string(),
-                bonds: "I will always build a solid foundation".to_string(),
-                flaws: "Talks to machines".to_string(),
-                features_and_traits: "Organizer: Goes into battle with an extra action to plan"
-                    .to_string(),
-                other_proficiencies_and_languages: "English and Spanish".to_string(),
-                armor_class: 13,
-                hit_points: 20,
-                current_hit_points: 18,
-                temporary_hit_points: 0,
-                hit_dice: 3,
-                used_hit_dice: 0,
-                saves: 2,
-                failures: 1,
-                speed: 30,
-                equipment: "Hammer".to_string(),
-                copper: 10,
-                silver: 5,
-                electrum: 1,
-                gold: 3,
-                platinum: 0,
-            }),
+            character: Some(build_bob()),
             link,
-            fetch_task: None,
+            fetch_task: Some(task),
             error: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::GetCharacter => {
-                // this is the important line
-                let variables = character_query::Variables {};
-                let request_body = CharacterQuery::build_query(variables);
-                let request_json = &json!(request_body);
-
-                let request = Request::post("/graphql")
-                    .header("Content-Type", "application/json")
-                    .body(Json(request_json))
-                    .expect("Could not build that request.");
-
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<Character, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::ReceiveResponse(data)
-                    },
-                );
-
-                let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // 4. store the task so it isn't canceled immediately
-                self.fetch_task = Some(task);
-            }
             Msg::ReceiveResponse(response) => {
                 match response {
                     Ok(character) => {
                         self.character = Some(character);
                     }
-                    Err(error) => {
-                        self.error = Some(error.to_string())
-                    }
+                    Err(error) => self.error = Some(error.to_string()),
                 }
                 self.fetch_task = None;
             }
@@ -177,150 +140,8 @@ impl Component for CharacterSheet {
 
     fn view(&self) -> Html {
         let character = self.character.as_ref().unwrap();
-        let saving_throws = vec![
-            Skill {
-                has_proficiency: false,
-                ability_score: character.strength,
-                name: "Strength".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.dexterity,
-                name: "Dexterity".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: true,
-                ability_score: character.constitution,
-                name: "Constitution".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.intelligence,
-                name: "Intelligence".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.charisma,
-                name: "Charisma".to_string(),
-                related_ability: None,
-            },
-        ];
-
-        let skills = vec![
-            Skill {
-                has_proficiency: false,
-                ability_score: character.dexterity,
-                name: "Acrobatics".to_string(),
-                related_ability: Some("Dex".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.wisdom,
-                name: "Animal Handling".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.intelligence,
-                name: "Arcana".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.strength,
-                name: "Athletics".to_string(),
-                related_ability: Some("Str".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.charisma,
-                name: "Deception".to_string(),
-                related_ability: Some("Cha".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.intelligence,
-                name: "History".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.wisdom,
-                name: "Insight".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.charisma,
-                name: "Intimidation".to_string(),
-                related_ability: Some("Char".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.intelligence,
-                name: "Investigation".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.wisdom,
-                name: "Medicine".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.intelligence,
-                name: "Nature".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.wisdom,
-                name: "Perception".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.charisma,
-                name: "Performance".to_string(),
-                related_ability: Some("Cha".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.charisma,
-                name: "Persuasion".to_string(),
-                related_ability: Some("Cha".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.intelligence,
-                name: "Religion".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.dexterity,
-                name: "Sleight of Hand".to_string(),
-                related_ability: Some("Dex".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.dexterity,
-                name: "Stealth".to_string(),
-                related_ability: Some("Dex".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: character.wisdom,
-                name: "Survival".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-        ];
-
+        let skills = build_skills(character);
+        let saving_throws = build_saving_throws(character);
         html! {
             <>
                 <CharacterInfo
