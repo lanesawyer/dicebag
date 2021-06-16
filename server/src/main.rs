@@ -4,6 +4,7 @@ extern crate rocket;
 use dotenv::dotenv;
 use juniper::{EmptyMutation, EmptySubscription, IntrospectionFormat, RootNode};
 use rocket::{response::content, Build, Rocket, State};
+use rocket_sync_db_pools::{database, diesel};
 use std::env;
 
 use crate::context::Database;
@@ -12,6 +13,9 @@ use crate::resolver::Query;
 mod context;
 mod resolver;
 mod schema;
+
+#[database("postgres")]
+struct DbConn(diesel::PgConnection);
 
 type Schema = RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
 
@@ -60,6 +64,7 @@ async fn rocket() -> Rocket<Build> {
     //     .expect(&format!("Error connecting to {}", database_url));
 
     rocket::build()
+        .attach(DbConn::fairing())
         .manage(Database::new())
         .manage(Schema::new(
             Query,
