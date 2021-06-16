@@ -54,8 +54,7 @@ fn introspection_handler(context: &State<Database>) -> content::Json<String> {
 async fn rocket() -> Rocket<Build> {
     dotenv().ok();
 
-    let _database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+    let _database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     // PgConnection::establish(&database_url)
     //     .expect(&format!("Error connecting to {}", database_url));
