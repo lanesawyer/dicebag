@@ -12,8 +12,12 @@ crate-type = ["cdylib", "rlib"]
 lto = true
 
 [dependencies]
+anyhow = "1.0.41"
 getrandom = { version = "0.2.3", features = ["js"] }
+graphql_client = "0.9.0"
 rand = "0.8.3"
+serde = "1.0.126"
+serde_json = "1.0.64"
+wasm-bindgen = "0.2.74"
 yew = "0.18.0"
 yew-router = "0.15.0"
-wasm-bindgen = "0.2.74"

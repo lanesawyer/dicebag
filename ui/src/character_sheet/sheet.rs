@@ -1,116 +1,136 @@
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
-
-use crate::components::Skill;
-use crate::dice_tower::tower::Tower;
-
 use super::{
-    armor_class::ArmorClass, attacks::Attacks, character_info::CharacterInfo,
-    death_saving_throws::DeathSavingThrows, hit_dice::HitDice, hit_points::HitPoints,
-    initiative::Initiative, inspiration::Inspiration, money::Money,
-    passive_perception::PassivePerception, proficiency_bonus::ProficiencyBonus,
-    saving_throws::SavingThrows, skills::Skills, speed::Speed, stat_block::StatBlock,
+    armor_class::ArmorClass,
+    attacks::Attacks,
+    character_info::CharacterInfo,
+    death_saving_throws::DeathSavingThrows,
+    hit_dice::HitDice,
+    hit_points::HitPoints,
+    initiative::Initiative,
+    inspiration::Inspiration,
+    mocks::{build_bob, build_saving_throws, build_skills},
+    money::Money,
+    passive_perception::PassivePerception,
+    proficiency_bonus::ProficiencyBonus,
+    saving_throws::SavingThrows,
+    skills::Skills,
+    speed::Speed,
+    stat_block::StatBlock,
     text_block::TextBlock,
 };
+use crate::dice_tower::tower::Tower;
+use graphql_client::GraphQLQuery;
+use serde::Deserialize;
+use serde_json::json;
+use yew::format::Json;
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
-#[derive(Properties, Clone)]
-pub struct CharacterSheet {
-    pub character: Character,
+#[derive(GraphQLQuery)]
+#[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
+struct CharacterQuery;
+
+#[derive(Debug)]
+pub enum Msg {
+    ReceiveResponse(Result<Character, anyhow::Error>),
 }
 
-#[derive(Clone)]
+#[derive(Debug)]
+pub struct CharacterSheet {
+    pub character: Option<Character>,
+    fetch_task: Option<FetchTask>,
+    link: ComponentLink<Self>,
+    error: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct Character {
     // Info
-    name: String,
-    class: String, // TODO: enum
-    level: usize,
-    background: String,
-    race: String,      // TODO: enum?
-    alignment: String, // TODO: enum
-    experience_points: usize,
+    pub name: String,
+    pub class: String, // TODO: enum
+    pub level: usize,
+    pub background: String,
+    pub race: String,      // TODO: enum?
+    pub alignment: String, // TODO: enum
+    pub experience_points: usize,
 
     // Stats
-    strength: usize,
-    dexterity: usize,
-    constitution: usize,
-    intelligence: usize,
-    wisdom: usize,
-    charisma: usize,
+    pub strength: usize,
+    pub dexterity: usize,
+    pub constitution: usize,
+    pub intelligence: usize,
+    pub wisdom: usize,
+    pub charisma: usize,
 
     // Other
-    proficiency_bonus: usize,
-    has_inspiration: bool,
-    personality_traits: String,
-    ideals: String,
-    bonds: String,
-    flaws: String,
-    features_and_traits: String,
-    other_proficiencies_and_languages: String,
-    armor_class: usize,
-    speed: usize,
-    hit_points: usize,
-    current_hit_points: usize,
-    temporary_hit_points: usize,
-    hit_dice: usize,
-    used_hit_dice: usize,
-    saves: usize,
-    failures: usize,
+    pub proficiency_bonus: usize,
+    pub has_inspiration: bool,
+    pub personality_traits: String,
+    pub ideals: String,
+    pub bonds: String,
+    pub flaws: String,
+    pub features_and_traits: String,
+    pub other_proficiencies_and_languages: String,
+    pub armor_class: usize,
+    pub speed: usize,
+    pub hit_points: usize,
+    pub current_hit_points: usize,
+    pub temporary_hit_points: usize,
+    pub hit_dice: usize,
+    pub used_hit_dice: usize,
+    pub saves: usize,
+    pub failures: usize,
 
-    equipment: String,
-    copper: usize,
-    silver: usize,
-    electrum: usize,
-    platinum: usize,
-    gold: usize,
+    pub equipment: String,
+    pub copper: usize,
+    pub silver: usize,
+    pub electrum: usize,
+    pub platinum: usize,
+    pub gold: usize,
 }
 
 impl Component for CharacterSheet {
-    type Message = ();
+    type Message = Msg;
     type Properties = ();
-    fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            character: Character {
-                name: "Bob the Builder".to_string(),
-                class: "Artificer".to_string(),
-                level: 3,
-                background: "Construction worker".to_string(),
-                race: "Human".to_string(),
-                alignment: "Lawful Good".to_string(),
-                experience_points: 100,
-                strength: 12,
-                dexterity: 8,
-                constitution: 14,
-                intelligence: 10,
-                wisdom: 12,
-                charisma: 8,
-                proficiency_bonus: 1,
-                has_inspiration: false,
-                personality_traits: "Happy go lucky".to_string(),
-                ideals: "A clean site is a safe site".to_string(),
-                bonds: "I will always build a solid foundation".to_string(),
-                flaws: "Talks to machines".to_string(),
-                features_and_traits: "Organizer: Goes into battle with an extra action to plan"
-                    .to_string(),
-                other_proficiencies_and_languages: "English and Spanish".to_string(),
-                armor_class: 13,
-                hit_points: 20,
-                current_hit_points: 18,
-                temporary_hit_points: 0,
-                hit_dice: 3,
-                used_hit_dice: 0,
-                saves: 2,
-                failures: 1,
-                speed: 30,
-                equipment: "Hammer".to_string(),
-                copper: 10,
-                silver: 5,
-                electrum: 1,
-                gold: 3,
-                platinum: 0,
+
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let variables = character_query::Variables {};
+        let request_body = CharacterQuery::build_query(variables);
+        let request_json = &json!(request_body);
+
+        let request = Request::post("/graphql")
+            .header("Content-Type", "application/json")
+            .body(Json(request_json))
+            .expect("Could not build that request.");
+
+        let callback = link.callback(
+            |response: Response<Json<Result<Character, anyhow::Error>>>| {
+                let Json(data) = response.into_body();
+                Msg::ReceiveResponse(data)
             },
+        );
+
+        let task = FetchService::fetch(request, callback).expect("failed to start request");
+
+        Self {
+            character: Some(build_bob()),
+            link,
+            fetch_task: Some(task),
+            error: None,
         }
     }
 
-    fn update(&mut self, _: Self::Message) -> ShouldRender {
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+            Msg::ReceiveResponse(response) => {
+                match response {
+                    Ok(character) => {
+                        self.character = Some(character);
+                    }
+                    Err(error) => self.error = Some(error.to_string()),
+                }
+                self.fetch_task = None;
+            }
+        }
         true
     }
 
@@ -119,206 +139,65 @@ impl Component for CharacterSheet {
     }
 
     fn view(&self) -> Html {
-        let saving_throws = vec![
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.strength,
-                name: "Strength".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.dexterity,
-                name: "Dexterity".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: true,
-                ability_score: self.character.constitution,
-                name: "Constitution".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.intelligence,
-                name: "Intelligence".to_string(),
-                related_ability: None,
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.charisma,
-                name: "Charisma".to_string(),
-                related_ability: None,
-            },
-        ];
-
-        let skills = vec![
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.dexterity,
-                name: "Acrobatics".to_string(),
-                related_ability: Some("Dex".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.wisdom,
-                name: "Animal Handling".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.intelligence,
-                name: "Arcana".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.strength,
-                name: "Athletics".to_string(),
-                related_ability: Some("Str".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.charisma,
-                name: "Deception".to_string(),
-                related_ability: Some("Cha".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.intelligence,
-                name: "History".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.wisdom,
-                name: "Insight".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.charisma,
-                name: "Intimidation".to_string(),
-                related_ability: Some("Char".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.intelligence,
-                name: "Investigation".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.wisdom,
-                name: "Medicine".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.intelligence,
-                name: "Nature".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.wisdom,
-                name: "Perception".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.charisma,
-                name: "Performance".to_string(),
-                related_ability: Some("Cha".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.charisma,
-                name: "Persuasion".to_string(),
-                related_ability: Some("Cha".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.intelligence,
-                name: "Religion".to_string(),
-                related_ability: Some("Int".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.dexterity,
-                name: "Sleight of Hand".to_string(),
-                related_ability: Some("Dex".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.dexterity,
-                name: "Stealth".to_string(),
-                related_ability: Some("Dex".to_string()),
-            },
-            Skill {
-                has_proficiency: false,
-                ability_score: self.character.wisdom,
-                name: "Survival".to_string(),
-                related_ability: Some("Wis".to_string()),
-            },
-        ];
-
+        let character = self.character.as_ref().unwrap();
+        let skills = build_skills(character);
+        let saving_throws = build_saving_throws(character);
         html! {
             <>
                 <CharacterInfo
-                    name={self.character.name.clone()}
-                    class={self.character.class.clone()}
-                    level={self.character.level}
-                    background={self.character.background.clone()}
-                    race={self.character.race.clone()}
-                    alignment={self.character.alignment.clone()}
-                    experience_points={self.character.experience_points}
+                    name={character.name.clone()}
+                    class={character.class.clone()}
+                    level={character.level}
+                    background={character.background.clone()}
+                    race={character.race.clone()}
+                    alignment={character.alignment.clone()}
+                    experience_points={character.experience_points}
                 />
                 <section id="stat-block" class="stats">
-                    <StatBlock name="Strength" value={self.character.strength} />
-                    <StatBlock name="Dexterity" value={self.character.dexterity} />
-                    <StatBlock name="Constitution" value={self.character.constitution} />
-                    <StatBlock name="Intelligence" value={self.character.intelligence} />
-                    <StatBlock name="Wisdom" value={self.character.wisdom} />
-                    <StatBlock name="Charisma" value={self.character.charisma} />
+                    <StatBlock name="Strength" value={character.strength} />
+                    <StatBlock name="Dexterity" value={character.dexterity} />
+                    <StatBlock name="Constitution" value={character.constitution} />
+                    <StatBlock name="Intelligence" value={character.intelligence} />
+                    <StatBlock name="Wisdom" value={character.wisdom} />
+                    <StatBlock name="Charisma" value={character.charisma} />
                 </section>
-                <Inspiration value=self.character.has_inspiration />
-                <ProficiencyBonus value=self.character.proficiency_bonus />
+                <Inspiration value=character.has_inspiration />
+                <ProficiencyBonus value=character.proficiency_bonus />
                 <SavingThrows items=saving_throws />
                 <Skills items=skills />
                 <PassivePerception value=1 />
                 <section id="other-proficiencies-and-languages">
-                    <TextBlock name="Other Proficiencies & Languages" value=self.character.other_proficiencies_and_languages.clone() />
+                    <TextBlock name="Other Proficiencies & Languages" value=character.other_proficiencies_and_languages.clone() />
                 </section>
-                <ArmorClass value=self.character.armor_class />
-                <Initiative value=self.character.dexterity />
-                <Speed value=self.character.speed />
+                <ArmorClass value=character.armor_class />
+                <Initiative value=character.dexterity />
+                <Speed value=character.speed />
                 <HitPoints
-                    maximum=self.character.hit_points
-                    current=self.character.current_hit_points
-                    temporary=self.character.temporary_hit_points
+                    maximum=character.hit_points
+                    current=character.current_hit_points
+                    temporary=character.temporary_hit_points
                 />
-                <HitDice total=self.character.hit_dice used=self.character.used_hit_dice />
-                <DeathSavingThrows saves=self.character.saves failures=self.character.failures />
+                <HitDice total=character.hit_dice used=character.used_hit_dice />
+                <DeathSavingThrows saves=character.saves failures=character.failures />
                 <Attacks attacks=Vec::new() />
                 <Money
-                    copper=self.character.copper
-                    silver=self.character.silver
-                    electrum=self.character.electrum
-                    gold=self.character.gold
-                    platinum=self.character.platinum
+                    copper=character.copper
+                    silver=character.silver
+                    electrum=character.electrum
+                    gold=character.gold
+                    platinum=character.platinum
                 />
                 <section id="equipment">
-                    <TextBlock name="Equipment" value=self.character.equipment.clone() />
+                    <TextBlock name="Equipment" value=character.equipment.clone() />
                 </section>
                 <section id="character-details">
-                    <TextBlock name="Personality Traits" value=self.character.personality_traits.clone() />
-                    <TextBlock name="Ideals" value=self.character.ideals.clone() />
-                    <TextBlock name="Bonds" value=self.character.bonds.clone() />
-                    <TextBlock name="Flaws" value=self.character.flaws.clone() />
+                    <TextBlock name="Personality Traits" value=character.personality_traits.clone() />
+                    <TextBlock name="Ideals" value=character.ideals.clone() />
+                    <TextBlock name="Bonds" value=character.bonds.clone() />
+                    <TextBlock name="Flaws" value=character.flaws.clone() />
                 </section>
                 <section id="features-traits">
-                    <TextBlock name="Features & Traits" value=self.character.features_and_traits.clone() />
+                    <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
                 </section>
                 <Tower />
             </>

@@ -1,0 +1,6 @@
+query CharacterQuery {
+    character {
+        id
+        name
+    }
+}
