@@ -41,7 +41,7 @@ fn post_graphql_handler(
 fn introspection_handler(context: &State<Database>) -> content::Json<String> {
     let (res, _errors) = juniper::introspect(
         &Schema::new(Query, EmptyMutation::new(), EmptySubscription::new()),
-        &context,
+        context,
         IntrospectionFormat::default(),
     )
     .unwrap();
