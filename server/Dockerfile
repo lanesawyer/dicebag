@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly as builder
+FROM rust as builder
 WORKDIR /usr/src/dicebag-server
 COPY . .
 RUN cargo install --path .

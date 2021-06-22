@@ -10,5 +10,5 @@ Cargo.lock
 **/*.rs.bk
 
 # Added Manually
-/dist/
+dist/
 .env
