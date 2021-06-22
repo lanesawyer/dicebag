@@ -18,7 +18,7 @@ docker build -t dicebag-server .
 To run the built image, run the following command:
 
 ```
-docker run -p 8000:8000 -it --rm --name dicebag-server dicebag-server
+docker run -p 8000:8000 -it --name dicebag-server dicebag-server
 ```
 
 ## Technologies Used
