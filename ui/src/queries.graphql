@@ -2,5 +2,40 @@ query CharacterQuery {
     character {
         id
         name
+        class
+        level
+        background
+        race
+        alignment
+        experiencePoints
+        strength
+        dexterity
+        constitution
+        intelligence
+        wisdom
+        charisma
+        proficiencyBonus
+        hasInspiration
+        personalityTraits
+        ideals
+        bonds
+        flaws
+        featuresAndTraits
+        otherProficienciesAndLanguages
+        armorClass
+        speed
+        hitPoints
+        currentHitPoints
+        temporaryHitPoints
+        hitDice
+        usedHitDice
+        saves
+        failures
+        equipment
+        copper
+        silver
+        electrum
+        platinum
+        gold
     }
 }
