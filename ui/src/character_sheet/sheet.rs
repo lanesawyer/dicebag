@@ -21,8 +21,8 @@ use crate::dice_tower::tower::Tower;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
-use yew::format::Json;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
+use yew::{format::Json, services::ConsoleService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 #[derive(GraphQLQuery)]
@@ -31,7 +31,7 @@ struct CharacterQuery;
 
 #[derive(Debug)]
 pub enum Msg {
-    ReceiveResponse(Result<Character, anyhow::Error>),
+    ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
 }
 
 #[derive(Debug)]
@@ -43,6 +43,7 @@ pub struct CharacterSheet {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Character {
     // Info
     pub name: String,
@@ -88,6 +89,16 @@ pub struct Character {
     pub gold: usize,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct GraphQLResponse<T> {
+    pub data: T,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CharacterList {
+    pub character: Vec<Character>,
+}
+
 impl Component for CharacterSheet {
     type Message = Msg;
     type Properties = ();
@@ -97,13 +108,16 @@ impl Component for CharacterSheet {
         let request_body = CharacterQuery::build_query(variables);
         let request_json = &json!(request_body);
 
-        let request = Request::post("/graphql")
+        ConsoleService::log(&format!("{:?}", &request_json));
+
+        // TODO: Pull URL from .env
+        let request = Request::post("http://127.0.0.1:8000/graphql")
             .header("Content-Type", "application/json")
             .body(Json(request_json))
             .expect("Could not build that request.");
 
         let callback = link.callback(
-            |response: Response<Json<Result<Character, anyhow::Error>>>| {
+            |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
                 let Json(data) = response.into_body();
                 Msg::ReceiveResponse(data)
             },
@@ -124,9 +138,13 @@ impl Component for CharacterSheet {
             Msg::ReceiveResponse(response) => {
                 match response {
                     Ok(character) => {
-                        self.character = Some(character);
+                        self.character = Some(character.data.character.into_iter().nth(1).unwrap());
+                        ConsoleService::log(&format!("win {:?}", self.character));
                     }
-                    Err(error) => self.error = Some(error.to_string()),
+                    Err(error) => {
+                        self.error = Some(error.to_string());
+                        ConsoleService::log(&format!("error {:?}", error));
+                    }
                 }
                 self.fetch_task = None;
             }
@@ -139,6 +157,7 @@ impl Component for CharacterSheet {
     }
 
     fn view(&self) -> Html {
+        ConsoleService::log(&format!("render time! {:?}", self.character));
         let character = self.character.as_ref().unwrap();
         let skills = build_skills(character);
         let saving_throws = build_saving_throws(character);

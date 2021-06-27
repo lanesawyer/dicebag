@@ -1,7 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-#[derive(Properties, Clone)]
-pub struct CharacterInfo {
+#[derive(Properties, Clone, PartialEq)]
+pub struct CharacterInfoProps {
     pub name: String,
     pub class: String, // TODO: enum
     pub level: usize,
@@ -11,40 +11,41 @@ pub struct CharacterInfo {
     pub experience_points: usize,
 }
 
+pub struct CharacterInfo {
+    pub props: CharacterInfoProps,
+}
+
 impl Component for CharacterInfo {
     type Message = ();
-    type Properties = CharacterInfo;
+    type Properties = CharacterInfoProps;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            name: props.name,
-            class: props.class,
-            level: props.level,
-            background: props.background,
-            race: props.race,
-            alignment: props.alignment,
-            experience_points: props.experience_points,
-        }
+        Self { props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
     }
 
     fn view(&self) -> Html {
         html! {
             <section id="character-info" class="text-block">
-                <h2>{ &self.name }</h2>
-                <span>{ format!("Class: {}", &self.class) }</span>
-                <span>{ format!("Level: {}", self.level) }</span>
-                <span>{ format!("Background: {}", &self.background) }</span>
-                <span>{ format!("Race: {}", &self.race) }</span>
-                <span>{ format!("Alignment: {}", &self.alignment) }</span>
-                <span>{ format!("Experience Points: {}", self.experience_points) }</span>
+                <h2>{ &self.props.name }</h2>
+                <span>{ format!("Class: {}", &self.props.class) }</span>
+                <span>{ format!("Level: {}", self.props.level) }</span>
+                <span>{ format!("Background: {}", &self.props.background) }</span>
+                <span>{ format!("Race: {}", &self.props.race) }</span>
+                <span>{ format!("Alignment: {}", &self.props.alignment) }</span>
+                <span>{ format!("Experience Points: {}", self.props.experience_points) }</span>
             </section>
         }
     }

@@ -1,37 +1,43 @@
 use crate::utils::calculate_modifier_display;
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-#[derive(Properties, Clone)]
-pub struct StatBlock {
+#[derive(Properties, Clone, PartialEq)]
+pub struct StatBlockProps {
     pub name: String,
     pub value: usize,
 }
 
+pub struct StatBlock {
+    pub props: StatBlockProps,
+}
+
 impl Component for StatBlock {
     type Message = ();
-    type Properties = StatBlock;
+    type Properties = StatBlockProps;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self {
-            name: props.name,
-            value: props.value,
-        }
+        Self { props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
     }
 
     fn view(&self) -> Html {
         html! {
             <div class="stat-block">
-                <div class="stat-name">{ &self.name }</div>
-                <div class="stat-value">{ self.value }</div>
-                <div class="stat-modifier">{ calculate_modifier_display(self.value) }</div>
+                <div class="stat-name">{ &self.props.name }</div>
+                <div class="stat-value">{ self.props.value }</div>
+                <div class="stat-modifier">{ calculate_modifier_display(self.props.value) }</div>
             </div>
         }
     }
