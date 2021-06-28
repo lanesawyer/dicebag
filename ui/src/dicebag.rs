@@ -70,14 +70,6 @@ impl Component for Dicebag {
 
 impl Dicebag {
     fn view_nav(&self) -> Html {
-        let Self {
-            ref link,
-            navbar_active,
-            ..
-        } = *self;
-
-        let _active_class = if navbar_active { "is-active" } else { "" };
-
         html! {
             <nav>
                 <h1>{ "Dicebag" }</h1>
