@@ -1,19 +1,19 @@
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew_router::{prelude::*, Switch};
 
 use crate::character_sheet::sheet::CharacterSheet;
 
-// TODO: The Router just got an update and it hasn't shipped with any versions of Yew
-// yet but this is the basic setup for when it does
-// #[derive(Routable, PartialEq, Clone, Debug)]
-// pub enum Route {
-//     #[at("/")]
-//     Home,
-//     #[at("/character")]
-//     CharacterSheet,
-//     #[not_found]
-//     #[at("/404")]
-//     NotFound,
-// }
+#[derive(Switch, PartialEq, Clone, Debug)]
+pub enum Route {
+    #[to = "/character"]
+    CharacterSheet,
+    // #[not_found] isn't in 0.18 but it's coming
+    #[to = "/404"]
+    NotFound,
+    // Needs to go last otherwise it will match everything
+    #[to = "/"]
+    Home,
+}
 
 pub enum Msg {
     ToggleNavbar,
@@ -54,8 +54,7 @@ impl Component for Dicebag {
                 { self.view_nav() }
 
                 <main>
-                    // <Router<Route> render=Router::render(switch) />
-                    <CharacterSheet />
+                    <Router<Route, ()> render = Router::render(routes) />
                 </main>
                 <footer class="footer">
                     <div class="content has-text-centered">
@@ -95,12 +94,12 @@ impl Dicebag {
                 </div>
                 <div class={"navbar-menu"}>
                     <div class="navbar-start">
-                        // <Link<Route> classes={"navbar-item"} route=Route::Home>
-                        //     { "Home" }
-                        // </Link<Route>>
-                        // <Link<Route> classes={"navbar-item"} route=Route::CharacterSheet>
-                        //     { "Character Sheet" }
-                        // </Link<Route>>
+                        <RouterAnchor<Route> classes={"navbar-item"} route=Route::Home>
+                            { "Home" }
+                        </RouterAnchor<Route>>
+                        <RouterAnchor<Route> classes={"navbar-item"} route=Route::CharacterSheet>
+                            { "Character Sheet" }
+                        </RouterAnchor<Route>>
                     </div>
                 </div>
             </nav>
@@ -108,16 +107,10 @@ impl Dicebag {
     }
 }
 
-// fn switch(routes: &Route) -> Html {
-//     match routes {
-//         Route::Home => {
-//             html! { <Dicebag /> }
-//         }
-//         Route::CharacterSheet => {
-//             html! { <CharacterSheet /> }
-//         }
-//         Route::NotFound => {
-//             html! { <>{ "NOT FOUND" }</> }
-//         }
-//     }
-// }
+fn routes(routes: Route) -> Html {
+    match routes {
+        Route::Home => html! { <>{ "HI" }</> },
+        Route::CharacterSheet => html! { <CharacterSheet /> },
+        Route::NotFound => html! { <>{ "NOT FOUND" }</> },
+    }
+}
