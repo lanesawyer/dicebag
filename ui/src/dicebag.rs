@@ -1,5 +1,5 @@
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
-use yew_router::{prelude::*, Switch};
+use yew_router::{prelude::*, service::RouteService, Switch};
 
 use crate::{character_sheet::sheet::CharacterSheet, home::Home};
 
@@ -20,12 +20,12 @@ pub enum Route {
 }
 
 pub enum Msg {
-    ToggleNavbar,
+    UpdateRoute,
 }
 
 pub struct Dicebag {
-    link: ComponentLink<Self>,
-    navbar_active: bool,
+    _route_agent: RouteAgentBridge,
+    _link: ComponentLink<Self>,
 }
 
 impl Component for Dicebag {
@@ -33,18 +33,18 @@ impl Component for Dicebag {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let callback = link.callback(|_| Msg::UpdateRoute);
+        let route_agent = RouteAgentBridge::new(callback);
+
         Self {
-            link,
-            navbar_active: false,
+            _route_agent: route_agent,
+            _link: link,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::ToggleNavbar => {
-                self.navbar_active = !self.navbar_active;
-                true
-            }
+            Msg::UpdateRoute => true,
         }
     }
 
@@ -70,23 +70,25 @@ impl Component for Dicebag {
 
 impl Dicebag {
     fn view_nav(&self) -> Html {
+        let route = RouteService::<()>::new().get_path();
+
         html! {
             <nav>
-                <h1>{ "Dicebag" }</h1>
+                <h1>{ "🎲 Dicebag" }</h1>
                 <ul>
                     <li>
-                        <RouterAnchor<Route> route=Route::Home>
-                            { "Home" }
+                        <RouterAnchor<Route> classes={set_active_route(&route, "/")} route=Route::Home>
+                            { "🏠 Home" }
                         </RouterAnchor<Route>>
                     </li>
                     <li>
-                        <RouterAnchor<Route> route=Route::Characters>
-                            { "Characters" }
+                        <RouterAnchor<Route> classes={set_active_route(&route, "/characters")} route=Route::Characters>
+                            { "⚔️ Characters" }
                         </RouterAnchor<Route>>
                     </li>
                     <li>
-                        <RouterAnchor<Route> route=Route::Campaigns>
-                            { "Campaigns" }
+                        <RouterAnchor<Route> classes={set_active_route(&route, "/campaigns")} route=Route::Campaigns>
+                            { "🗺️ Campaigns" }
                         </RouterAnchor<Route>>
                     </li>
                 </ul>
@@ -95,12 +97,20 @@ impl Dicebag {
     }
 }
 
-fn routes(routes: Route) -> Html {
-    match routes {
+fn routes(route: Route) -> Html {
+    match route {
         Route::Home => html! { <Home /> },
         Route::Characters => html! { <CharacterSheet id={0} /> },
-        Route::CharacterSheet(id) => html! { <CharacterSheet id={id} /> },
+        Route::CharacterSheet(id) => html! { <CharacterSheet id=id /> },
         Route::Campaigns => html! { <>{ "Campaigns" }</> },
         Route::NotFound => html! { <>{ "NOT FOUND" }</> },
+    }
+}
+
+fn set_active_route(route: &str, path: &'static str) -> &'static str {
+    if route == path {
+        "active"
+    } else {
+        ""
     }
 }

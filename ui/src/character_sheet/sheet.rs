@@ -146,7 +146,6 @@ impl Component for CharacterSheet {
                 match response {
                     Ok(character) => {
                         self.character = Some(character.data.character.into_iter().next().unwrap());
-                        ConsoleService::log(&format!("win {:?}", self.character));
                     }
                     Err(error) => {
                         self.error = Some(error.to_string());
@@ -164,7 +163,6 @@ impl Component for CharacterSheet {
     }
 
     fn view(&self) -> Html {
-        ConsoleService::log(&format!("render time! {:?}", self.character));
         let character = self.character.as_ref().unwrap();
         let skills = build_skills(character);
         let saving_throws = build_saving_throws(character);

@@ -1,15 +1,15 @@
 :root {
-  --primary-color: antiquewhite; // FAEBD7
-  --secondary-color: #3B5249;
-  --success-color: #519872;
-  --error-color: #34252F;
-  --accent-color: #957D95;
-  --white: #ffffff;
-  --black: #000000;
+    // https://coolors.co/bbcde5-002500-81f0e5-e3c567-461b7e-4e9258-c36241-34282c-faebd7
+    --primary-color: #461B7E;
+    --secondary-color: #E3C567;
+    --success-color: #4E9258;
+    --error-color: #C36241;
+    --white: #FAEBD7;
+    --black: #000000;
 }
 
 body {
-    background-color: var(--primary-color);
+    background-color: var(--white);
     display: grid;
     grid-template-columns: 1fr 4fr;
     grid-template-rows: 4fr 4em;
@@ -19,10 +19,17 @@ body {
         "footer main";
     min-height: 100vh;
     font: 1em "Fira Sans", sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 nav {
     grid-area: nav;
+    background-color: var(--primary-color);
+}
+
+nav h1 {
+    padding: 1em;
 }
 
 nav ul {
@@ -31,19 +38,27 @@ nav ul {
 
 nav ul li {
     list-style-type: none;
-    padding: .75em;
 }
 
 nav ul li a {
-    background-color: var(--secondary-color);
-    border-radius: .25em;
-    color: var(--white);
+    color: var(--black);
     text-decoration: none;
-    padding: .5em;
+    padding: 1em;
+    display: inline-block;
+    width: calc(100% - 2em);
 }
 
 nav ul li a:hover {
-    background-color: var(--accent-color);
+    background-color: var(--black);
+    color: var(--white);
+}
+
+nav ul li a:hover.active {
+    color: var(--black);
+}
+
+nav ul li a.active {
+    background-color: var(--secondary-color);
 }
 
 main {
@@ -52,10 +67,13 @@ main {
     grid-template-columns: repeat(9, 1fr);
     gap: 1em;
     grid-auto-rows: minmax(50px, auto);
+    padding: 1em;
 }
 
 footer {
     grid-area: footer;
+    background-color: var(--primary-color);
+    padding: 1em;
 }
 
 h3 {
