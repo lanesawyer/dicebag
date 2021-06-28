@@ -1,7 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, Switch};
 
-use crate::character_sheet::sheet::CharacterSheet;
+use crate::{character_sheet::sheet::CharacterSheet, home::Home};
 
 #[derive(Switch, PartialEq, Clone, Debug)]
 pub enum Route {
@@ -52,15 +52,12 @@ impl Component for Dicebag {
         html! {
             <>
                 { self.view_nav() }
-
                 <main>
                     <Router<Route, ()> render = Router::render(routes) />
                 </main>
-                <footer class="footer">
-                    <div class="content has-text-centered">
-                        { "Powered by " }
-                        <a href="https://yew.rs">{ "Yew" }</a>
-                    </div>
+                <footer>
+                    { "Powered by " }
+                    <a href="https://yew.rs">{ "Yew" }</a>
                 </footer>
             </>
         }
@@ -92,16 +89,18 @@ impl Dicebag {
                         <span aria-hidden="true"></span>
                     </a>
                 </div>
-                <div class={"navbar-menu"}>
-                    <div class="navbar-start">
+                <ul>
+                    <li>
                         <RouterAnchor<Route> classes={"navbar-item"} route=Route::Home>
                             { "Home" }
                         </RouterAnchor<Route>>
+                    </li>
+                    <li>
                         <RouterAnchor<Route> classes={"navbar-item"} route=Route::CharacterSheet>
                             { "Character Sheet" }
                         </RouterAnchor<Route>>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </nav>
         }
     }
@@ -109,7 +108,7 @@ impl Dicebag {
 
 fn routes(routes: Route) -> Html {
     match routes {
-        Route::Home => html! { <>{ "HI" }</> },
+        Route::Home => html! { <Home /> },
         Route::CharacterSheet => html! { <CharacterSheet /> },
         Route::NotFound => html! { <>{ "NOT FOUND" }</> },
     }

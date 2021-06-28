@@ -7,6 +7,7 @@ mod character_sheet;
 mod components;
 mod dice_tower;
 mod dicebag;
+mod home;
 mod utils;
 
 use crate::dicebag::Dicebag;

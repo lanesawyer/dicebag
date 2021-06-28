@@ -138,7 +138,7 @@ impl Component for CharacterSheet {
             Msg::ReceiveResponse(response) => {
                 match response {
                     Ok(character) => {
-                        self.character = Some(character.data.character.into_iter().nth(1).unwrap());
+                        self.character = Some(character.data.character.into_iter().next().unwrap());
                         ConsoleService::log(&format!("win {:?}", self.character));
                     }
                     Err(error) => {

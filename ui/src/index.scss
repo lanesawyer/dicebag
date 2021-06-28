@@ -1,12 +1,43 @@
 body {
     background-color: antiquewhite;
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 4fr 4em;
+    gap: 0px 0px;
+    grid-template-areas:
+        "nav main"
+        "footer main";
+    min-height: 100vh;
+    font: 1em "Fira Sans", sans-serif;
+}
+
+nav {
+    grid-area: nav;
+}
+
+nav ul {
+    padding: 0;
+}
+
+nav ul li {
+    list-style-type: none;
+    padding: .75em;
+}
+
+nav ul li a {
+    text-decoration: none;
 }
 
 main {
+    grid-area: main;
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 1em;
     grid-auto-rows: minmax(50px, auto);
+}
+
+footer {
+    grid-area: footer;
 }
 
 h3 {
