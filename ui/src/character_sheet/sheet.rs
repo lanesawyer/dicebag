@@ -54,22 +54,22 @@ pub struct Character {
     // Info
     pub name: String,
     pub class: String, // TODO: enum
-    pub level: usize,
+    pub level: i64,
     pub background: String,
     pub race: String,      // TODO: enum?
     pub alignment: String, // TODO: enum
-    pub experience_points: usize,
+    pub experience_points: i64,
 
     // Stats
-    pub strength: usize,
-    pub dexterity: usize,
-    pub constitution: usize,
-    pub intelligence: usize,
-    pub wisdom: usize,
-    pub charisma: usize,
+    pub strength: i64,
+    pub dexterity: i64,
+    pub constitution: i64,
+    pub intelligence: i64,
+    pub wisdom: i64,
+    pub charisma: i64,
 
     // Other
-    pub proficiency_bonus: usize,
+    pub proficiency_bonus: i64,
     pub has_inspiration: bool,
     pub personality_traits: String,
     pub ideals: String,
@@ -77,22 +77,22 @@ pub struct Character {
     pub flaws: String,
     pub features_and_traits: String,
     pub other_proficiencies_and_languages: String,
-    pub armor_class: usize,
-    pub speed: usize,
-    pub hit_points: usize,
-    pub current_hit_points: usize,
-    pub temporary_hit_points: usize,
-    pub hit_dice: usize,
-    pub used_hit_dice: usize,
-    pub saves: usize,
-    pub failures: usize,
+    pub armor_class: i64,
+    pub speed: i64,
+    pub hit_points: i64,
+    pub current_hit_points: i64,
+    pub temporary_hit_points: i64,
+    pub hit_dice: i64,
+    pub used_hit_dice: i64,
+    pub saves: i64,
+    pub failures: i64,
 
     pub equipment: String,
-    pub copper: usize,
-    pub silver: usize,
-    pub electrum: usize,
-    pub platinum: usize,
-    pub gold: usize,
+    pub copper: i64,
+    pub silver: i64,
+    pub electrum: i64,
+    pub platinum: i64,
+    pub gold: i64,
 }
 
 #[derive(Debug, Deserialize)]
