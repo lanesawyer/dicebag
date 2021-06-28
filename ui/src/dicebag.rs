@@ -5,8 +5,12 @@ use crate::{character_sheet::sheet::CharacterSheet, home::Home};
 
 #[derive(Switch, PartialEq, Clone, Debug)]
 pub enum Route {
-    #[to = "/character"]
-    CharacterSheet,
+    #[to = "/characters"]
+    Characters,
+    #[to = "/characters/{id}"]
+    CharacterSheet(i32),
+    #[to = "/campaigns"]
+    Campaigns,
     // #[not_found] isn't in 0.18 but it's coming
     #[to = "/404"]
     NotFound,
@@ -75,29 +79,22 @@ impl Dicebag {
         let _active_class = if navbar_active { "is-active" } else { "" };
 
         html! {
-            <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
-                <div class="navbar-brand">
-                    <h1 class="navbar-item is-size-3">{ "Dicebag" }</h1>
-
-                    <a role="button"
-                        class={"navbar-burger burger"}
-                        aria-label="menu" aria-expanded="false"
-                        onclick=link.callback(|_| Msg::ToggleNavbar)
-                    >
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                    </a>
-                </div>
+            <nav>
+                <h1>{ "Dicebag" }</h1>
                 <ul>
                     <li>
-                        <RouterAnchor<Route> classes={"navbar-item"} route=Route::Home>
+                        <RouterAnchor<Route> route=Route::Home>
                             { "Home" }
                         </RouterAnchor<Route>>
                     </li>
                     <li>
-                        <RouterAnchor<Route> classes={"navbar-item"} route=Route::CharacterSheet>
-                            { "Character Sheet" }
+                        <RouterAnchor<Route> route=Route::Characters>
+                            { "Characters" }
+                        </RouterAnchor<Route>>
+                    </li>
+                    <li>
+                        <RouterAnchor<Route> route=Route::Campaigns>
+                            { "Campaigns" }
                         </RouterAnchor<Route>>
                     </li>
                 </ul>
@@ -109,7 +106,9 @@ impl Dicebag {
 fn routes(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <Home /> },
-        Route::CharacterSheet => html! { <CharacterSheet /> },
+        Route::Characters => html! { <CharacterSheet id={0} /> },
+        Route::CharacterSheet(id) => html! { <CharacterSheet id={id} /> },
+        Route::Campaigns => html! { <>{ "Campaigns" }</> },
         Route::NotFound => html! { <>{ "NOT FOUND" }</> },
     }
 }

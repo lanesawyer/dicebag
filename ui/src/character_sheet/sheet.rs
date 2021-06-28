@@ -23,7 +23,7 @@ use serde::Deserialize;
 use serde_json::json;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::{format::Json, services::ConsoleService};
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(GraphQLQuery)]
 #[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
@@ -34,8 +34,14 @@ pub enum Msg {
     ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
 }
 
+#[derive(Properties, Clone, Debug)]
+pub struct CharacterSheetProps {
+    pub id: i32,
+}
+
 #[derive(Debug)]
 pub struct CharacterSheet {
+    pub props: CharacterSheetProps,
     pub character: Option<Character>,
     fetch_task: Option<FetchTask>,
     link: ComponentLink<Self>,
@@ -101,9 +107,9 @@ pub struct CharacterList {
 
 impl Component for CharacterSheet {
     type Message = Msg;
-    type Properties = ();
+    type Properties = CharacterSheetProps;
 
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let variables = character_query::Variables {};
         let request_body = CharacterQuery::build_query(variables);
         let request_json = &json!(request_body);
@@ -126,6 +132,7 @@ impl Component for CharacterSheet {
         let task = FetchService::fetch(request, callback).expect("failed to start request");
 
         Self {
+            props,
             character: Some(build_bob()),
             link,
             fetch_task: Some(task),

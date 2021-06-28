@@ -1,5 +1,15 @@
+:root {
+  --primary-color: antiquewhite; // FAEBD7
+  --secondary-color: #3B5249;
+  --success-color: #519872;
+  --error-color: #34252F;
+  --accent-color: #957D95;
+  --white: #ffffff;
+  --black: #000000;
+}
+
 body {
-    background-color: antiquewhite;
+    background-color: var(--primary-color);
     display: grid;
     grid-template-columns: 1fr 4fr;
     grid-template-rows: 4fr 4em;
@@ -25,7 +35,15 @@ nav ul li {
 }
 
 nav ul li a {
+    background-color: var(--secondary-color);
+    border-radius: .25em;
+    color: var(--white);
     text-decoration: none;
+    padding: .5em;
+}
+
+nav ul li a:hover {
+    background-color: var(--accent-color);
 }
 
 main {
@@ -156,7 +174,7 @@ h3 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid black;
+    border: 1px solid var(--black);
 }
 
 .stat-name {
@@ -173,7 +191,7 @@ h3 {
 
 .text-block {
     padding: .5em;
-    border: 1px solid black;
+    border: 1px solid var(--black);
 }
 
 .single-value {
@@ -183,5 +201,5 @@ h3 {
 
 .card {
     padding: .5em;
-    border: 1px solid black;
+    border: 1px solid var(--black);
 }
