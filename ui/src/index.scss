@@ -1,12 +1,79 @@
+:root {
+    // https://coolors.co/bbcde5-002500-81f0e5-e3c567-461b7e-4e9258-c36241-34282c-faebd7
+    --primary-color: #461B7E;
+    --secondary-color: #E3C567;
+    --success-color: #4E9258;
+    --error-color: #C36241;
+    --white: #FAEBD7;
+    --black: #000000;
+}
+
 body {
-    background-color: antiquewhite;
+    background-color: var(--white);
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 4fr 4em;
+    gap: 0px 0px;
+    grid-template-areas:
+        "nav main"
+        "footer main";
+    min-height: 100vh;
+    font: 1em "Fira Sans", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    grid-area: nav;
+    background-color: var(--primary-color);
+}
+
+nav h1 {
+    padding: 1em;
+}
+
+nav ul {
+    padding: 0;
+}
+
+nav ul li {
+    list-style-type: none;
+}
+
+nav ul li a {
+    color: var(--black);
+    text-decoration: none;
+    padding: 1em;
+    display: inline-block;
+    width: calc(100% - 2em);
+}
+
+nav ul li a:hover {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+nav ul li a:hover.active {
+    color: var(--black);
+}
+
+nav ul li a.active {
+    background-color: var(--secondary-color);
 }
 
 main {
+    grid-area: main;
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 1em;
     grid-auto-rows: minmax(50px, auto);
+    padding: 1em;
+}
+
+footer {
+    grid-area: footer;
+    background-color: var(--primary-color);
+    padding: 1em;
 }
 
 h3 {
@@ -125,7 +192,7 @@ h3 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid black;
+    border: 1px solid var(--black);
 }
 
 .stat-name {
@@ -142,7 +209,7 @@ h3 {
 
 .text-block {
     padding: .5em;
-    border: 1px solid black;
+    border: 1px solid var(--black);
 }
 
 .single-value {
@@ -152,5 +219,5 @@ h3 {
 
 .card {
     padding: .5em;
-    border: 1px solid black;
+    border: 1px solid var(--black);
 }
