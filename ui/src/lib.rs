@@ -9,6 +9,7 @@ mod components;
 mod dice_tower;
 mod dicebag;
 mod home;
+mod services;
 mod utils;
 
 use crate::dicebag::Dicebag;

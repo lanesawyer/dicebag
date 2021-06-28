@@ -614,7 +614,7 @@
             "deprecationReason": null,
             "description": null,
             "isDeprecated": false,
-            "name": "character",
+            "name": "characters",
             "type": {
               "kind": "NON_NULL",
               "name": null,

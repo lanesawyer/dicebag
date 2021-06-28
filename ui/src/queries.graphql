@@ -1,5 +1,5 @@
 query CharacterQuery {
-    character {
+    characters {
         id
         name
         class

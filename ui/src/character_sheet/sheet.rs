@@ -17,17 +17,14 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::dice_tower::tower::Tower;
+use crate::{dice_tower::tower::Tower, services::{CharacterQuery, GraphQLResponse}};
+use crate::services::character_query;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::{format::Json, services::ConsoleService};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
-
-#[derive(GraphQLQuery)]
-#[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
-struct CharacterQuery;
 
 #[derive(Debug)]
 pub enum Msg {
@@ -96,13 +93,8 @@ pub struct Character {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct GraphQLResponse<T> {
-    pub data: T,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct CharacterList {
-    pub character: Vec<Character>,
+    pub characters: Vec<Character>,
 }
 
 impl Component for CharacterSheet {
@@ -145,7 +137,7 @@ impl Component for CharacterSheet {
             Msg::ReceiveResponse(response) => {
                 match response {
                     Ok(character) => {
-                        self.character = Some(character.data.character.into_iter().next().unwrap());
+                        self.character = Some(character.data.characters.into_iter().next().unwrap());
                     }
                     Err(error) => {
                         self.error = Some(error.to_string());
