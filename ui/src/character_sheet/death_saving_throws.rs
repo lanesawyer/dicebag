@@ -2,8 +2,8 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct DeathSavingThrows {
-    pub saves: usize,
-    pub failures: usize,
+    pub saves: i64,
+    pub failures: i64,
 }
 
 impl Component for DeathSavingThrows {

@@ -4,7 +4,7 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 #[derive(Properties, Clone, PartialEq)]
 pub struct StatBlockProps {
     pub name: String,
-    pub value: usize,
+    pub value: i64,
 }
 
 pub struct StatBlock {

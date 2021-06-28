@@ -4,11 +4,11 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 pub struct CharacterInfoProps {
     pub name: String,
     pub class: String, // TODO: enum
-    pub level: usize,
+    pub level: i64,
     pub background: String,
     pub race: String,      // TODO: enum?
     pub alignment: String, // TODO: enum
-    pub experience_points: usize,
+    pub experience_points: i64,
 }
 
 pub struct CharacterInfo {

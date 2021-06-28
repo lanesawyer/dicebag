@@ -1,14 +1,16 @@
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, service::RouteService, Switch};
 
-use crate::{character_sheet::sheet::CharacterSheet, home::Home};
+use crate::{character_sheet::sheet::CharacterSheet, characters::CharactersPage, home::Home};
 
+// Matches from most specific to least
+// so if you don't see the page, it's probably the wrong order
 #[derive(Switch, PartialEq, Clone, Debug)]
 pub enum Route {
-    #[to = "/characters"]
-    Characters,
     #[to = "/characters/{id}"]
     CharacterSheet(i32),
+    #[to = "/characters"]
+    Characters,
     #[to = "/campaigns"]
     Campaigns,
     // #[not_found] isn't in 0.18 but it's coming
@@ -100,7 +102,7 @@ impl Dicebag {
 fn routes(route: Route) -> Html {
     match route {
         Route::Home => html! { <Home /> },
-        Route::Characters => html! { <CharacterSheet id={0} /> },
+        Route::Characters => html! { <CharactersPage /> },
         Route::CharacterSheet(id) => html! { <CharacterSheet id=id /> },
         Route::Campaigns => html! { <>{ "Campaigns" }</> },
         Route::NotFound => html! { <>{ "NOT FOUND" }</> },
@@ -108,9 +110,9 @@ fn routes(route: Route) -> Html {
 }
 
 fn set_active_route(route: &str, path: &'static str) -> &'static str {
-    if route == path {
-        "active"
-    } else {
-        ""
+    match path {
+        "/" if route == path => "active",
+        _ if path != "/" && route.starts_with(path) => "active",
+        _ => "",
     }
 }

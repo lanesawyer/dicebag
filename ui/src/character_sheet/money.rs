@@ -2,11 +2,11 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct Money {
-    pub copper: usize,
-    pub silver: usize,
-    pub electrum: usize,
-    pub gold: usize,
-    pub platinum: usize,
+    pub copper: i64,
+    pub silver: i64,
+    pub electrum: i64,
+    pub gold: i64,
+    pub platinum: i64,
 }
 
 impl Component for Money {
