@@ -8,7 +8,7 @@ use crate::{character_sheet::sheet::CharacterSheet, characters::CharactersPage, 
 #[derive(Switch, PartialEq, Clone, Debug)]
 pub enum Route {
     #[to = "/characters/{id}"]
-    CharacterSheet(i32),
+    CharacterSheet(String),
     #[to = "/characters"]
     Characters,
     #[to = "/campaigns"]

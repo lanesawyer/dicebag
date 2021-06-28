@@ -48,7 +48,7 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn new() -> Self {
+    pub fn _new() -> Self {
         Self {
             ..Default::default()
         }

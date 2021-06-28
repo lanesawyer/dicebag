@@ -3,8 +3,8 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-mod characters;
 mod character_sheet;
+mod characters;
 mod components;
 mod dice_tower;
 mod dicebag;

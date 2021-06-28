@@ -1,62 +1,85 @@
-// use graphql_client::GraphQLQuery;
-// use serde_json::json;
+use graphql_client::GraphQLQuery;
+use serde_json::json;
 use yew::{
-    // format::Json,
+    format::Json,
     html,
-    // services::{
-    //     fetch::{Request, Response},
-    //     ConsoleService, FetchService,
-    // },
-    Component,
-    ComponentLink,
-    Html,
-    ShouldRender,
+    services::{
+        fetch::{FetchTask, Request, Response},
+        ConsoleService, FetchService,
+    },
+    Component, ComponentLink, Html, ShouldRender,
+};
+use yew_router::components::RouterAnchor;
+
+use crate::{
+    character_sheet::sheet::{Character, CharacterList},
+    dicebag::Route,
+    services::{characters_query, CharactersQuery, GraphQLResponse},
 };
 
-// #[derive(GraphQLQuery)]
-// #[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
-// struct CharactersQuery;
+#[derive(Debug)]
+pub enum Msg {
+    ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
+}
 
-pub struct CharactersPage;
+#[derive(Debug)]
+pub struct CharactersPage {
+    pub characters: Option<Vec<Character>>,
+    fetch_task: Option<FetchTask>,
+    link: ComponentLink<Self>,
+    error: Option<String>,
+}
 
 impl Component for CharactersPage {
-    type Message = ();
+    type Message = Msg;
     type Properties = ();
 
-    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        // let variables = characters_query::Variables {};
-        // let request_body = CharactersQuery::build_query(variables);
-        // let request_json = &json!(request_body);
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let variables = characters_query::Variables {};
+        let request_body = CharactersQuery::build_query(variables);
+        let request_json = &json!(request_body);
 
-        // ConsoleService::log(&format!("{:?}", &request_json));
+        ConsoleService::log(&format!("{:?}", &request_json));
 
-        // // TODO: Pull URL from .env
-        // let request = Request::post("http://127.0.0.1:8000/graphql")
-        //     .header("Content-Type", "application/json")
-        //     .body(Json(request_json))
-        //     .expect("Could not build that request.");
+        // TODO: Pull URL from .env
+        let request = Request::post("http://127.0.0.1:8000/graphql")
+            .header("Content-Type", "application/json")
+            .body(Json(request_json))
+            .expect("Could not build that request.");
 
-        // let callback = link.callback(
-        //     |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
-        //         let Json(data) = response.into_body();
-        //         Msg::ReceiveResponse(data)
-        //     },
-        // );
+        let callback = link.callback(
+            |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
+                let Json(data) = response.into_body();
+                Msg::ReceiveResponse(data)
+            },
+        );
 
-        // let task = FetchService::fetch(request, callback).expect("failed to start request");
+        let task = FetchService::fetch(request, callback).expect("failed to start request");
 
-        // Self {
-        //     props,
-        //     character: Some(build_bob()),
-        //     link,
-        //     fetch_task: Some(task),
-        //     error: None,
-        // }
-        Self
+        Self {
+            characters: None,
+            link,
+            fetch_task: Some(task),
+            error: None,
+        }
     }
 
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        false
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+            Msg::ReceiveResponse(response) => {
+                match response {
+                    Ok(character) => {
+                        self.characters = Some(character.data.characters);
+                    }
+                    Err(error) => {
+                        self.error = Some(error.to_string());
+                        ConsoleService::log(&format!("error {:?}", error));
+                    }
+                }
+                self.fetch_task = None;
+            }
+        }
+        true
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
@@ -66,8 +89,29 @@ impl Component for CharactersPage {
     fn view(&self) -> Html {
         html! {
             <>
-                { "Characters here" }
+                <h2> { "Characters" }</h2>
+                {
+                    if let Some(characters) = &self.characters {
+                        characters.iter().map(view_characters).collect::<Html>()
+                    } else {
+                        html! { <></> }
+                    }
+                }
+                <div class="character-panel">{ "Add new" }</div>
             </>
         }
+    }
+}
+
+fn view_characters(character: &Character) -> Html {
+    html! {
+        <RouterAnchor<Route> route=Route::CharacterSheet(character.id.clone())>
+            <div class="character-panel">
+                <span>{character.name.clone()}</span>
+                <span>{character.class.clone()}</span>
+                <span>{character.level}</span>
+                { "View" }
+            </div>
+        </RouterAnchor<Route>>
     }
 }

@@ -1,4 +1,4 @@
-query CharacterQuery {
+query CharactersQuery {
     characters {
         id
         name

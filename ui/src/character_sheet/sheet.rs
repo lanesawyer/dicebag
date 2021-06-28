@@ -17,8 +17,11 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::{dice_tower::tower::Tower, services::{CharacterQuery, GraphQLResponse}};
-use crate::services::character_query;
+use crate::services::characters_query;
+use crate::{
+    dice_tower::tower::Tower,
+    services::{CharactersQuery, GraphQLResponse},
+};
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
@@ -33,7 +36,7 @@ pub enum Msg {
 
 #[derive(Properties, Clone, Debug)]
 pub struct CharacterSheetProps {
-    pub id: i32,
+    pub id: String,
 }
 
 #[derive(Debug)]
@@ -48,6 +51,8 @@ pub struct CharacterSheet {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Character {
+    pub id: String,
+
     // Info
     pub name: String,
     pub class: String, // TODO: enum
@@ -102,8 +107,8 @@ impl Component for CharacterSheet {
     type Properties = CharacterSheetProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let variables = character_query::Variables {};
-        let request_body = CharacterQuery::build_query(variables);
+        let variables = characters_query::Variables {};
+        let request_body = CharactersQuery::build_query(variables);
         let request_json = &json!(request_body);
 
         ConsoleService::log(&format!("{:?}", &request_json));
@@ -137,7 +142,14 @@ impl Component for CharacterSheet {
             Msg::ReceiveResponse(response) => {
                 match response {
                     Ok(character) => {
-                        self.character = Some(character.data.characters.into_iter().next().unwrap());
+                        self.character = Some(
+                            character
+                                .data
+                                .characters
+                                .into_iter()
+                                .find(|character| character.id == self.props.id)
+                                .unwrap(),
+                        );
                     }
                     Err(error) => {
                         self.error = Some(error.to_string());

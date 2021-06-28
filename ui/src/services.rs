@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 #[derive(GraphQLQuery)]
 #[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
-pub struct CharacterQuery;
+pub struct CharactersQuery;
 
 // TODO: I should be able to use the auto-generated ones,
 // but I'm running into deserialization issues with Yew's Fetch

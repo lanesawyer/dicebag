@@ -15,12 +15,23 @@ impl Database {
                 (
                     1,
                     Character {
-                        id: "guid".to_string(),
+                        id: "varis".to_string(),
                         name: "Varis".to_string(),
+                        class: "Sorcerer".to_string(),
+                        level: 4,
                         ..Default::default()
                     },
                 ),
-                (2, Character::new()),
+                (
+                    2,
+                    Character {
+                        id: "campton".to_string(),
+                        name: "Campton".to_string(),
+                        class: "Fighter".to_string(),
+                        level: 6,
+                        ..Default::default()
+                    },
+                ),
             ]
             .iter()
             .cloned()
