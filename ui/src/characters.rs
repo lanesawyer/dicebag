@@ -14,6 +14,7 @@ use yew_router::components::RouterAnchor;
 use crate::{
     character_sheet::sheet::{Character, CharacterList},
     dicebag::Route,
+    character_sheet::mocks::build_bob,
     services::{characters_query, CharactersQuery, GraphQLResponse},
 };
 
@@ -57,7 +58,7 @@ impl Component for CharactersPage {
         let task = FetchService::fetch(request, callback).expect("failed to start request");
 
         Self {
-            characters: None,
+            characters: Some(vec![build_bob()]),
             link,
             fetch_task: Some(task),
             error: None,
@@ -107,10 +108,10 @@ fn view_characters(character: &Character) -> Html {
     html! {
         <RouterAnchor<Route> route=Route::CharacterSheet(character.id.clone())>
             <div class="character-panel">
-                <span>{character.name.clone()}</span>
-                <span>{character.class.clone()}</span>
-                <span>{character.level}</span>
-                { "View" }
+                <img class="character-image" src=character.image.clone()/>
+                <span class="character-name">{character.name.clone()}</span>
+                <span class="character-class">{character.class.clone()}</span>
+                <span class="character-level">{character.level}</span>
             </div>
         </RouterAnchor<Route>>
     }

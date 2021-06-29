@@ -6,7 +6,7 @@ mod hit_dice;
 mod hit_points;
 mod initiative;
 mod inspiration;
-mod mocks;
+pub mod mocks;
 mod money;
 mod passive_perception;
 mod proficiency_bonus;

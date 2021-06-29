@@ -52,6 +52,7 @@ pub struct CharacterSheet {
 #[serde(rename_all = "camelCase")]
 pub struct Character {
     pub id: String,
+    pub image: String,
 
     // Info
     pub name: String,

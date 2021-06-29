@@ -3,4 +3,30 @@
     background-color: var(--primary-color);
     display: flex;
     flex-direction: column;
+    color: var(--white);
+}
+
+.character-image {
+    flex: 12;
+    object-fit: cover;
+    width: 100%;
+    clip-path: polygon(
+        0 0, /* left top */
+        100% 0, /* right top */ 
+        100% 95%, /* right bottom */
+        0 100% /* left bottom */
+    );
+}
+
+.character-name {
+    flex: 1;
+    padding: .25em;
+}
+
+.character-class {
+    flex: 1;
+}
+
+.character-level {
+    flex: 1;
 }

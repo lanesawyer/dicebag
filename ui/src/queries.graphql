@@ -1,6 +1,7 @@
 query CharactersQuery {
     characters {
         id
+        image
         name
         class
         level
