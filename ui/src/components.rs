@@ -4,7 +4,7 @@ use yew::{html, Html};
 #[derive(Clone)]
 pub struct Skill {
     pub has_proficiency: bool,
-    pub ability_score: usize,
+    pub ability_score: i64,
     pub name: String,
     pub related_ability: Option<String>,
 }

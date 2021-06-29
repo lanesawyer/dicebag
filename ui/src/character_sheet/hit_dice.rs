@@ -2,8 +2,8 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct HitDice {
-    pub total: usize,
-    pub used: usize,
+    pub total: i64,
+    pub used: i64,
 }
 
 impl Component for HitDice {

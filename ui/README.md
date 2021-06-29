@@ -9,9 +9,11 @@ trunk serve
 ```
 
 ### Getting the Schema
-This project uses the [Juniper `graphql-client` CLI tool](https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli)
+This project uses the [Juniper `graphql-client` CLI tool](https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli) to fetch the server schema.
 
-`graphql-client introspect-schema --output src/schema.json localhost:8000`
+While running the `server` project locally, you can use the following command to update the schema at any time:
+
+`graphql-client introspect-schema --output src/schema.json http://127.0.0.1:8000`
 
 ### Generating Types
 This project uses the [Juniper `graphql-client` CLI tool](https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli)

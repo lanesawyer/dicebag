@@ -2,9 +2,9 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct HitPoints {
-    pub maximum: usize,
-    pub current: usize,
-    pub temporary: usize,
+    pub maximum: i64,
+    pub current: i64,
+    pub temporary: i64,
 }
 
 impl Component for HitPoints {

@@ -20,15 +20,15 @@ pub struct Roll {
 }
 
 impl Roll {
-    fn roll(roll: &Roll) -> Vec<usize> {
+    fn roll(roll: &Roll) -> Vec<i64> {
         let mut rng = thread_rng();
         (0..roll.number.into())
             .map(|_| rng.gen_range(1..=roll.dice.into()))
-            .collect::<Vec<usize>>()
+            .collect::<Vec<i64>>()
     }
 }
 
-impl From<DiceType> for usize {
+impl From<DiceType> for i64 {
     fn from(die: DiceType) -> Self {
         match die {
             DiceType::D4 => 4,

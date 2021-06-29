@@ -2,7 +2,7 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone)]
 pub struct Speed {
-    pub value: usize,
+    pub value: i64,
 }
 
 impl Component for Speed {

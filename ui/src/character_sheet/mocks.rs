@@ -3,6 +3,8 @@ use crate::components::Skill;
 
 pub fn build_bob() -> Character {
     Character {
+        id: "bob".to_string(),
+        image: "https://wallpapercave.com/wp/wp2255801.jpg".to_string(),
         name: "Bob the Builder".to_string(),
         class: "Artificer".to_string(),
         level: 3,

@@ -3,6 +3,7 @@ use juniper::GraphQLObject;
 #[derive(Clone, Default, GraphQLObject)]
 pub struct Character {
     pub id: String,
+    pub image: String,
 
     // Info
     pub name: String,
@@ -48,7 +49,7 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn new() -> Self {
+    pub fn _new() -> Self {
         Self {
             ..Default::default()
         }

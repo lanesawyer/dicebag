@@ -3,7 +3,7 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 #[derive(Clone)]
 pub struct Attack {
     pub name: String,
-    pub bonus: usize,
+    pub bonus: i64,
     pub damage: String,
 }
 

@@ -17,17 +17,17 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::dice_tower::tower::Tower;
+use crate::services::characters_query;
+use crate::{
+    dice_tower::tower::Tower,
+    services::{CharactersQuery, GraphQLResponse},
+};
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::{format::Json, services::ConsoleService};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
-
-#[derive(GraphQLQuery)]
-#[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
-struct CharacterQuery;
 
 #[derive(Debug)]
 pub enum Msg {
@@ -36,7 +36,7 @@ pub enum Msg {
 
 #[derive(Properties, Clone, Debug)]
 pub struct CharacterSheetProps {
-    pub id: i32,
+    pub id: String,
 }
 
 #[derive(Debug)]
@@ -51,25 +51,28 @@ pub struct CharacterSheet {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Character {
+    pub id: String,
+    pub image: String,
+
     // Info
     pub name: String,
     pub class: String, // TODO: enum
-    pub level: usize,
+    pub level: i64,
     pub background: String,
     pub race: String,      // TODO: enum?
     pub alignment: String, // TODO: enum
-    pub experience_points: usize,
+    pub experience_points: i64,
 
     // Stats
-    pub strength: usize,
-    pub dexterity: usize,
-    pub constitution: usize,
-    pub intelligence: usize,
-    pub wisdom: usize,
-    pub charisma: usize,
+    pub strength: i64,
+    pub dexterity: i64,
+    pub constitution: i64,
+    pub intelligence: i64,
+    pub wisdom: i64,
+    pub charisma: i64,
 
     // Other
-    pub proficiency_bonus: usize,
+    pub proficiency_bonus: i64,
     pub has_inspiration: bool,
     pub personality_traits: String,
     pub ideals: String,
@@ -77,32 +80,27 @@ pub struct Character {
     pub flaws: String,
     pub features_and_traits: String,
     pub other_proficiencies_and_languages: String,
-    pub armor_class: usize,
-    pub speed: usize,
-    pub hit_points: usize,
-    pub current_hit_points: usize,
-    pub temporary_hit_points: usize,
-    pub hit_dice: usize,
-    pub used_hit_dice: usize,
-    pub saves: usize,
-    pub failures: usize,
+    pub armor_class: i64,
+    pub speed: i64,
+    pub hit_points: i64,
+    pub current_hit_points: i64,
+    pub temporary_hit_points: i64,
+    pub hit_dice: i64,
+    pub used_hit_dice: i64,
+    pub saves: i64,
+    pub failures: i64,
 
     pub equipment: String,
-    pub copper: usize,
-    pub silver: usize,
-    pub electrum: usize,
-    pub platinum: usize,
-    pub gold: usize,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct GraphQLResponse<T> {
-    pub data: T,
+    pub copper: i64,
+    pub silver: i64,
+    pub electrum: i64,
+    pub platinum: i64,
+    pub gold: i64,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct CharacterList {
-    pub character: Vec<Character>,
+    pub characters: Vec<Character>,
 }
 
 impl Component for CharacterSheet {
@@ -110,8 +108,8 @@ impl Component for CharacterSheet {
     type Properties = CharacterSheetProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let variables = character_query::Variables {};
-        let request_body = CharacterQuery::build_query(variables);
+        let variables = characters_query::Variables {};
+        let request_body = CharactersQuery::build_query(variables);
         let request_json = &json!(request_body);
 
         ConsoleService::log(&format!("{:?}", &request_json));
@@ -145,7 +143,14 @@ impl Component for CharacterSheet {
             Msg::ReceiveResponse(response) => {
                 match response {
                     Ok(character) => {
-                        self.character = Some(character.data.character.into_iter().next().unwrap());
+                        self.character = Some(
+                            character
+                                .data
+                                .characters
+                                .into_iter()
+                                .find(|character| character.id == self.props.id)
+                                .unwrap(),
+                        );
                     }
                     Err(error) => {
                         self.error = Some(error.to_string());
@@ -167,7 +172,7 @@ impl Component for CharacterSheet {
         let skills = build_skills(character);
         let saving_throws = build_saving_throws(character);
         html! {
-            <>
+            <section id="character-sheet">
                 <CharacterInfo
                     name={character.name.clone()}
                     class={character.class.clone()}
@@ -224,7 +229,7 @@ impl Component for CharacterSheet {
                     <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
                 </section>
                 <Tower />
-            </>
+            </section>
         }
     }
 }

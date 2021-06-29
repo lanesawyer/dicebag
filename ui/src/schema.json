@@ -614,7 +614,7 @@
             "deprecationReason": null,
             "description": null,
             "isDeprecated": false,
-            "name": "character",
+            "name": "characters",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -770,6 +770,22 @@
             "description": null,
             "isDeprecated": false,
             "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          },
+          {
+            "args": [],
+            "deprecationReason": null,
+            "description": null,
+            "isDeprecated": false,
+            "name": "image",
             "type": {
               "kind": "NON_NULL",
               "name": null,

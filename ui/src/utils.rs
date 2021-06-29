@@ -1,4 +1,4 @@
-pub fn calculate_modifier(stat: usize) -> i32 {
+pub fn calculate_modifier(stat: i64) -> i64 {
     match stat {
         1 => -5,
         2 | 3 => -4,
@@ -15,7 +15,7 @@ pub fn calculate_modifier(stat: usize) -> i32 {
     }
 }
 
-pub fn calculate_modifier_display(stat: usize) -> String {
+pub fn calculate_modifier_display(stat: i64) -> String {
     format!("{:+}", calculate_modifier(stat))
 }
 
