@@ -12,9 +12,9 @@ use yew::{
 use yew_router::components::RouterAnchor;
 
 use crate::{
+    character_sheet::mocks::build_bob,
     character_sheet::sheet::{Character, CharacterList},
     dicebag::Route,
-    character_sheet::mocks::build_bob,
     services::{characters_query, CharactersQuery, GraphQLResponse},
 };
 
