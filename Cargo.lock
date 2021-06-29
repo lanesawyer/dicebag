@@ -879,7 +879,7 @@ dependencies = [
 [[package]]
 name = "juniper"
 version = "0.15.6"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#de4c0e90880d5bdeac9907d97fa43c2c42ccd02e"
+source = "git+https://github.com/graphql-rust/juniper?branch=master#739cc3bfc2c23f837dd8a25767222c9fff545593"
 dependencies = [
  "async-trait",
  "bson",
@@ -900,7 +900,7 @@ dependencies = [
 [[package]]
 name = "juniper_codegen"
 version = "0.15.6"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#de4c0e90880d5bdeac9907d97fa43c2c42ccd02e"
+source = "git+https://github.com/graphql-rust/juniper?branch=master#739cc3bfc2c23f837dd8a25767222c9fff545593"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -911,7 +911,7 @@ dependencies = [
 [[package]]
 name = "juniper_rocket_async"
 version = "0.5.1"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#de4c0e90880d5bdeac9907d97fa43c2c42ccd02e"
+source = "git+https://github.com/graphql-rust/juniper?branch=master#739cc3bfc2c23f837dd8a25767222c9fff545593"
 dependencies = [
  "futures",
  "juniper",
