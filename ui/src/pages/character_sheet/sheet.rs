@@ -40,7 +40,7 @@ pub struct CharacterSheetProps {
 }
 
 #[derive(Debug)]
-pub struct CharacterSheet {
+pub struct CharacterSheetPage {
     pub props: CharacterSheetProps,
     pub character: Option<Character>,
     fetch_task: Option<FetchTask>,
@@ -103,7 +103,7 @@ pub struct CharacterList {
     pub characters: Vec<Character>,
 }
 
-impl Component for CharacterSheet {
+impl Component for CharacterSheetPage {
     type Message = Msg;
     type Properties = CharacterSheetProps;
 

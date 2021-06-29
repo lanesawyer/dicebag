@@ -1,7 +1,16 @@
+#![recursion_limit = "1024"]
+
+use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, service::RouteService, Switch};
 
-use crate::{character_sheet::sheet::CharacterSheet, characters::CharactersPage, home::Home};
+use crate::pages::{CharacterSheetPage, CharactersPage, HomePage};
+
+mod components;
+mod dice_tower;
+mod pages;
+mod services;
+mod utils;
 
 // Matches from most specific to least
 // so if you don't see the page, it's probably the wrong order
@@ -101,9 +110,9 @@ impl Dicebag {
 
 fn routes(route: Route) -> Html {
     match route {
-        Route::Home => html! { <Home /> },
+        Route::Home => html! { <HomePage /> },
         Route::Characters => html! { <CharactersPage /> },
-        Route::CharacterSheet(id) => html! { <CharacterSheet id=id /> },
+        Route::CharacterSheet(id) => html! { <CharacterSheetPage id=id /> },
         Route::Campaigns => html! { <>{ "Campaigns" }</> },
         Route::NotFound => html! { <>{ "NOT FOUND" }</> },
     }
@@ -115,4 +124,8 @@ fn set_active_route(route: &str, path: &'static str) -> &'static str {
         _ if path != "/" && route.starts_with(path) => "active",
         _ => "",
     }
+}
+
+pub fn main() {
+    App::<Dicebag>::new().mount_to_body();
 }
