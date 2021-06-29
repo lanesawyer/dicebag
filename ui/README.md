@@ -13,12 +13,12 @@ This project uses the [Juniper `graphql-client` CLI tool](https://github.com/gra
 
 While running the `server` project locally, you can use the following command to update the schema at any time:
 
-`graphql-client introspect-schema --output src/schema.json http://127.0.0.1:8000`
+`graphql-client introspect-schema --output src/graphql/schema.json http://127.0.0.1:8000`
 
 ### Generating Types
 This project uses the [Juniper `graphql-client` CLI tool](https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli)
 
-`graphql-client generate --schema-path src/schema.json src/queries.graphql`
+`graphql-client generate --schema-path src/graphql/schema.json src/graphql/queries.graphql`
 
 ## Technologies Used
 - [WebAssembly](https://webassembly.org/)

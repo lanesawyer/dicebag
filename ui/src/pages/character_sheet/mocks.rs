@@ -1,5 +1,5 @@
-use crate::character_sheet::sheet::Character;
 use crate::components::Skill;
+use crate::pages::character_sheet::sheet::Character;
 
 pub fn build_bob() -> Character {
     Character {

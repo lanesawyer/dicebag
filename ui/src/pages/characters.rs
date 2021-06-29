@@ -12,10 +12,10 @@ use yew::{
 use yew_router::components::RouterAnchor;
 
 use crate::{
-    character_sheet::mocks::build_bob,
-    character_sheet::sheet::{Character, CharacterList},
-    dicebag::Route,
+    pages::character_sheet::mocks::build_bob,
+    pages::character_sheet::sheet::{Character, CharacterList},
     services::{characters_query, CharactersQuery, GraphQLResponse},
+    Route,
 };
 
 #[derive(Debug)]
@@ -39,8 +39,6 @@ impl Component for CharactersPage {
         let variables = characters_query::Variables {};
         let request_body = CharactersQuery::build_query(variables);
         let request_json = &json!(request_body);
-
-        ConsoleService::log(&format!("{:?}", &request_json));
 
         // TODO: Pull URL from .env
         let request = Request::post("http://127.0.0.1:8000/graphql")

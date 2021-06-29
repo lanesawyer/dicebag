@@ -2,7 +2,10 @@ use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 
 #[derive(GraphQLQuery)]
-#[graphql(schema_path = "src/schema.json", query_path = "src/queries.graphql")]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
 pub struct CharactersQuery;
 
 // TODO: I should be able to use the auto-generated ones,
