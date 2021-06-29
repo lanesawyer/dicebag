@@ -1,31 +1,40 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-#[derive(Properties, Clone)]
-pub struct ArmorClass {
+#[derive(Properties, Clone, PartialEq)]
+pub struct ArmorClassProps {
     pub value: i64,
+}
+
+pub struct ArmorClass {
+    pub props: ArmorClassProps,
 }
 
 impl Component for ArmorClass {
     type Message = ();
-    type Properties = ArmorClass;
+    type Properties = ArmorClassProps;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { value: props.value }
+        Self { props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
     }
 
     fn view(&self) -> Html {
         html! {
             <section id="armor-class" class="text-block">
                 <h3>{ "Armor Class" }</h3>
-                <div>{ &self.value }</div>
+                <div>{ &self.props.value }</div>
             </section>
         }
     }

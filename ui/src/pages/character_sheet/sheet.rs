@@ -174,21 +174,22 @@ impl Component for CharacterSheetPage {
         html! {
             <section id="character-sheet">
                 <CharacterInfo
-                    name={character.name.clone()}
-                    class={character.class.clone()}
-                    level={character.level}
-                    background={character.background.clone()}
-                    race={character.race.clone()}
-                    alignment={character.alignment.clone()}
-                    experience_points={character.experience_points}
+                    image=character.image.clone()
+                    name=character.name.clone()
+                    class=character.class.clone()
+                    level=character.level
+                    background=character.background.clone()
+                    race=character.race.clone()
+                    alignment=character.alignment.clone()
+                    experience_points=character.experience_points
                 />
                 <section id="stat-block" class="stats">
-                    <StatBlock name="Strength" value={character.strength} />
-                    <StatBlock name="Dexterity" value={character.dexterity} />
-                    <StatBlock name="Constitution" value={character.constitution} />
-                    <StatBlock name="Intelligence" value={character.intelligence} />
-                    <StatBlock name="Wisdom" value={character.wisdom} />
-                    <StatBlock name="Charisma" value={character.charisma} />
+                    <StatBlock name="Strength" value=character.strength />
+                    <StatBlock name="Dexterity" value=character.dexterity />
+                    <StatBlock name="Constitution" value=character.constitution />
+                    <StatBlock name="Intelligence" value=character.intelligence />
+                    <StatBlock name="Wisdom" value=character.wisdom />
+                    <StatBlock name="Charisma" value=character.charisma />
                 </section>
                 <Inspiration value=character.has_inspiration />
                 <ProficiencyBonus value=character.proficiency_bonus />

@@ -2,6 +2,7 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct CharacterInfoProps {
+    pub image: String,
     pub name: String,
     pub class: String, // TODO: enum
     pub level: i64,
@@ -39,6 +40,7 @@ impl Component for CharacterInfo {
     fn view(&self) -> Html {
         html! {
             <section id="character-info" class="text-block">
+                <img src=self.props.image.clone() style={"width: 4em"}/>
                 <h2>{ &self.props.name }</h2>
                 <span>{ format!("Class: {}", &self.props.class) }</span>
                 <span>{ format!("Level: {}", self.props.level) }</span>
