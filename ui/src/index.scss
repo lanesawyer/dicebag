@@ -32,6 +32,7 @@ nav {
 
 nav h1 {
     padding: 1em;
+    color: var(--white);
 }
 
 nav ul {
@@ -69,10 +70,6 @@ nav ul li a.active {
 
 main {
     grid-area: main;
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 1em;
-    padding: 1em;
     overflow-y: scroll;
 }
 
@@ -84,146 +81,4 @@ footer {
 
 h3 {
     margin-top: 0;
-}
-
-#character-info {
-    grid-column: 1 / 10;
-    grid-row: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#stat-block {
-    grid-column: 1 / 2;
-    grid-row: 2 / 6;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-#inspiration {
-    grid-column: 2 / 4;
-    grid-row: 2;
-}
-
-#proficiency-bonus {
-    grid-column: 2 / 4;
-    grid-row: 3;
-}
-
-#saving-throws {
-    grid-column: 2 / 4;
-    grid-row: 4;
-}
-
-#skills {
-    grid-column: 2 / 4;
-    grid-row: 5;
-}
-
-#passive-perception {
-    grid-column: 1 / 4;
-    grid-row: 6;
-}
-
-#other-proficiencies-and-languages {
-    grid-column: 1 / 4;
-    grid-row: 7;
-}
-
-#armor-class {
-    grid-column: 4 / 5;
-    grid-row: 2;
-}
-
-#initiative {
-    grid-column: 5 / 6;
-    grid-row: 2;
-}
-
-#speed {
-    grid-column: 6 / 7;
-    grid-row: 2;
-}
-
-#hit-points {
-    grid-column: 4 / 7;
-    grid-row: 3;
-}
-
-#hit-dice {
-    grid-column: 4 / 5;
-    grid-row: 4;
-}
-
-#death-saving-throws {
-    grid-column: 6 / 7;
-    grid-row: 4;
-}
-
-#attacks-and-spellcasting {
-    grid-column: 4 / 7;
-    grid-row: 5;
-}
-
-#money {
-    grid-column: 4 / 5;
-    grid-row: 6;
-}
-
-#equipment {
-    grid-column: 5 / 7;
-    grid-row: 6;
-}
-
-#character-details {
-    grid-column: 7 / 10;
-    grid-row: 2 / 7;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-#features-traits {
-    grid-column: 7 / 10;
-    grid-row: 7;
-}
-
-.stats {
-    width: 10em;
-}
-
-.stat-block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid var(--black);
-}
-
-.stat-name {
-    font-size: 1em;
-}
-
-.stat-value {
-    font-size: 2em;
-}
-
-.stat-modifier {
-    font-size: .8em;
-}
-
-.text-block {
-    padding: .5em;
-    border: 1px solid var(--black);
-}
-
-.single-value {
-    display: flex;
-    align-items: center;
-}
-
-.card {
-    padding: .5em;
-    border: 1px solid var(--black);
 }

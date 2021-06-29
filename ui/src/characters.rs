@@ -89,17 +89,25 @@ impl Component for CharactersPage {
 
     fn view(&self) -> Html {
         html! {
-            <>
-                <h2> { "Characters" }</h2>
-                {
-                    if let Some(characters) = &self.characters {
-                        characters.iter().map(view_characters).collect::<Html>()
-                    } else {
-                        html! { <></> }
+            <section id="characters-page">
+                <div id="characters">
+                    {
+                        if let Some(characters) = &self.characters {
+                            characters.iter().map(view_characters).collect::<Html>()
+                        } else {
+                            // TODO: Character skeleton
+                            html! { <></> }
+                        }
                     }
-                }
-                <div class="character-panel">{ "Add new" }</div>
-            </>
+                    // TODO: Click action to add new character
+                    <div class="add-character-panel">
+                        <div>
+                            <div>{ "➕" }</div>
+                            <div>{ "Create" }</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         }
     }
 }

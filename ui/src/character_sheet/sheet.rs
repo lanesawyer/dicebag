@@ -172,7 +172,7 @@ impl Component for CharacterSheet {
         let skills = build_skills(character);
         let saving_throws = build_saving_throws(character);
         html! {
-            <>
+            <section id="character-sheet">
                 <CharacterInfo
                     name={character.name.clone()}
                     class={character.class.clone()}
@@ -229,7 +229,7 @@ impl Component for CharacterSheet {
                     <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
                 </section>
                 <Tower />
-            </>
+            </section>
         }
     }
 }
