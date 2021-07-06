@@ -4,6 +4,7 @@ extern crate rocket;
 use dotenv::dotenv;
 use juniper::{EmptyMutation, EmptySubscription, IntrospectionFormat, RootNode};
 use rocket::{response::content, Build, Rocket, State};
+use std::env;
 
 use crate::context::Database;
 use crate::resolver::Query;
@@ -52,6 +53,11 @@ fn introspection_handler(context: &State<Database>) -> content::Json<String> {
 #[launch]
 async fn rocket() -> Rocket<Build> {
     dotenv().ok();
+
+    let _database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    // PgConnection::establish(&database_url)
+    //     .expect(&format!("Error connecting to {}", database_url));
 
     rocket::build()
         .manage(Database::new())
