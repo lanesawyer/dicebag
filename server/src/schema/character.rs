@@ -1,5 +1,5 @@
 use diesel::Queryable;
-use juniper::GraphQLObject;
+use juniper::{GraphQLObject, GraphQLInputObject };
 
 #[derive(Clone, Default, GraphQLObject, Queryable)]
 pub struct Character {
@@ -55,4 +55,23 @@ impl Character {
             ..Default::default()
         }
     }
+}
+
+impl From<NewCharacter> for Character {
+    fn from(new_character: NewCharacter) -> Self {
+        Character { 
+            id: new_character.id,
+            name: new_character.name,
+            ..Default::default()
+        }
+    }
+}
+
+
+#[derive(GraphQLInputObject)]
+pub struct NewCharacter {
+    id: String,
+    image: Option<String>,
+    name: String,
+    class: String,
 }

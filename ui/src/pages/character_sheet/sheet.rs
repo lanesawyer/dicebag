@@ -17,7 +17,7 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::services::characters_query;
+use crate::services::{self, characters_query};
 use crate::{
     dice_tower::tower::Tower,
     services::{CharactersQuery, GraphQLResponse},
@@ -109,8 +109,8 @@ impl Component for CharacterSheetPage {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let variables = characters_query::Variables {};
-        let request_body = CharactersQuery::build_query(variables);
-        let request_json = &json!(request_body);
+        let query = CharactersQuery::build_query(variables);
+        let request_json = &json!(query);
 
         ConsoleService::log(&format!("{:?}", &request_json));
 
@@ -128,6 +128,11 @@ impl Component for CharacterSheetPage {
         );
 
         let task = FetchService::fetch(request, callback).expect("failed to start request");
+
+        // let task = services::post(query,
+        //     link,
+        //     Box::new(|data| Msg::ReceiveResponse(data))
+        // );
 
         Self {
             props,

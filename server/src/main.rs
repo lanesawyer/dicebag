@@ -6,8 +6,9 @@ extern crate diesel;
 extern crate diesel_migrations;
 
 use dotenv::dotenv;
-use juniper::{EmptyMutation, EmptySubscription, IntrospectionFormat, RootNode};
 use rocket::{fairing::AdHoc, response::content, Build, Rocket, State};
+use juniper::{EmptySubscription, IntrospectionFormat, RootNode};
+use resolver::Mutation;
 
 use context::Database;
 use resolver::Query;
@@ -16,7 +17,7 @@ mod context;
 mod resolver;
 mod schema;
 
-type Schema = RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
+type Schema = RootNode<'static, Query, Mutation, EmptySubscription<Database>>;
 
 #[rocket::get("/")]
 fn graphiql() -> content::Html<String> {
@@ -44,7 +45,7 @@ async fn post_graphql_handler(
 #[rocket::post("/")]
 fn introspection_handler(context: Database) -> content::Json<String> {
     let (res, _errors) = juniper::introspect(
-        &Schema::new(Query, EmptyMutation::new(), EmptySubscription::new()),
+        &Schema::new(Query, Mutation, EmptySubscription::new()),
         &context,
         IntrospectionFormat::default(),
     )
@@ -65,7 +66,7 @@ async fn rocket() -> Rocket<Build> {
         ))
         .manage(Schema::new(
             Query,
-            EmptyMutation::<Database>::new(),
+            Mutation,
             EmptySubscription::<Database>::new(),
         ))
         .mount(
