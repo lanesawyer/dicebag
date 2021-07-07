@@ -28,6 +28,8 @@ To run both the server and a Postgres database, run the following command from t
 docker compose up
 ```
 
+The database data will be saved in the `postgres-data` docker volume between runs.
+
 Make sure to include the `ROCKET_ADDRESS` `.env` variable of `0.0.0.0` so the API will be exposed.
 
 ## Technologies Used
