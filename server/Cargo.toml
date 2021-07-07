@@ -5,7 +5,7 @@ authors = ["Lane Sawyer <github@lanesaywer.dev>"]
 edition = "2018"
 
 [dependencies]
-diesel = { version = "1.4.6", features = ["postgres"] }
+diesel = { version = "1.4.6", features = ["postgres", "64-column-tables"] }
 dotenv = "0.15.0"
 # TODO: Move to versioned crate once it's released
 juniper = { git = "https://github.com/graphql-rust/juniper", branch = "master" }
