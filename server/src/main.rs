@@ -6,9 +6,9 @@ extern crate diesel;
 extern crate diesel_migrations;
 
 use dotenv::dotenv;
-use rocket::{fairing::AdHoc, response::content, Build, Rocket, State};
 use juniper::{EmptySubscription, IntrospectionFormat, RootNode};
 use resolver::Mutation;
+use rocket::{fairing::AdHoc, response::content, Build, Rocket, State};
 
 use context::Database;
 use resolver::Query;

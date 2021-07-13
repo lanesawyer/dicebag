@@ -1,8 +1,8 @@
 extern crate diesel;
 
+use crate::schema::character::NewCharacter;
 use crate::{context::Database, schema::character::Character};
-use crate::schema::character::{Character, NewCharacter};
-use juniper::{graphql_object, FieldResult};
+use juniper::{graphql_object, graphql_value, FieldError, FieldResult};
 
 use self::diesel::prelude::*;
 
@@ -28,10 +28,23 @@ pub struct Mutation;
 
 #[graphql_object(context = Database)]
 impl Mutation {
-    pub fn add_character(context: &mut Database, _new_character: NewCharacter) -> FieldResult<&Character> {
-        // context.characters.insert(2, new_character.into());
+    pub async fn add_character(
+        context: &Database,
+        new_character: NewCharacter,
+    ) -> FieldResult<bool> {
+        use crate::schema::db::characters::dsl::*;
 
-        let character = context.characters.get(&2).unwrap();
-        Ok(character)
+        let character: Character = new_character.into();
+        // TODO: Clean up
+        match context
+            .run(|c| diesel::insert_into(characters).values(character).execute(c))
+            .await
+        {
+            Ok(_) => Ok(true),
+            Err(_) => Err(FieldError::new(
+                "Unable to create character",
+                graphql_value!({ "internal_error": "Database insert failed" }),
+            )),
+        }
     }
 }
