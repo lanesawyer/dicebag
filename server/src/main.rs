@@ -18,24 +18,24 @@ type Schema = RootNode<'static, Query, EmptyMutation<Database>, EmptySubscriptio
 
 #[rocket::get("/")]
 fn graphiql() -> content::Html<String> {
-    juniper_rocket_async::graphiql_source("/graphql", None)
+    juniper_rocket::graphiql_source("/graphql", None)
 }
 
 #[rocket::get("/graphql?<request>")]
 async fn get_graphql_handler(
     context: Database,
-    request: juniper_rocket_async::GraphQLRequest,
+    request: juniper_rocket::GraphQLRequest,
     schema: &State<Schema>,
-) -> juniper_rocket_async::GraphQLResponse {
+) -> juniper_rocket::GraphQLResponse {
     request.execute(&*schema, &context).await
 }
 
 #[rocket::post("/graphql", data = "<request>")]
 async fn post_graphql_handler(
     context: Database,
-    request: juniper_rocket_async::GraphQLRequest,
+    request: juniper_rocket::GraphQLRequest,
     schema: &State<Schema>,
-) -> juniper_rocket_async::GraphQLResponse {
+) -> juniper_rocket::GraphQLResponse {
     request.execute(&*schema, &context).await
 }
 

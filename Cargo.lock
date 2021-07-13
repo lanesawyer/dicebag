@@ -349,7 +349,7 @@ dependencies = [
  "diesel",
  "dotenv",
  "juniper",
- "juniper_rocket_async",
+ "juniper_rocket",
  "rocket",
  "rocket_sync_db_pools",
  "serde_json",
@@ -895,8 +895,9 @@ dependencies = [
 
 [[package]]
 name = "juniper"
-version = "0.15.6"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#739cc3bfc2c23f837dd8a25767222c9fff545593"
+version = "0.15.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "637ffa8a8d8a05aed3331449e311f145864adcd82442d82e54d0522decb7cecf"
 dependencies = [
  "async-trait",
  "bson",
@@ -916,8 +917,9 @@ dependencies = [
 
 [[package]]
 name = "juniper_codegen"
-version = "0.15.6"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#739cc3bfc2c23f837dd8a25767222c9fff545593"
+version = "0.15.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a040e09482a45e77dd2dafa0d9d2651d17faf0ac674da0c93eabc3075ee24997"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -926,9 +928,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "juniper_rocket_async"
-version = "0.5.1"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#739cc3bfc2c23f837dd8a25767222c9fff545593"
+name = "juniper_rocket"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c24868ce3d00537b353d2e18882133a317f504782730bb2979df00c1bfcc575c"
 dependencies = [
  "futures",
  "juniper",
