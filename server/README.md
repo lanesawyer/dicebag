@@ -30,7 +30,12 @@ docker compose up
 
 The database data will be saved in the `postgres-data` Docker volume between runs.
 
-**Current Errors:** When running `docker compose`, the `ROCKET_DATABASE` environment variable is not working. I think it's something with the network connection between the two containers but I haven't been able to figure it out yet.
+**Current Errors:** When running `docker compose`, the `ROCKET_DATABASES` environment variable is not working. I think it's something with the network connection between the two containers but I haven't been able to figure it out yet. I've tried changing the quotes in and around the values and that seems to cause different errors, but from the documentation the current one should work. The error is included below:
+
+```
+Error: database config error for pool named `postgres`
+    >> missing field `url`
+```
 
 ## Technologies Used
 - [Rocket](https://rocket.rs/)
