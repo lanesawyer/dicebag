@@ -1,8 +1,9 @@
+use diesel::Queryable;
 use juniper::GraphQLObject;
 
-#[derive(Clone, Default, GraphQLObject)]
+#[derive(Clone, Default, GraphQLObject, Queryable)]
 pub struct Character {
-    pub id: String,
+    pub id: i32,
     pub image: String,
 
     // Info

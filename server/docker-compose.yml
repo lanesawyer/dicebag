@@ -1,10 +1,14 @@
-version: '3'
+version: '3.9'
+
+volumes:
+    postgres_data: {}
 
 services:
     server:
         build: .
-        env_file:
-            - .env
+        environment:
+            - ROCKET_SECRET_KEY=${ROCKET_SECRET_KEY}
+            - ROCKET_DATABASES='{postgres={url="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}"}}'
         depends_on:
             - db
         ports:
@@ -12,7 +16,11 @@ services:
     db:
         image: postgres
         restart: always
-        env_file:
-            - .env
+        environment:
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_DB=${POSTGRES_DB}db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
         ports:
             - 5432:5432

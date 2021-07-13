@@ -1,13 +1,16 @@
 #[macro_use]
 extern crate rocket;
+#[macro_use]
+extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
 
 use dotenv::dotenv;
 use juniper::{EmptyMutation, EmptySubscription, IntrospectionFormat, RootNode};
-use rocket::{response::content, Build, Rocket, State};
-use std::env;
+use rocket::{fairing::AdHoc, response::content, Build, Rocket, State};
 
-use crate::context::Database;
-use crate::resolver::Query;
+use context::Database;
+use resolver::Query;
 
 mod context;
 mod resolver;
@@ -17,32 +20,32 @@ type Schema = RootNode<'static, Query, EmptyMutation<Database>, EmptySubscriptio
 
 #[rocket::get("/")]
 fn graphiql() -> content::Html<String> {
-    juniper_rocket_async::graphiql_source("/graphql", None)
+    juniper_rocket::graphiql_source("/graphql", None)
 }
 
 #[rocket::get("/graphql?<request>")]
-fn get_graphql_handler(
-    context: &State<Database>,
-    request: juniper_rocket_async::GraphQLRequest,
+async fn get_graphql_handler(
+    context: Database,
+    request: juniper_rocket::GraphQLRequest,
     schema: &State<Schema>,
-) -> juniper_rocket_async::GraphQLResponse {
-    request.execute_sync(&*schema, &*context)
+) -> juniper_rocket::GraphQLResponse {
+    request.execute(&*schema, &context).await
 }
 
 #[rocket::post("/graphql", data = "<request>")]
-fn post_graphql_handler(
-    context: &State<Database>,
-    request: juniper_rocket_async::GraphQLRequest,
+async fn post_graphql_handler(
+    context: Database,
+    request: juniper_rocket::GraphQLRequest,
     schema: &State<Schema>,
-) -> juniper_rocket_async::GraphQLResponse {
-    request.execute_sync(&*schema, &*context)
+) -> juniper_rocket::GraphQLResponse {
+    request.execute(&*schema, &context).await
 }
 
 #[rocket::post("/")]
-fn introspection_handler(context: &State<Database>) -> content::Json<String> {
+fn introspection_handler(context: Database) -> content::Json<String> {
     let (res, _errors) = juniper::introspect(
         &Schema::new(Query, EmptyMutation::new(), EmptySubscription::new()),
-        context,
+        &context,
         IntrospectionFormat::default(),
     )
     .unwrap();
@@ -54,13 +57,12 @@ fn introspection_handler(context: &State<Database>) -> content::Json<String> {
 async fn rocket() -> Rocket<Build> {
     dotenv().ok();
 
-    let _database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-    // PgConnection::establish(&database_url)
-    //     .expect(&format!("Error connecting to {}", database_url));
-
     rocket::build()
-        .manage(Database::new())
+        .attach(Database::fairing())
+        .attach(AdHoc::on_ignite(
+            "Run Database Migrations",
+            context::run_migrations,
+        ))
         .manage(Schema::new(
             Query,
             EmptyMutation::<Database>::new(),
