@@ -2,10 +2,12 @@
 extern crate rocket;
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
 
 use dotenv::dotenv;
 use juniper::{EmptyMutation, EmptySubscription, IntrospectionFormat, RootNode};
-use rocket::{response::content, Build, Rocket, State};
+use rocket::{fairing::AdHoc, response::content, Build, Rocket, State};
 
 use context::Database;
 use resolver::Query;
@@ -57,6 +59,10 @@ async fn rocket() -> Rocket<Build> {
 
     rocket::build()
         .attach(Database::fairing())
+        .attach(AdHoc::on_ignite(
+            "Run Database Migrations",
+            context::run_migrations,
+        ))
         .manage(Schema::new(
             Query,
             EmptyMutation::<Database>::new(),

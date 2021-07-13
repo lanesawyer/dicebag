@@ -30,6 +30,8 @@ docker compose up
 
 The database data will be saved in the `postgres-data` Docker volume between runs.
 
+**Current Errors:** When running `docker compose`, the `ROCKET_DATABASE` environment variable is not working. I think it's something with the network connection between the two containers but I haven't been able to figure it out yet.
+
 ## Technologies Used
 - [Rocket](https://rocket.rs/)
 - [Juniper](https://github.com/graphql-rust/juniper)
