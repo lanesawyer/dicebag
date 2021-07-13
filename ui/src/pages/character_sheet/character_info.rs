@@ -2,11 +2,11 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct CharacterInfoProps {
-    pub image: String,
+    pub image: Option<String>,
     pub name: String,
     pub class: String, // TODO: enum
     pub level: i64,
-    pub background: String,
+    pub background: Option<String>,
     pub race: String,      // TODO: enum?
     pub alignment: String, // TODO: enum
     pub experience_points: i64,
@@ -44,7 +44,7 @@ impl Component for CharacterInfo {
                 <h2>{ &self.props.name }</h2>
                 <span>{ format!("Class: {}", &self.props.class) }</span>
                 <span>{ format!("Level: {}", self.props.level) }</span>
-                <span>{ format!("Background: {}", &self.props.background) }</span>
+                <span>{ format!("Background: {}", self.props.background.as_ref().unwrap_or(&"".to_string())) }</span>
                 <span>{ format!("Race: {}", &self.props.race) }</span>
                 <span>{ format!("Alignment: {}", &self.props.alignment) }</span>
                 <span>{ format!("Experience Points: {}", self.props.experience_points) }</span>

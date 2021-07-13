@@ -112,7 +112,7 @@ impl Component for CharactersPage {
 
 fn view_characters(character: &Character) -> Html {
     html! {
-        <RouterAnchor<Route> route=Route::CharacterSheet(character.id.clone())>
+        <RouterAnchor<Route> route=Route::CharacterSheet(character.id)>
             <div class="character-panel">
                 <img class="character-image" src=character.image.clone()/>
                 <span class="character-name">{character.name.clone()}</span>

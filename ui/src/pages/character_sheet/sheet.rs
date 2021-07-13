@@ -17,7 +17,7 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::services::{self, characters_query};
+use crate::services::characters_query;
 use crate::{
     dice_tower::tower::Tower,
     services::{CharactersQuery, GraphQLResponse},
@@ -36,7 +36,7 @@ pub enum Msg {
 
 #[derive(Properties, Clone, Debug)]
 pub struct CharacterSheetProps {
-    pub id: String,
+    pub id: i64,
 }
 
 #[derive(Debug)]
@@ -51,14 +51,14 @@ pub struct CharacterSheetPage {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Character {
-    pub id: String,
-    pub image: String,
+    pub id: i64,
+    pub image: Option<String>,
 
     // Info
     pub name: String,
     pub class: String, // TODO: enum
     pub level: i64,
-    pub background: String,
+    pub background: Option<String>,
     pub race: String,      // TODO: enum?
     pub alignment: String, // TODO: enum
     pub experience_points: i64,
@@ -74,12 +74,14 @@ pub struct Character {
     // Other
     pub proficiency_bonus: i64,
     pub has_inspiration: bool,
-    pub personality_traits: String,
-    pub ideals: String,
-    pub bonds: String,
-    pub flaws: String,
-    pub features_and_traits: String,
-    pub other_proficiencies_and_languages: String,
+
+    pub personality_traits: Option<String>,
+    pub ideals: Option<String>,
+    pub bonds: Option<String>,
+    pub flaws: Option<String>,
+    pub features_and_traits: Option<String>,
+    pub other_proficiencies_and_languages: Option<String>,
+
     pub armor_class: i64,
     pub speed: i64,
     pub hit_points: i64,
@@ -89,8 +91,7 @@ pub struct Character {
     pub used_hit_dice: i64,
     pub saves: i64,
     pub failures: i64,
-
-    pub equipment: String,
+    pub equipment: Option<String>,
     pub copper: i64,
     pub silver: i64,
     pub electrum: i64,

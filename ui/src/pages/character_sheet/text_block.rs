@@ -3,7 +3,7 @@ use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 #[derive(Properties, Clone, PartialEq)]
 pub struct TextBlockProps {
     pub name: String,
-    pub value: String,
+    pub value: Option<String>,
 }
 
 pub struct TextBlock {
@@ -35,7 +35,7 @@ impl Component for TextBlock {
         html! {
             <section class="text-block">
                 <h3>{ &self.props.name }</h3>
-                <div>{ &self.props.value }</div>
+                <div>{ &self.props.value.as_ref().unwrap_or(&"".to_string()) }</div>
             </section>
         }
     }
