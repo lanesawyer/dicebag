@@ -7,8 +7,8 @@ pub struct CharacterInfoProps {
     pub class: String, // TODO: enum
     pub level: i64,
     pub background: Option<String>,
-    pub race: String,      // TODO: enum?
-    pub alignment: String, // TODO: enum
+    pub race: String,              // TODO: enum?
+    pub alignment: Option<String>, // TODO: enum
     pub experience_points: i64,
 }
 
@@ -46,7 +46,7 @@ impl Component for CharacterInfo {
                 <span>{ format!("Level: {}", self.props.level) }</span>
                 <span>{ format!("Background: {}", self.props.background.as_ref().unwrap_or(&"".to_string())) }</span>
                 <span>{ format!("Race: {}", &self.props.race) }</span>
-                <span>{ format!("Alignment: {}", &self.props.alignment) }</span>
+                <span>{ format!("Alignment: {}", self.props.alignment.as_ref().unwrap_or(&"".to_string())) }</span>
                 <span>{ format!("Experience Points: {}", self.props.experience_points) }</span>
             </section>
         }

@@ -7,7 +7,7 @@ table! {
         level -> Int4,
         background -> Nullable<Varchar>,
         race -> Varchar,
-        alignment -> Varchar,
+        alignment -> Nullable<Varchar>,
         experience_points -> Int4,
         strength -> Int4,
         dexterity -> Int4,

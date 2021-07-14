@@ -1,15 +1,15 @@
-use anyhow::Error;
+// use anyhow::Error;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
-use serde_json::json;
-use yew::{
-    format::Json,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        FetchService,
-    },
-    Component, ComponentLink,
-};
+// use serde_json::json;
+// use yew::{
+//     format::Json,
+//     services::{
+//         fetch::{FetchTask, Request, Response},
+//         FetchService,
+//     },
+//     Component, ComponentLink,
+// };
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -17,6 +17,13 @@ use yew::{
     query_path = "src/graphql/queries.graphql"
 )]
 pub struct CharactersQuery;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
+pub struct NewCharacterMutation;
 
 // TODO: I should be able to use the auto-generated ones,
 // but I'm running into deserialization issues with Yew's Fetch

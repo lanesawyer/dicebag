@@ -14,8 +14,8 @@ pub struct Character {
     pub class: String, // TODO: enum
     pub level: i32,
     pub background: Option<String>,
-    pub race: String,      // TODO: enum?
-    pub alignment: String, // TODO: enum
+    pub race: String,              // TODO: enum?
+    pub alignment: Option<String>, // TODO: enum
     pub experience_points: i32,
 
     // Stats
@@ -81,35 +81,20 @@ impl Character {
 impl From<NewCharacter> for Character {
     fn from(new_character: NewCharacter) -> Self {
         Character {
-            id: new_character.id,
             image: new_character.image,
             name: new_character.name,
             class: new_character.class,
             race: new_character.race,
-            alignment: new_character.alignment,
-            strength: new_character.strength,
-            dexterity: new_character.dexterity,
-            constitution: new_character.constitution,
-            intelligence: new_character.intelligence,
-            wisdom: new_character.wisdom,
-            charisma: new_character.charisma,
             ..Default::default()
         }
     }
 }
 
-#[derive(GraphQLInputObject)]
+#[derive(GraphQLInputObject, Insertable)]
+#[table_name="characters"]
 pub struct NewCharacter {
-    id: i32,
     image: Option<String>,
     name: String,
     class: String,
     race: String,
-    alignment: String,
-    strength: i32,
-    dexterity: i32,
-    constitution: i32,
-    intelligence: i32,
-    wisdom: i32,
-    charisma: i32,
 }

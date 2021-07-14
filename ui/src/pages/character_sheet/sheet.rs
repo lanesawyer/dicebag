@@ -59,8 +59,8 @@ pub struct Character {
     pub class: String, // TODO: enum
     pub level: i64,
     pub background: Option<String>,
-    pub race: String,      // TODO: enum?
-    pub alignment: String, // TODO: enum
+    pub race: String,              // TODO: enum?
+    pub alignment: Option<String>, // TODO: enum
     pub experience_points: i64,
 
     // Stats

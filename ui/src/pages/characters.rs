@@ -12,15 +12,24 @@ use yew::{
 use yew_router::components::RouterAnchor;
 
 use crate::{
+    components::{Button, TextField},
     pages::character_sheet::mocks::build_bob,
     pages::character_sheet::sheet::{Character, CharacterList},
-    services::{characters_query, CharactersQuery, GraphQLResponse},
+    services::{
+        characters_query, new_character_mutation, CharactersQuery, GraphQLResponse,
+        NewCharacterMutation,
+    },
     Route,
 };
 
 #[derive(Debug)]
 pub enum Msg {
     ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
+    ReceiveNewCharacterResponse(Result<GraphQLResponse<bool>, anyhow::Error>),
+    UpdateName(String),
+    UpdateRace(String),
+    UpdateClass(String),
+    Add,
 }
 
 #[derive(Debug)]
@@ -29,6 +38,9 @@ pub struct CharactersPage {
     fetch_task: Option<FetchTask>,
     link: ComponentLink<Self>,
     error: Option<String>,
+    new_name: String,
+    new_race: String,
+    new_class: String,
 }
 
 impl Component for CharactersPage {
@@ -60,6 +72,9 @@ impl Component for CharactersPage {
             link,
             fetch_task: Some(task),
             error: None,
+            new_name: "".to_string(),
+            new_race: "".to_string(),
+            new_class: "".to_string(),
         }
     }
 
@@ -76,6 +91,41 @@ impl Component for CharactersPage {
                     }
                 }
                 self.fetch_task = None;
+            }
+            Msg::UpdateName(new_value) => self.new_name = new_value,
+            Msg::UpdateRace(new_value) => self.new_race = new_value,
+            Msg::UpdateClass(new_value) => self.new_class = new_value,
+            Msg::Add => {
+                let variables = new_character_mutation::Variables {
+                    new_character: new_character_mutation::NewCharacter {
+                        name: self.new_name.clone(),
+                        class: self.new_class.clone(),
+                        image: Some("".to_string()),
+                        race: self.new_race.clone(),
+                    },
+                };
+                let request_body = NewCharacterMutation::build_query(variables);
+                let request_json = &json!(request_body);
+
+                // TODO: Pull URL from .env
+                let request = Request::post("http://127.0.0.1:8000/graphql")
+                    .header("Content-Type", "application/json")
+                    .body(Json(request_json))
+                    .expect("Could not build that request.");
+
+                let callback = self.link.callback(
+                    |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
+                        let Json(data) = response.into_body();
+                        Msg::ReceiveNewCharacterResponse(data)
+                    },
+                );
+
+                let task = FetchService::fetch(request, callback).expect("failed to start request");
+
+                self.fetch_task = Some(task);
+            }
+            Msg::ReceiveNewCharacterResponse(result) => {
+                ConsoleService::log(&format!("{:?}", result))
             }
         }
         true
@@ -102,10 +152,24 @@ impl Component for CharactersPage {
                         <div>
                             <div>{ "➕" }</div>
                             <div>{ "Create" }</div>
+                            { self.view_input() }
                         </div>
                     </div>
                 </div>
             </section>
+        }
+    }
+}
+
+impl CharactersPage {
+    fn view_input(&self) -> Html {
+        html! {
+            <>
+                <TextField label="Name" value=self.new_name.clone() on_change=self.link.callback(Msg::UpdateName) />
+                <TextField label="Race" value=self.new_race.clone() on_change=self.link.callback(Msg::UpdateRace) />
+                <TextField label="Class" value=self.new_class.clone() on_change=self.link.callback(Msg::UpdateClass) />
+                <Button label="Create" on_click=self.link.callback(|_| Msg::Add) />
+            </>
         }
     }
 }

@@ -28,16 +28,15 @@ pub struct Mutation;
 
 #[graphql_object(context = Database)]
 impl Mutation {
-    pub async fn add_character(
+    pub async fn new_character(
         context: &Database,
         new_character: NewCharacter,
     ) -> FieldResult<bool> {
         use crate::schema::db::characters::dsl::*;
 
-        let character: Character = new_character.into();
         // TODO: Clean up
         match context
-            .run(|c| diesel::insert_into(characters).values(character).execute(c))
+            .run(|c| diesel::insert_into(characters).values(new_character).execute(c))
             .await
         {
             Ok(_) => Ok(true),
