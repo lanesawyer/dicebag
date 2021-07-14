@@ -36,7 +36,11 @@ impl Mutation {
 
         // TODO: Clean up
         match context
-            .run(|c| diesel::insert_into(characters).values(new_character).execute(c))
+            .run(|c| {
+                diesel::insert_into(characters)
+                    .values(new_character)
+                    .execute(c)
+            })
             .await
         {
             Ok(_) => Ok(true),

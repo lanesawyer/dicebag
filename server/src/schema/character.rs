@@ -91,7 +91,7 @@ impl From<NewCharacter> for Character {
 }
 
 #[derive(GraphQLInputObject, Insertable)]
-#[table_name="characters"]
+#[table_name = "characters"]
 pub struct NewCharacter {
     image: Option<String>,
     name: String,
