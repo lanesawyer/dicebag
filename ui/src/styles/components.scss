@@ -4,5 +4,24 @@ ul.skill-list {
 
 .skill-display {
     display: flex;
-    justify-content: space-between;
+    text-align: left;
+}
+
+.skill-proficiency {
+    flex: 1;
+}
+
+.skill-modifier {
+    flex: 2;
+    text-align: right;
+    padding-right: .75em;
+}
+
+.skill-name {
+    flex: 8;
+}
+
+.related-ability {
+    flex: 3;
+    color: var(--black);
 }

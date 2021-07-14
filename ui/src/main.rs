@@ -17,7 +17,7 @@ mod utils;
 #[derive(Switch, PartialEq, Clone, Debug)]
 pub enum Route {
     #[to = "/characters/{id}"]
-    CharacterSheet(String),
+    CharacterSheet(i64),
     #[to = "/characters"]
     Characters,
     #[to = "/campaigns"]

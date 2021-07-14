@@ -36,7 +36,7 @@ pub enum Msg {
 
 #[derive(Properties, Clone, Debug)]
 pub struct CharacterSheetProps {
-    pub id: String,
+    pub id: i64,
 }
 
 #[derive(Debug)]
@@ -51,16 +51,16 @@ pub struct CharacterSheetPage {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Character {
-    pub id: String,
-    pub image: String,
+    pub id: i64,
+    pub image: Option<String>,
 
     // Info
     pub name: String,
     pub class: String, // TODO: enum
     pub level: i64,
-    pub background: String,
-    pub race: String,      // TODO: enum?
-    pub alignment: String, // TODO: enum
+    pub background: Option<String>,
+    pub race: String,              // TODO: enum?
+    pub alignment: Option<String>, // TODO: enum
     pub experience_points: i64,
 
     // Stats
@@ -74,12 +74,14 @@ pub struct Character {
     // Other
     pub proficiency_bonus: i64,
     pub has_inspiration: bool,
-    pub personality_traits: String,
-    pub ideals: String,
-    pub bonds: String,
-    pub flaws: String,
-    pub features_and_traits: String,
-    pub other_proficiencies_and_languages: String,
+
+    pub personality_traits: Option<String>,
+    pub ideals: Option<String>,
+    pub bonds: Option<String>,
+    pub flaws: Option<String>,
+    pub features_and_traits: Option<String>,
+    pub other_proficiencies_and_languages: Option<String>,
+
     pub armor_class: i64,
     pub speed: i64,
     pub hit_points: i64,
@@ -89,8 +91,7 @@ pub struct Character {
     pub used_hit_dice: i64,
     pub saves: i64,
     pub failures: i64,
-
-    pub equipment: String,
+    pub equipment: Option<String>,
     pub copper: i64,
     pub silver: i64,
     pub electrum: i64,
@@ -109,8 +110,8 @@ impl Component for CharacterSheetPage {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let variables = characters_query::Variables {};
-        let request_body = CharactersQuery::build_query(variables);
-        let request_json = &json!(request_body);
+        let query = CharactersQuery::build_query(variables);
+        let request_json = &json!(query);
 
         ConsoleService::log(&format!("{:?}", &request_json));
 
@@ -128,6 +129,11 @@ impl Component for CharacterSheetPage {
         );
 
         let task = FetchService::fetch(request, callback).expect("failed to start request");
+
+        // let task = services::post(query,
+        //     link,
+        //     Box::new(|data| Msg::ReceiveResponse(data))
+        // );
 
         Self {
             props,
@@ -174,21 +180,22 @@ impl Component for CharacterSheetPage {
         html! {
             <section id="character-sheet">
                 <CharacterInfo
-                    name={character.name.clone()}
-                    class={character.class.clone()}
-                    level={character.level}
-                    background={character.background.clone()}
-                    race={character.race.clone()}
-                    alignment={character.alignment.clone()}
-                    experience_points={character.experience_points}
+                    image=character.image.clone()
+                    name=character.name.clone()
+                    class=character.class.clone()
+                    level=character.level
+                    background=character.background.clone()
+                    race=character.race.clone()
+                    alignment=character.alignment.clone()
+                    experience_points=character.experience_points
                 />
                 <section id="stat-block" class="stats">
-                    <StatBlock name="Strength" value={character.strength} />
-                    <StatBlock name="Dexterity" value={character.dexterity} />
-                    <StatBlock name="Constitution" value={character.constitution} />
-                    <StatBlock name="Intelligence" value={character.intelligence} />
-                    <StatBlock name="Wisdom" value={character.wisdom} />
-                    <StatBlock name="Charisma" value={character.charisma} />
+                    <StatBlock name="Strength" value=character.strength />
+                    <StatBlock name="Dexterity" value=character.dexterity />
+                    <StatBlock name="Constitution" value=character.constitution />
+                    <StatBlock name="Intelligence" value=character.intelligence />
+                    <StatBlock name="Wisdom" value=character.wisdom />
+                    <StatBlock name="Charisma" value=character.charisma />
                 </section>
                 <Inspiration value=character.has_inspiration />
                 <ProficiencyBonus value=character.proficiency_bonus />

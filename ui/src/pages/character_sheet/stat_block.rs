@@ -23,14 +23,13 @@ impl Component for StatBlock {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        true
-        // if self.props != props {
-        //     self.props = props;
-        //     true
-        // } else {
-        //     false
-        // }
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
     }
 
     fn view(&self) -> Html {

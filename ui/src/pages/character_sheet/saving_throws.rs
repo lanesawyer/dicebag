@@ -1,25 +1,34 @@
 use crate::components::{skill_display, Skill};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-#[derive(Properties, Clone)]
-pub struct SavingThrows {
+#[derive(Properties, Clone, PartialEq)]
+pub struct SavingThrowsProps {
     pub items: Vec<Skill>,
+}
+
+pub struct SavingThrows {
+    pub props: SavingThrowsProps,
 }
 
 impl Component for SavingThrows {
     type Message = ();
-    type Properties = SavingThrows;
+    type Properties = SavingThrowsProps;
 
     fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { items: props.items }
+        Self { props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
     }
 
     fn view(&self) -> Html {
@@ -27,7 +36,7 @@ impl Component for SavingThrows {
             <section id="saving-throws" class="text-block">
                 <h3>{"Saving Throws"}</h3>
                 <ul class="skill-list">
-                { self.items.iter().map(skill_display).collect::<Html>() }
+                    { self.props.items.iter().map(skill_display).collect::<Html>() }
                 </ul>
             </section>
         }

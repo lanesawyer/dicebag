@@ -40,3 +40,7 @@ query CharactersQuery {
         gold
     }
 }
+
+mutation NewCharacterMutation($newCharacter: NewCharacter!) {
+    newCharacter(newCharacter: $newCharacter)
+}
