@@ -44,3 +44,7 @@ query CharactersQuery {
 mutation NewCharacterMutation($newCharacter: NewCharacter!) {
     newCharacter(newCharacter: $newCharacter)
 }
+
+mutation DeleteCharacterMutation($deleteId: Int!) {
+    deleteCharacter(deleteId: $deleteId)
+}

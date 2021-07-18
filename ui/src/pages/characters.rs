@@ -4,7 +4,7 @@ use yew::{
     format::Json,
     html,
     services::{
-        fetch::{FetchTask, Request, Response},
+        fetch::{FetchTask, Response},
         ConsoleService, FetchService,
     },
     Component, ComponentLink, Html, ShouldRender,
@@ -16,8 +16,8 @@ use crate::{
     pages::character_sheet::mocks::build_bob,
     pages::character_sheet::sheet::{Character, CharacterList},
     services::{
-        self, characters_query, new_character_mutation, CharactersQuery, GraphQLResponse,
-        NewCharacterMutation,
+        self, characters_query, delete_character_mutation, new_character_mutation, CharactersQuery,
+        DeleteCharacterMutation, GraphQLResponse, NewCharacterMutation,
     },
     Route,
 };
@@ -30,6 +30,7 @@ pub enum Msg {
     UpdateRace(String),
     UpdateClass(String),
     Add,
+    Delete(i64),
 }
 
 #[derive(Debug)]
@@ -134,6 +135,24 @@ impl Component for CharactersPage {
 
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
             }
+            Msg::Delete(delete_id) => {
+                let variables = delete_character_mutation::Variables { delete_id };
+                let request_body = DeleteCharacterMutation::build_query(variables);
+                let request_json = &json!(request_body);
+
+                let request = services::build_request(request_json);
+
+                let callback = self.link.callback(
+                    |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
+                        let Json(data) = response.into_body();
+                        Msg::ReceiveNewCharacterResponse(data)
+                    },
+                );
+
+                let task = FetchService::fetch(request, callback).expect("failed to start request");
+
+                self.fetch_task = Some(task);
+            }
         }
         true
     }
@@ -148,7 +167,23 @@ impl Component for CharactersPage {
                 <div id="characters">
                     {
                         if let Some(characters) = &self.characters {
-                            characters.iter().map(view_characters).collect::<Html>()
+                            characters.iter().map(|c| {
+                                let id = c.id;
+                                html! {
+                                    <>
+                                        <RouterAnchor<Route> route=Route::CharacterSheet(c.id)>
+                                            <div class="character-panel">
+                                                <img class="character-image" src=c.image.clone()/>
+                                                <span class="character-name">{c.name.clone()}</span>
+                                                <span class="character-class">{c.class.clone()}</span>
+                                                <span class="character-level">{c.level}</span>
+                                                
+                                            </div>
+                                        </RouterAnchor<Route>>
+                                        <Button label="Delete" on_click=self.link.callback(move |_| Msg::Delete(id)) />
+                                    </>
+                                }
+                            }).collect::<Html>()
                         } else {
                             // TODO: Character skeleton
                             html! { <></> }
@@ -179,17 +214,18 @@ impl CharactersPage {
             </>
         }
     }
-}
 
-fn view_characters(character: &Character) -> Html {
-    html! {
-        <RouterAnchor<Route> route=Route::CharacterSheet(character.id)>
-            <div class="character-panel">
-                <img class="character-image" src=character.image.clone()/>
-                <span class="character-name">{character.name.clone()}</span>
-                <span class="character-class">{character.class.clone()}</span>
-                <span class="character-level">{character.level}</span>
-            </div>
-        </RouterAnchor<Route>>
-    }
+    // fn view_characters(&self) -> Html {
+    //     html! {
+    //         <RouterAnchor<Route> route=Route::CharacterSheet(character.id)>
+    //             <div class="character-panel">
+    //                 <img class="character-image" src=character.image.clone()/>
+    //                 <span class="character-name">{character.name.clone()}</span>
+    //                 <span class="character-class">{character.class.clone()}</span>
+    //                 <span class="character-level">{character.level}</span>
+    //                 <Button label="Delete" on_click=self.link.callback(|_| Msg::Delete(character.id)) />
+    //             </div>
+    //         </RouterAnchor<Route>>
+    //     }
+    // }
 }

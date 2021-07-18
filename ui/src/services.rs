@@ -3,11 +3,15 @@ use dotenv_codegen::dotenv;
 // use anyhow::Error;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
-use serde_json::{Value, json};
-use yew::{Callback, Component, ComponentLink, format::Json, services::{
+use serde_json::{json, Value};
+use yew::{
+    format::Json,
+    services::{
         fetch::{FetchTask, Request, Response},
         FetchService,
-    }};
+    },
+    Callback, Component, ComponentLink,
+};
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -22,6 +26,13 @@ pub struct CharactersQuery;
     query_path = "src/graphql/queries.graphql"
 )]
 pub struct NewCharacterMutation;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
+pub struct DeleteCharacterMutation;
 
 // TODO: I should be able to use the auto-generated ones,
 // but I'm running into deserialization issues with Yew's Fetch

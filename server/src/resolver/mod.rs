@@ -50,4 +50,20 @@ impl Mutation {
             )),
         }
     }
+
+    pub async fn delete_character(context: &Database, delete_id: i32) -> FieldResult<bool> {
+        use crate::schema::db::characters::dsl::*;
+
+        // TODO: Clean up
+        match context.run(move |c| {
+            diesel::delete(characters.filter(id.eq(delete_id)))
+                .execute(c)
+        }).await {
+            Ok(_) => Ok(true),
+            Err(_) => Err(FieldError::new(
+                "Unable to create character",
+                graphql_value!({ "internal_error": "Database delete failed" }),
+            )),
+        }
+    }
 }
