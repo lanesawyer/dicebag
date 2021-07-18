@@ -17,7 +17,7 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::services::characters_query;
+use crate::services::{self, characters_query};
 use crate::{
     dice_tower::tower::Tower,
     services::{CharactersQuery, GraphQLResponse},
@@ -115,11 +115,7 @@ impl Component for CharacterSheetPage {
 
         ConsoleService::log(&format!("{:?}", &request_json));
 
-        // TODO: Pull URL from .env
-        let request = Request::post("http://127.0.0.1:8000/graphql")
-            .header("Content-Type", "application/json")
-            .body(Json(request_json))
-            .expect("Could not build that request.");
+        let request = services::build_request(request_json);
 
         let callback = link.callback(
             |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {

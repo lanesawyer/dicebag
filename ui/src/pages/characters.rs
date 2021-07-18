@@ -16,7 +16,7 @@ use crate::{
     pages::character_sheet::mocks::build_bob,
     pages::character_sheet::sheet::{Character, CharacterList},
     services::{
-        characters_query, new_character_mutation, CharactersQuery, GraphQLResponse,
+        self, characters_query, new_character_mutation, CharactersQuery, GraphQLResponse,
         NewCharacterMutation,
     },
     Route,
@@ -52,11 +52,7 @@ impl Component for CharactersPage {
         let request_body = CharactersQuery::build_query(variables);
         let request_json = &json!(request_body);
 
-        // TODO: Pull URL from .env
-        let request = Request::post("http://127.0.0.1:8000/graphql")
-            .header("Content-Type", "application/json")
-            .body(Json(request_json))
-            .expect("Could not build that request.");
+        let request = services::build_request(request_json);
 
         let callback = link.callback(
             |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
@@ -107,11 +103,7 @@ impl Component for CharactersPage {
                 let request_body = NewCharacterMutation::build_query(variables);
                 let request_json = &json!(request_body);
 
-                // TODO: Pull URL from .env
-                let request = Request::post("http://127.0.0.1:8000/graphql")
-                    .header("Content-Type", "application/json")
-                    .body(Json(request_json))
-                    .expect("Could not build that request.");
+                let request = services::build_request(request_json);
 
                 let callback = self.link.callback(
                     |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
@@ -125,7 +117,22 @@ impl Component for CharactersPage {
                 self.fetch_task = Some(task);
             }
             Msg::ReceiveNewCharacterResponse(result) => {
-                ConsoleService::log(&format!("{:?}", result))
+                let variables = characters_query::Variables {};
+                let request_body = CharactersQuery::build_query(variables);
+                let request_json = &json!(request_body);
+
+                let request = services::build_request(request_json);
+
+                let callback = self.link.callback(
+                    |response: Response<
+                        Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>,
+                    >| {
+                        let Json(data) = response.into_body();
+                        Msg::ReceiveResponse(data)
+                    },
+                );
+
+                let task = FetchService::fetch(request, callback).expect("failed to start request");
             }
         }
         true
