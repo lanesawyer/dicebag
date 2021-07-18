@@ -6,6 +6,9 @@
     --error-color: #C36241;
     --white: #FAEBD7;
     --black: #000000;
+    --small-spacing: .5em;
+    --medium-spacing: 1em;
+    --large-spacing: 2em;
 }
 
 body {
@@ -31,7 +34,7 @@ nav {
 }
 
 nav h1 {
-    padding: 1em;
+    padding: var(--medium-spacing);
     color: var(--white);
 }
 
@@ -46,7 +49,7 @@ nav ul li {
 nav ul li a {
     color: var(--white);
     text-decoration: none;
-    padding: 1em;
+    padding: var(--medium-spacing);
     display: inline-block;
     width: calc(100% - 2em);
 }
@@ -76,7 +79,7 @@ main {
 footer {
     grid-area: footer;
     background-color: var(--primary-color);
-    padding: 1em;
+    padding: var(--medium-spacing);
 }
 
 h3 {

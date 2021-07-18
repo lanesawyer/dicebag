@@ -1,12 +1,12 @@
 #characters-page {
     display: flex;
     flex-direction: column;
-    margin: 1em;
+    margin: var(--medium-spacing);
 }
 
 #characters {
     display: flex;
-    gap: 1em;
+    gap: var(--medium-spacing);
 }
 
 #characters a {
@@ -22,7 +22,6 @@
     background-color: var(--primary-color);
     color: var(--white);
     text-align: center;
-    flex: 1;
 }
 
 .add-character-panel {
@@ -37,6 +36,7 @@
 }
 
 .character-image {
+    background-color: var(--secondary-color);
     flex: 12;
     object-fit: cover;
     width: 100%;

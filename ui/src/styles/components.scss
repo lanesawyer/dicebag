@@ -25,3 +25,11 @@ ul.skill-list {
     flex: 3;
     color: var(--black);
 }
+
+button {
+    background-color: var(--primary-color);
+    border: none;
+    padding: var(--medium-spacing);
+    padding-left: var(--large-spacing);
+    // clip-path: polygon(100% 0, 35% 0, 0 100%, 100% 100%);
+}

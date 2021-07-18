@@ -1,6 +1,5 @@
 #![recursion_limit = "1024"]
 
-#[macro_use]
 extern crate dotenv_codegen;
 
 use yew::prelude::*;
@@ -18,7 +17,7 @@ mod utils;
 // Matches from most specific to least
 // so if you don't see the page, it's probably the wrong order
 #[derive(Switch, PartialEq, Clone, Debug)]
-pub enum Route {
+pub enum AppRoute {
     #[to = "/characters/{id}"]
     CharacterSheet(i64),
     #[to = "/characters"]
@@ -71,7 +70,7 @@ impl Component for Dicebag {
             <>
                 { self.view_nav() }
                 <main>
-                    <Router<Route, ()> render = Router::render(routes) />
+                    <Router<AppRoute, ()> render = Router::render(routes) />
                 </main>
                 <footer>
                     { "Powered by " }
@@ -91,19 +90,19 @@ impl Dicebag {
                 <h1>{ "🎲 Dicebag" }</h1>
                 <ul>
                     <li>
-                        <RouterAnchor<Route> classes={set_active_route(&route, "/")} route=Route::Home>
+                        <RouterAnchor<AppRoute> classes={set_active_route(&route, "/")} route=AppRoute::Home>
                             { "🏠 Home" }
-                        </RouterAnchor<Route>>
+                        </RouterAnchor<AppRoute>>
                     </li>
                     <li>
-                        <RouterAnchor<Route> classes={set_active_route(&route, "/characters")} route=Route::Characters>
+                        <RouterAnchor<AppRoute> classes={set_active_route(&route, "/characters")} route=AppRoute::Characters>
                             { "⚔️ Characters" }
-                        </RouterAnchor<Route>>
+                        </RouterAnchor<AppRoute>>
                     </li>
                     <li>
-                        <RouterAnchor<Route> classes={set_active_route(&route, "/campaigns")} route=Route::Campaigns>
+                        <RouterAnchor<AppRoute> classes={set_active_route(&route, "/campaigns")} route=AppRoute::Campaigns>
                             { "🗺️ Campaigns" }
-                        </RouterAnchor<Route>>
+                        </RouterAnchor<AppRoute>>
                     </li>
                 </ul>
             </nav>
@@ -111,13 +110,13 @@ impl Dicebag {
     }
 }
 
-fn routes(route: Route) -> Html {
+fn routes(route: AppRoute) -> Html {
     match route {
-        Route::Home => html! { <HomePage /> },
-        Route::Characters => html! { <CharactersPage /> },
-        Route::CharacterSheet(id) => html! { <CharacterSheetPage id=id /> },
-        Route::Campaigns => html! { <>{ "Campaigns" }</> },
-        Route::NotFound => html! { <>{ "NOT FOUND" }</> },
+        AppRoute::Home => html! { <HomePage /> },
+        AppRoute::Characters => html! { <CharactersPage /> },
+        AppRoute::CharacterSheet(id) => html! { <CharacterSheetPage id=id /> },
+        AppRoute::Campaigns => html! { <>{ "Campaigns" }</> },
+        AppRoute::NotFound => html! { <>{ "NOT FOUND" }</> },
     }
 }
 
