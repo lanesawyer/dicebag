@@ -1,8 +1,8 @@
 #character-sheet {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    gap: 1em;
-    padding: 1em;
+    gap: var(--medium-spacing);
+    padding: var(--medium-spacing);
 }
 
 #character-info {
@@ -18,7 +18,7 @@
     grid-row: 2 / 6;
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: var(--medium-spacing);
 }
 
 #inspiration {
@@ -121,7 +121,7 @@
 }
 
 .stat-name {
-    font-size: 1em;
+    font-size: var(--medium-spacing);
 }
 
 .stat-value {

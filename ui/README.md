@@ -8,6 +8,15 @@ This project uses [Trunk](https://trunkrs.dev) for development.
 trunk serve
 ```
 
+### Environment Variables
+The `dicebag` frontend uses the following environment variables:
+- `API_URL`: Defaults to `http://127.0.0.1:8080/graphql` if not provided
+
+I would like to use `dotenv` like the `server` project does, but Trunk requires the environment variables to be included in the build at build time. Unfortunately, this doesn't work with CI/CD because there is no .env file. I would prefer to have a 
+default as I do with the `option_env!` macro, but `dotenv` doesn't support this at the time of this writing.
+
+**When building `dicebag` for production use, you must include the `API_URL` in the build command.**
+
 ### Getting the Schema
 This project uses the [Juniper `graphql-client` CLI tool](https://github.com/graphql-rust/graphql-client/tree/master/graphql_client_cli) to fetch the server schema.
 

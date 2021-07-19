@@ -1,3 +1,14 @@
+use graphql_client::GraphQLQuery;
+use serde::Deserialize;
+use serde_json::json;
+use yew::services::fetch::{FetchService, FetchTask, Response};
+use yew::{format::Json, services::ConsoleService};
+use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew_router::{
+    agent::RouteRequest,
+    prelude::{Route, RouteAgentDispatcher},
+};
+
 use super::{
     armor_class::ArmorClass,
     attacks::Attacks,
@@ -17,21 +28,19 @@ use super::{
     stat_block::StatBlock,
     text_block::TextBlock,
 };
-use crate::services::characters_query;
 use crate::{
+    components::Button,
     dice_tower::tower::Tower,
+    services::{self, characters_query, delete_character_mutation, DeleteCharacterMutation},
     services::{CharactersQuery, GraphQLResponse},
+    AppRoute,
 };
-use graphql_client::GraphQLQuery;
-use serde::Deserialize;
-use serde_json::json;
-use yew::services::fetch::{FetchService, FetchTask, Request, Response};
-use yew::{format::Json, services::ConsoleService};
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 #[derive(Debug)]
 pub enum Msg {
     ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
+    Delete(i64),
+    RedirectMsg,
 }
 
 #[derive(Properties, Clone, Debug)]
@@ -46,6 +55,7 @@ pub struct CharacterSheetPage {
     fetch_task: Option<FetchTask>,
     link: ComponentLink<Self>,
     error: Option<String>,
+    route_agent: RouteAgentDispatcher<()>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -109,17 +119,15 @@ impl Component for CharacterSheetPage {
     type Properties = CharacterSheetProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let route_agent = RouteAgentDispatcher::new();
+
         let variables = characters_query::Variables {};
         let query = CharactersQuery::build_query(variables);
         let request_json = &json!(query);
 
         ConsoleService::log(&format!("{:?}", &request_json));
 
-        // TODO: Pull URL from .env
-        let request = Request::post("http://127.0.0.1:8000/graphql")
-            .header("Content-Type", "application/json")
-            .body(Json(request_json))
-            .expect("Could not build that request.");
+        let request = services::build_request(request_json);
 
         let callback = link.callback(
             |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
@@ -141,6 +149,7 @@ impl Component for CharacterSheetPage {
             link,
             fetch_task: Some(task),
             error: None,
+            route_agent,
         }
     }
 
@@ -165,6 +174,29 @@ impl Component for CharacterSheetPage {
                 }
                 self.fetch_task = None;
             }
+            Msg::Delete(delete_id) => {
+                let variables = delete_character_mutation::Variables { delete_id };
+                let request_body = DeleteCharacterMutation::build_query(variables);
+                let request_json = &json!(request_body);
+
+                let request = services::build_request(request_json);
+
+                let callback = self.link.callback(
+                    |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
+                        // TODO: Error pop up if delete fails
+                        let Json(_data) = response.into_body();
+                        Msg::RedirectMsg
+                    },
+                );
+
+                let task = FetchService::fetch(request, callback).expect("failed to start request");
+
+                self.fetch_task = Some(task);
+            }
+            Msg::RedirectMsg => {
+                let route = Route::from(AppRoute::Characters);
+                self.route_agent.send(RouteRequest::ChangeRoute(route));
+            }
         }
         true
     }
@@ -175,6 +207,7 @@ impl Component for CharacterSheetPage {
 
     fn view(&self) -> Html {
         let character = self.character.as_ref().unwrap();
+        let delete_id = character.id;
         let skills = build_skills(character);
         let saving_throws = build_saving_throws(character);
         html! {
@@ -234,6 +267,9 @@ impl Component for CharacterSheetPage {
                 </section>
                 <section id="features-traits">
                     <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
+                </section>
+                <section id="settings">
+                    <Button label="Delete" on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
                 </section>
                 <Tower />
             </section>

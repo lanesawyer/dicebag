@@ -4,7 +4,7 @@ volumes:
     postgres_data: {}
 
 services:
-    server:
+    api:
         build: .
         environment:
             - ROCKET_SECRET_KEY=${ROCKET_SECRET_KEY}
@@ -14,7 +14,7 @@ services:
         ports:
             - 8000:8000
     db:
-        image: postgres
+        image: postgres:13
         restart: always
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
