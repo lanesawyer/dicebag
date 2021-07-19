@@ -10,7 +10,6 @@ lto = true
 
 [dependencies]
 anyhow = "1.0.42"
-dotenv_codegen = "0.15.0"
 getrandom = { version = "0.2.3", features = ["js"] }
 graphql_client = "0.10.0"
 rand = "0.8.4"

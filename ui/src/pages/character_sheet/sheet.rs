@@ -183,7 +183,8 @@ impl Component for CharacterSheetPage {
 
                 let callback = self.link.callback(
                     |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
+                        // TODO: Error pop up if delete fails
+                        let Json(_data) = response.into_body();
                         Msg::RedirectMsg
                     },
                 );

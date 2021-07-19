@@ -1,17 +1,7 @@
-use anyhow::Error;
-use dotenv_codegen::dotenv;
-// use anyhow::Error;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
-use serde_json::{json, Value};
-use yew::{
-    format::Json,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        FetchService,
-    },
-    Callback, Component, ComponentLink,
-};
+use serde_json::Value;
+use yew::{format::Json, services::fetch::Request};
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -42,7 +32,7 @@ pub struct GraphQLResponse<T> {
 }
 
 pub fn build_request(request_json: &Value) -> Request<Json<&Value>> {
-    let api_url = dotenv!("API_URL");
+    let api_url = option_env!("API_URL").unwrap_or("http://127.0.0.1:8000/graphql");
     Request::post(api_url)
         .header("Content-Type", "application/json")
         .body(Json(request_json))

@@ -119,7 +119,8 @@ impl Component for CharactersPage {
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
                 self.fetch_task = Some(task);
             }
-            Msg::ReceiveNewCharacterResponse(result) => {
+            Msg::ReceiveNewCharacterResponse(_result) => {
+                // TODO: Error popup if new character fails
                 let variables = characters_query::Variables {};
                 let request_body = CharactersQuery::build_query(variables);
                 let request_json = &json!(request_body);

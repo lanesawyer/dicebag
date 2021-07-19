@@ -1,7 +1,5 @@
 #![recursion_limit = "1024"]
 
-extern crate dotenv_codegen;
-
 use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, service::RouteService, Switch};
