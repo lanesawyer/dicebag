@@ -29,8 +29,7 @@ use super::{
     text_block::TextBlock,
 };
 use crate::{
-    components::Button,
-    dice_tower::tower::Tower,
+    components::{Button, ButtonType},
     services::{self, characters_query, delete_character_mutation, DeleteCharacterMutation},
     services::{CharactersQuery, GraphQLResponse},
     AppRoute,
@@ -269,9 +268,8 @@ impl Component for CharacterSheetPage {
                     <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
                 </section>
                 <section id="settings">
-                    <Button label="Delete" on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
+                    <Button label="Delete" button_type=ButtonType::Danger on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
                 </section>
-                <Tower />
             </section>
         }
     }

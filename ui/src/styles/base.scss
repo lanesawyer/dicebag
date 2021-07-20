@@ -15,7 +15,7 @@ body {
     background-color: var(--white);
     display: grid;
     grid-template-columns: 1fr 4fr;
-    grid-template-rows: 6fr 1fr;
+    grid-template-rows: 3fr 3fr;
     gap: 0px 0px;
     grid-template-areas:
         "nav main"
@@ -80,6 +80,7 @@ footer {
     grid-area: footer;
     background-color: var(--primary-color);
     padding: var(--medium-spacing);
+    overflow-y: scroll;
 }
 
 h3 {

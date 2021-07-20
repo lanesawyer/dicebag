@@ -4,6 +4,7 @@ use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, service::RouteService, Switch};
 
+use crate::dice_tower::tower::Tower;
 use crate::pages::{CharacterSheetPage, CharactersPage, HomePage};
 
 mod components;
@@ -71,8 +72,12 @@ impl Component for Dicebag {
                     <Router<AppRoute, ()> render = Router::render(routes) />
                 </main>
                 <footer>
+                    <Tower />
                     { "Powered by " }
                     <a href="https://yew.rs">{ "Yew" }</a>
+                    <a href="https://github.com/lanesawyer/dicebag">
+                        <img src="/assets/GitHub-Mark-32px.png" />
+                    </a>
                 </footer>
             </>
         }

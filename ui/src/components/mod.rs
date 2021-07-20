@@ -4,7 +4,7 @@ use yew::{html, Html};
 mod button;
 mod text_field;
 
-pub use button::Button;
+pub use button::{Button, ButtonType};
 pub use text_field::TextField;
 
 #[derive(Clone, PartialEq, PartialOrd)]
