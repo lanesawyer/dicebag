@@ -32,8 +32,8 @@ ul.skill-list {
 button {
     background-color: var(--secondary-color);
     border: none;
-    padding: var(--medium-spacing) var(--large-spacing);
-    margin: var(--small-spacing);
+    padding: var(--spacing-medium) var(--spacing-large);
+    margin: var(--spacing-small);
     clip-path: polygon(100% 0, 30% 0, 0 100%, 70% 100%);
 }
 
@@ -45,7 +45,7 @@ button.btn-danger {
 .text-field {
     display: block;
     text-align: left;
-    margin: var(--medium-spacing);
+    margin: var(--spacing-medium);
 }
 
 .text-field label {

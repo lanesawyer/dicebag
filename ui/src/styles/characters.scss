@@ -1,12 +1,12 @@
 #characters-page {
     display: flex;
     flex-direction: column;
-    margin: var(--medium-spacing);
+    margin: var(--spacing-medium);
 }
 
 #characters {
     display: flex;
-    gap: var(--medium-spacing);
+    gap: var(--spacing-medium);
 }
 
 #characters a {

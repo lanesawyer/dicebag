@@ -34,7 +34,7 @@ impl Component for Inspiration {
         html! {
             <section id="inspiration" class="single-value card">
                 <input type="checkbox" class="stat-value" checked=self.props.value />
-                <div class="stat-name">{ "Inspiration" }</div>
+                <div>{ "Inspiration" }</div>
             </section>
         }
     }

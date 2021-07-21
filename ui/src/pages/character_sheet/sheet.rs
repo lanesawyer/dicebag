@@ -25,7 +25,7 @@ use super::{
     saving_throws::SavingThrows,
     skills::Skills,
     speed::Speed,
-    stat_block::StatBlock,
+    stat_block::{StatBlock, Stat},
     text_block::TextBlock,
 };
 use crate::{
@@ -221,13 +221,13 @@ impl Component for CharacterSheetPage {
                     alignment=character.alignment.clone()
                     experience_points=character.experience_points
                 />
-                <section id="stat-block" class="stats">
-                    <StatBlock name="Strength" value=character.strength />
-                    <StatBlock name="Dexterity" value=character.dexterity />
-                    <StatBlock name="Constitution" value=character.constitution />
-                    <StatBlock name="Intelligence" value=character.intelligence />
-                    <StatBlock name="Wisdom" value=character.wisdom />
-                    <StatBlock name="Charisma" value=character.charisma />
+                <section id="stat-blocks" class="stats">
+                    <StatBlock stat=Stat::Strength name="Strength" value=character.strength />
+                    <StatBlock stat=Stat::Dexterity name="Dexterity" value=character.dexterity />
+                    <StatBlock stat=Stat::Constitution name="Constitution" value=character.constitution />
+                    <StatBlock stat=Stat::Intelligence name="Intelligence" value=character.intelligence />
+                    <StatBlock stat=Stat::Wisdom name="Wisdom" value=character.wisdom />
+                    <StatBlock stat=Stat::Charisma name="Charisma" value=character.charisma />
                 </section>
                 <Inspiration value=character.has_inspiration />
                 <ProficiencyBonus value=character.proficiency_bonus />

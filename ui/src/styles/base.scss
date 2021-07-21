@@ -6,9 +6,17 @@
     --error-color: #C36241;
     --white: #FAEBD7;
     --black: #000000;
-    --small-spacing: .5em;
-    --medium-spacing: 1em;
-    --large-spacing: 2em;
+
+    --strength-color: red;
+    --dexterity-color: blue;
+    --constitution-color: yellow;
+    --intelligence-color: orange;
+    --wisdom-color: green;
+    --charisma-color: purple;
+
+    --spacing-small: .5em;
+    --spacing-medium: 1em;
+    --spacing-large: 2em;
 }
 
 body {
@@ -34,7 +42,7 @@ nav {
 }
 
 nav h1 {
-    padding: var(--medium-spacing);
+    padding: var(--spacing-medium);
     color: var(--white);
 }
 
@@ -49,7 +57,7 @@ nav ul li {
 nav ul li a {
     color: var(--white);
     text-decoration: none;
-    padding: var(--medium-spacing);
+    padding: var(--spacing-medium);
     display: inline-block;
     width: calc(100% - 2em);
 }
@@ -79,7 +87,7 @@ main {
 footer {
     grid-area: footer;
     background-color: var(--primary-color);
-    padding: var(--medium-spacing);
+    padding: var(--spacing-medium);
     overflow-y: scroll;
 }
 

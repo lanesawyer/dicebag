@@ -1,8 +1,8 @@
 #character-sheet {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    gap: var(--medium-spacing);
-    padding: var(--medium-spacing);
+    gap: var(--spacing-medium);
+    padding: var(--spacing-medium);
 }
 
 #character-info {
@@ -13,12 +13,12 @@
 	align-items: center;
 }
 
-#stat-block {
+#stat-blocks {
     grid-column: 1 / 2;
     grid-row: 2 / 6;
     display: flex;
     flex-direction: column;
-    gap: var(--medium-spacing);
+    margin-top: 1.5em;
 }
 
 #inspiration {
@@ -117,11 +117,39 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid var(--black);
+    clip-path: polygon(0 0, 100% 30%, 100% 100%, 0 70%);
+    padding: var(--spacing-large);
+    margin: -1.5em 0;
+}
+
+.strength {
+    background-color: var(--strength-color);
+}
+
+.dexterity {
+    background-color: var(--dexterity-color);
+}
+
+.constitution {
+    background-color: var(--constitution-color);
+}
+
+.intelligence {
+    background-color: var(--intelligence-color);
+}
+
+.wisdom {
+    background-color: var(--wisdom-color);
+}
+
+.charisma {
+    background-color: var(--charisma-color);
 }
 
 .stat-name {
-    font-size: var(--medium-spacing);
+    font-size: var(--spacing-medium);
+    transform: rotate(15deg);
+    text-transform: uppercase;
 }
 
 .stat-value {

@@ -34,7 +34,7 @@ impl Component for PassivePerception {
         html! {
             <div id="passive-perception" class="single-value">
                 <div class="stat-value">{ self.props.value }</div>
-                <div class="stat-name">{ "Passive Perception" }</div>
+                <div>{ "Passive Perception" }</div>
             </div>
         }
     }

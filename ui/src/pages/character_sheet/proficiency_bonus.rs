@@ -34,7 +34,7 @@ impl Component for ProficiencyBonus {
         html! {
             <section id="proficiency-bonus" class="single-value card">
                 <div class="stat-value">{ self.props.value }</div>
-                <div class="stat-name">{ "Proficiency Bonus" }</div>
+                <div>{ "Proficiency Bonus" }</div>
             </section>
         }
     }
