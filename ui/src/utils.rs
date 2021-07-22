@@ -11,12 +11,42 @@ pub fn calculate_modifier(stat: i64) -> i64 {
         16 | 17 => 3,
         18 | 19 => 4,
         20 => 5,
-        _ => panic!("Ability scores must be between 1 and 20"),
+        _ => panic!("Ability score must be between 1 and 20"),
     }
 }
 
 pub fn calculate_modifier_display(stat: i64) -> String {
     format!("{:+}", calculate_modifier(stat))
+}
+
+pub fn level_xp(level: i64) -> i64 {
+    match level {
+        1 => 0,
+        2 => 300,
+        3 => 900,
+        4 => 2700,
+        5 => 6500,
+        6 => 14000,
+        7 => 23000,
+        8 => 34000,
+        9 => 48000,
+        10 => 64000,
+        11 => 85000,
+        12 => 100000,
+        13 => 120000,
+        14 => 140000,
+        15 => 165000,
+        16 => 195000,
+        17 => 225000,
+        18 => 265000,
+        19 => 305000,
+        20 => 355000,
+        _ => panic!("Level must be between 1 and 20")
+    }
+}
+
+pub fn level_xp_display(level: i64) -> String {
+    format!("{}", level_xp(level))
 }
 
 #[cfg(test)]

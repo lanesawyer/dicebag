@@ -126,24 +126,48 @@
     background-color: var(--strength-color);
 }
 
+.strength-text {
+    color: var(--strength-color);
+}
+
 .dexterity {
     background-color: var(--dexterity-color);
+}
+
+.dexterity-text {
+    color: var(--dexterity-color);
 }
 
 .constitution {
     background-color: var(--constitution-color);
 }
 
+.constitution-text {
+    color: var(--constitution-color);
+}
+
 .intelligence {
     background-color: var(--intelligence-color);
+}
+
+.intelligence-text {
+    color: var(--intelligence-color);
 }
 
 .wisdom {
     background-color: var(--wisdom-color);
 }
 
+.wisdom-text {
+    color: var(--wisdom-color);
+}
+
 .charisma {
     background-color: var(--charisma-color);
+}
+
+.charisma-text {
+    color: var(--charisma-color);
 }
 
 .stat-name {

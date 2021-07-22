@@ -1,5 +1,5 @@
 use crate::utils::calculate_modifier_display;
-use yew::{html, Html};
+use yew::{classes, html, Html};
 
 mod button;
 mod text_field;
@@ -20,8 +20,8 @@ pub fn skill_display(skill: &Skill) -> Html {
         <li class="skill-display">
             <input type="checkbox" class="skill-proficiency" checked=skill.has_proficiency disabled=true />
             <span class="skill-modifier">{calculate_modifier_display(skill.ability_score)}</span>
-            <span class="skill-name">{&skill.name}</span>
-            <span class="related-ability">
+            <span class=classes!("skill-name", stat_color_class(&skill.name))>{&skill.name}</span>
+            <span class=classes!("related-ability")>
                 {
                     if let Some(related_ability) = &skill.related_ability {
                         format!("({})", related_ability)
@@ -31,5 +31,17 @@ pub fn skill_display(skill: &Skill) -> Html {
                 }
             </span>
         </li>
+    }
+}
+
+fn stat_color_class(stat: &String) -> String {
+    match stat.as_ref() {
+        "Strength" => "strength-text".to_string(),
+        "Dexterity" => "dexterity-text".to_string(),
+        "Constitution" => "constitution-text".to_string(),
+        "Intelligence" => "intelligence-text".to_string(),
+        "Wisdom" => "wisdom-text".to_string(),
+        "Charisma" => "charisma-text".to_string(),
+        _ => "".to_string(),
     }
 }
