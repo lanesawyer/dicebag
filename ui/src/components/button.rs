@@ -61,7 +61,7 @@ impl Component for Button {
                     } else {
                         html! { <></> }
                     }
-                }    
+                }
                 { &self.props.label }
             </button>
         }

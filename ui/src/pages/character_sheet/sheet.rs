@@ -39,7 +39,7 @@ use crate::{
 pub enum Msg {
     ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
     Delete(i64),
-    RedirectMsg,
+    Redirect,
 }
 
 #[derive(Properties, Clone, Debug)]
@@ -184,7 +184,7 @@ impl Component for CharacterSheetPage {
                     |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
                         // TODO: Error pop up if delete fails
                         let Json(_data) = response.into_body();
-                        Msg::RedirectMsg
+                        Msg::Redirect
                     },
                 );
 
@@ -192,7 +192,7 @@ impl Component for CharacterSheetPage {
 
                 self.fetch_task = Some(task);
             }
-            Msg::RedirectMsg => {
+            Msg::Redirect => {
                 let route = Route::from(AppRoute::Characters);
                 self.route_agent.send(RouteRequest::ChangeRoute(route));
             }

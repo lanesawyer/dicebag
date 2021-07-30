@@ -102,13 +102,13 @@ impl Dicebag {
                     </li>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/characters")} route=AppRoute::Characters>
-                            <Icon name="people" />    
+                            <Icon name="people" />
                             { "Characters" }
                         </RouterAnchor<AppRoute>>
                     </li>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/campaigns")} route=AppRoute::Campaigns>
-                            <Icon name="map" />    
+                            <Icon name="map" />
                             { "Campaigns" }
                         </RouterAnchor<AppRoute>>
                     </li>
