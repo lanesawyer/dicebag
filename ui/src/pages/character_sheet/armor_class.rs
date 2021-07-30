@@ -1,5 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
+use crate::components::Icon;
+
 #[derive(Properties, Clone, PartialEq)]
 pub struct ArmorClassProps {
     pub value: i64,
@@ -34,7 +36,10 @@ impl Component for ArmorClass {
         html! {
             <section id="armor-class" class="text-block">
                 <h3>{ "Armor Class" }</h3>
-                <div>{ &self.props.value }</div>
+                <div>
+                    <Icon name="shield" />
+                    { &self.props.value }
+                </div>
             </section>
         }
     }

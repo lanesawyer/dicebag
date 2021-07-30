@@ -29,7 +29,7 @@ use super::{
     text_block::TextBlock,
 };
 use crate::{
-    components::{Button, ButtonType},
+    components::{Button, ButtonType, Icon},
     services::{self, characters_query, delete_character_mutation, DeleteCharacterMutation},
     services::{CharactersQuery, GraphQLResponse},
     AppRoute,
@@ -221,6 +221,10 @@ impl Component for CharacterSheetPage {
                     alignment=character.alignment.clone()
                     experience_points=character.experience_points
                 />
+                <section id="settings">
+                    <Icon name="cog" />
+                    <Button label="Delete" button_type=ButtonType::Danger on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
+                </section>
                 <section id="stat-blocks" class="stats">
                     <StatBlock stat=Stat::Strength name="Strength" value=character.strength />
                     <StatBlock stat=Stat::Dexterity name="Dexterity" value=character.dexterity />
@@ -266,9 +270,6 @@ impl Component for CharacterSheetPage {
                 </section>
                 <section id="features-traits">
                     <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
-                </section>
-                <section id="settings">
-                    <Button label="Delete" button_type=ButtonType::Danger on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
                 </section>
             </section>
         }

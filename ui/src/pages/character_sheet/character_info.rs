@@ -1,6 +1,6 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-use crate::utils::{level_xp, level_xp_display};
+use crate::{pages::character_sheet::text_block::TextBlock, utils::{level_xp, level_xp_display}};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct CharacterInfoProps {
@@ -43,33 +43,20 @@ impl Component for CharacterInfo {
         html! {
             <section id="character-info" class="text-block">
                 <img src=self.props.image.clone() style={"width: 4em"}/>
-                <h2>{ &self.props.name }</h2>
                 <div>
-                    <span>{ "Class" }</span>
-                    <span>{ &self.props.class }</span>
+                    <h2>{ &self.props.name }</h2>
+                    <span> { &self.props.race }</span>
+                    <span> { &self.props.class }</span>
+                    <span> { &self.props.level }</span>
+                    <div>
+                        <label for="xp">{ "Experience Points:" }</label>
+                        <span>{ level_xp_display(self.props.level) }</span>
+                        <meter id="xp" min=0 max=1 value=self.calc_hp_bar_value()> { self.props.experience_points }</meter>
+                        <span>{ level_xp_display(self.props.level + 1) }</span>
+                    </div>
                 </div>
-                <div>
-                    <span>{ "Level" }</span>
-                    <span>{ self.props.level }</span>
-                </div>
-                <div>
-                    <span>{ "Background" }</span>
-                    <span>{ self.props.background.as_ref().unwrap_or(&"".to_string()) }</span>
-                </div>
-                <div>
-                    <span>{ "Race" }</span>
-                    <span>{ &self.props.race }</span>
-                </div>
-                <div>
-                    <span>{ "Alignment" }</span>
-                    <span>{ self.props.alignment.as_ref().unwrap_or(&"".to_string()) }</span>
-                </div>
-                <span>
-                    <label for="xp">{ "Experience Points:" }</label>
-                    <span>{ level_xp_display(self.props.level) }</span>
-                    <meter id="xp" min=0 max=1 value=self.calc_hp_bar_value()> { self.props.experience_points }</meter>
-                    <span>{ level_xp_display(self.props.level + 1) }</span>
-                </span>
+                <TextBlock name="Background" value=self.props.background.clone() />
+                <TextBlock name="Alignment" value=self.props.alignment.clone() />
             </section>
         }
     }

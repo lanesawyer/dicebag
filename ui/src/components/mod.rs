@@ -18,32 +18,36 @@ pub struct Skill {
 }
 
 pub fn skill_display(skill: &Skill) -> Html {
+    let related_ability_node = if let Some(related_ability) = &skill.related_ability {
+        html! { 
+            <span class=classes!("related-ability", stat_color_class(related_ability))>
+                { format!("({})", related_ability) }
+            </span>
+        }
+        } else {
+            html! { <></> }
+        };
+
     html! {
         <li class="skill-display">
             <input type="checkbox" class="skill-proficiency" checked=skill.has_proficiency disabled=true />
             <span class="skill-modifier">{calculate_modifier_display(skill.ability_score)}</span>
             <span class=classes!("skill-name", stat_color_class(&skill.name))>{&skill.name}</span>
-            <span class=classes!("related-ability")>
-                {
-                    if let Some(related_ability) = &skill.related_ability {
-                        format!("({})", related_ability)
-                    } else {
-                        "".to_string()
-                    }
-                }
-            </span>
+            {
+                related_ability_node
+            }
         </li>
     }
 }
 
-fn stat_color_class(stat: &String) -> String {
-    match stat.as_ref() {
-        "Strength" => "strength-text".to_string(),
-        "Dexterity" => "dexterity-text".to_string(),
-        "Constitution" => "constitution-text".to_string(),
-        "Intelligence" => "intelligence-text".to_string(),
-        "Wisdom" => "wisdom-text".to_string(),
-        "Charisma" => "charisma-text".to_string(),
+fn stat_color_class(stat: &str) -> String {
+    match stat {
+        "Strength" | "Str" => "strength-text".to_string(),
+        "Dexterity" | "Dex" => "dexterity-text".to_string(),
+        "Constitution" | "Con" => "constitution-text".to_string(),
+        "Intelligence" | "Int" => "intelligence-text".to_string(),
+        "Wisdom" | "Wis" => "wisdom-text".to_string(),
+        "Charisma" | "Cha" => "charisma-text".to_string(),
         _ => "".to_string(),
     }
 }

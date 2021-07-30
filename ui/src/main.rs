@@ -73,10 +73,11 @@ impl Component for Dicebag {
                 </main>
                 <footer>
                     <Tower />
-                    { "Powered by " }
-                    <a href="https://yew.rs">{ "Yew" }</a>
+                    <a href="https://yew.rs">
+                        <img src="/assets/yew-logo.png" alt="yew logo" />
+                    </a>
                     <a href="https://github.com/lanesawyer/dicebag">
-                        <img src="/assets/GitHub-Mark-32px.png" />
+                        <img src="/assets/github-logo.png" alt="github logo" />
                     </a>
                 </footer>
             </>

@@ -46,7 +46,7 @@ pub fn build_bob() -> Character {
     }
 }
 
-pub fn build_skills(character: &Character) -> Vec<Skill> {
+pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
     vec![
         Skill {
             has_proficiency: false,
@@ -87,7 +87,7 @@ pub fn build_skills(character: &Character) -> Vec<Skill> {
     ]
 }
 
-pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
+pub fn build_skills(character: &Character) -> Vec<Skill> {
     vec![
         Skill {
             has_proficiency: false,

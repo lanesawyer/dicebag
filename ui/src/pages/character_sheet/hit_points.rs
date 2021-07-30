@@ -1,5 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
+use crate::components::Icon;
+
 #[derive(Properties, Clone, PartialEq)]
 pub struct HitPointsProps {
     pub maximum: i64,
@@ -36,6 +38,7 @@ impl Component for HitPoints {
         html! {
             <section id="hit-points" class="text-block">
                 <h3>{ "Hit Points" }</h3>
+                <Icon name="pulse" />
                 <span>{ "0" }</span>
                 <meter
                     min="0"

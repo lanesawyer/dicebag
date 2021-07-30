@@ -1,5 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
+use crate::components::Icon;
+
 #[derive(Properties, Clone, PartialEq)]
 pub struct PassivePerceptionProps {
     pub value: i64,
@@ -32,10 +34,13 @@ impl Component for PassivePerception {
 
     fn view(&self) -> Html {
         html! {
-            <div id="passive-perception" class="single-value">
-                <div class="stat-value">{ self.props.value }</div>
-                <div>{ "Passive Perception" }</div>
-            </div>
+            <section id="passive-perception" class="text-block">
+                <h3>{ "Passive Perception" }</h3>
+                <div>
+                    <Icon name="eye" />
+                    { self.props.value }
+                </div>
+            </section>
         }
     }
 }

@@ -1,5 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
+use crate::components::Icon;
+
 #[derive(Properties, Clone, PartialEq)]
 pub struct InspirationProps {
     pub value: bool,
@@ -32,9 +34,10 @@ impl Component for Inspiration {
 
     fn view(&self) -> Html {
         html! {
-            <section id="inspiration" class="single-value card">
-                <input type="checkbox" class="stat-value" checked=self.props.value />
-                <div>{ "Inspiration" }</div>
+            <section id="inspiration-section" class="single-value card">
+                <Icon name="star" />
+                <input type="checkbox" id="inspiration" name="inspiration" class="stat-value" checked=self.props.value />
+                <label for="inspiration">{ "Inspiration" }</label>
             </section>
         }
     }
