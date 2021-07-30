@@ -223,7 +223,7 @@ impl Component for CharacterSheetPage {
                 />
                 <section id="settings">
                     <Icon name="cog" />
-                    <Button label="Delete" button_type=ButtonType::Danger on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
+                    <Button label="Delete" icon_name="trash".to_string() button_type=ButtonType::Danger on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
                 </section>
                 <section id="stat-blocks" class="stats">
                     <StatBlock stat=Stat::Strength name="Strength" value=character.strength />

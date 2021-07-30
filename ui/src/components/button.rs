@@ -1,6 +1,8 @@
 use yew::prelude::*;
 use yew::{html, Html};
 
+use crate::components::Icon;
+
 pub struct Button {
     props: ButtonProps,
     link: ComponentLink<Self>,
@@ -23,6 +25,8 @@ pub struct ButtonProps {
     pub on_click: Callback<bool>,
     #[prop_or(ButtonType::Primary)]
     pub button_type: ButtonType,
+    #[prop_or_default]
+    pub icon_name: Option<String>,
 }
 
 impl Component for Button {
@@ -49,6 +53,15 @@ impl Component for Button {
     fn view(&self) -> Html {
         html! {
             <button type="button" class=classes!(self.choose_class()) onclick=self.link.callback(|_| ButtonMsg::Clicked)>
+                {
+                    if let Some(icon_name) = &self.props.icon_name {
+                        html! {
+                            <Icon name=icon_name.clone() />
+                        }
+                    } else {
+                        html! { <></> }
+                    }
+                }    
                 { &self.props.label }
             </button>
         }

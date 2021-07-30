@@ -4,6 +4,7 @@ use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, service::RouteService, Switch};
 
+use crate::components::Icon;
 use crate::dice_tower::tower::Tower;
 use crate::pages::{CharacterSheetPage, CharactersPage, HomePage};
 
@@ -95,17 +96,20 @@ impl Dicebag {
                 <ul>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/")} route=AppRoute::Home>
-                            { "🏠 Home" }
+                            <Icon name="home" />
+                            { "Home" }
                         </RouterAnchor<AppRoute>>
                     </li>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/characters")} route=AppRoute::Characters>
-                            { "⚔️ Characters" }
+                            <Icon name="people" />    
+                            { "Characters" }
                         </RouterAnchor<AppRoute>>
                     </li>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/campaigns")} route=AppRoute::Campaigns>
-                            { "🗺️ Campaigns" }
+                            <Icon name="map" />    
+                            { "Campaigns" }
                         </RouterAnchor<AppRoute>>
                     </li>
                 </ul>
