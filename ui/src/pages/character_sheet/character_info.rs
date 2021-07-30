@@ -1,6 +1,9 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-use crate::{pages::character_sheet::text_block::TextBlock, utils::{level_xp, level_xp_display}};
+use crate::{
+    pages::character_sheet::text_block::TextBlock,
+    utils::{level_xp, level_xp_display},
+};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct CharacterInfoProps {
@@ -69,8 +72,9 @@ impl CharacterInfo {
         let previous_level_xp = level_xp(self.props.level);
         let next_level_xp = level_xp(self.props.level + 1);
         let current_xp = self.props.experience_points;
-        
-        let bar_value = (current_xp - previous_level_xp) as f64 / (next_level_xp - previous_level_xp) as f64;
+
+        let bar_value =
+            (current_xp - previous_level_xp) as f64 / (next_level_xp - previous_level_xp) as f64;
 
         bar_value.to_string()
     }

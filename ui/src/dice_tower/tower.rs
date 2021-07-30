@@ -26,7 +26,10 @@ impl Component for Tower {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, dice: DiceType::D4 }
+        Self {
+            link,
+            dice: DiceType::D4,
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -48,7 +51,7 @@ impl Component for Tower {
         ConsoleService::log(&format!("{:?}", result));
 
         self.dice = dice;
-        
+
         true
     }
 

@@ -41,7 +41,7 @@ pub fn level_xp(level: i64) -> i64 {
         18 => 265000,
         19 => 305000,
         20 => 355000,
-        _ => panic!("Level must be between 1 and 20")
+        _ => panic!("Level must be between 1 and 20"),
     }
 }
 

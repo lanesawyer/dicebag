@@ -9,7 +9,7 @@ pub struct Button {
 #[derive(Clone, PartialEq)]
 pub enum ButtonType {
     Primary,
-    Success,
+    // Success,
     Danger,
 }
 
@@ -60,7 +60,7 @@ impl Button {
     fn choose_class(&self) -> String {
         match self.props.button_type {
             ButtonType::Primary => "btn-primary".to_string(),
-            ButtonType::Success => "btn-success".to_string(),
+            // ButtonType::Success => "btn-success".to_string(),
             ButtonType::Danger => "btn-danger".to_string(),
         }
     }

@@ -58,8 +58,4 @@ impl HitPoints {
     fn calc_low_hp(&self) -> String {
         (self.props.maximum as f64 * 0.50).to_string()
     }
-
-    fn calc_high_hp(&self) -> String {
-        (self.props.maximum as f64 * 0.75).to_string()
-    }
 }

@@ -25,7 +25,7 @@ use super::{
     saving_throws::SavingThrows,
     skills::Skills,
     speed::Speed,
-    stat_block::{StatBlock, Stat},
+    stat_block::{Stat, StatBlock},
     text_block::TextBlock,
 };
 use crate::{

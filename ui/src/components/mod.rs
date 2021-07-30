@@ -19,14 +19,14 @@ pub struct Skill {
 
 pub fn skill_display(skill: &Skill) -> Html {
     let related_ability_node = if let Some(related_ability) = &skill.related_ability {
-        html! { 
+        html! {
             <span class=classes!("related-ability", stat_color_class(related_ability))>
                 { format!("({})", related_ability) }
             </span>
         }
-        } else {
-            html! { <></> }
-        };
+    } else {
+        html! { <></> }
+    };
 
     html! {
         <li class="skill-display">

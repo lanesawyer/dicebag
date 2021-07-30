@@ -8,7 +8,7 @@ pub enum Stat {
     Constitution,
     Intelligence,
     Wisdom,
-    Charisma
+    Charisma,
 }
 
 #[derive(Properties, Clone, PartialEq)]
