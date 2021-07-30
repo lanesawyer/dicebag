@@ -2,9 +2,11 @@ use crate::utils::calculate_modifier_display;
 use yew::{classes, html, Html};
 
 mod button;
+mod icon;
 mod text_field;
 
 pub use button::{Button, ButtonType};
+pub use icon::Icon;
 pub use text_field::TextField;
 
 #[derive(Clone, PartialEq, PartialOrd)]
