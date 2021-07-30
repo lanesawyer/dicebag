@@ -1,8 +1,8 @@
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
+use yew::format::Json;
 use yew::services::fetch::{FetchService, FetchTask, Response};
-use yew::{format::Json, services::ConsoleService};
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 use yew_router::{
     agent::RouteRequest,
@@ -124,8 +124,6 @@ impl Component for CharacterSheetPage {
         let query = CharactersQuery::build_query(variables);
         let request_json = &json!(query);
 
-        ConsoleService::log(&format!("{:?}", &request_json));
-
         let request = services::build_request(request_json);
 
         let callback = link.callback(
@@ -168,7 +166,7 @@ impl Component for CharacterSheetPage {
                     }
                     Err(error) => {
                         self.error = Some(error.to_string());
-                        ConsoleService::log(&format!("error {:?}", error));
+                        yew::services::ConsoleService::log(&format!("error {:?}", error));
                     }
                 }
                 self.fetch_task = None;

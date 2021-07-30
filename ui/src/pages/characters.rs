@@ -5,7 +5,7 @@ use yew::{
     html,
     services::{
         fetch::{FetchTask, Response},
-        ConsoleService, FetchService,
+        FetchService,
     },
     Component, ComponentLink, Html, ShouldRender,
 };
@@ -86,7 +86,7 @@ impl Component for CharactersPage {
                     }
                     Err(error) => {
                         self.error = Some(error.to_string());
-                        ConsoleService::log(&format!("error {:?}", error));
+                        yew::services::ConsoleService::log(&format!("error {:?}", error));
                     }
                 }
                 self.fetch_task = None;

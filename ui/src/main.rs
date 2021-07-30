@@ -6,10 +6,12 @@ use yew_router::{prelude::*, service::RouteService, Switch};
 
 use crate::components::Icon;
 use crate::dice_tower::tower::Tower;
+use crate::music_player::MusicPlayer;
 use crate::pages::{CharacterSheetPage, CharactersPage, HomePage};
 
 mod components;
 mod dice_tower;
+mod music_player;
 mod pages;
 mod services;
 mod utils;
@@ -73,6 +75,7 @@ impl Component for Dicebag {
                     <Router<AppRoute, ()> render = Router::render(routes) />
                 </main>
                 <footer>
+                    <MusicPlayer />
                     <Tower />
                     <a href="https://yew.rs">
                         <img src="/assets/yew-logo.png" alt="yew logo" />

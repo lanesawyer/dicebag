@@ -1,5 +1,4 @@
 use std::num::NonZeroU8;
-use yew::services::ConsoleService;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::dice_tower::Roll;
@@ -33,7 +32,7 @@ impl Component for Tower {
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        let (number, dice) = match msg {
+        let (_number, dice) = match msg {
             RollMsg::D4 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D4),
             RollMsg::D6 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D6),
             RollMsg::D8 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D8),
@@ -45,10 +44,6 @@ impl Component for Tower {
                 crate::dice_tower::DiceType::D100,
             ),
         };
-
-        let result = Roll::roll(&Roll { number, dice });
-
-        ConsoleService::log(&format!("{:?}", result));
 
         self.dice = dice;
 

@@ -21,6 +21,7 @@ pub enum ButtonMsg {
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct ButtonProps {
+    #[prop_or_default]
     pub label: String,
     pub on_click: Callback<bool>,
     #[prop_or(ButtonType::Primary)]

@@ -34,3 +34,7 @@ This project uses the [Juniper `graphql-client` CLI tool](https://github.com/gra
 - [Yew](https://yew.rs)
 - [Sass](https://sass-lang.com/)
 - [Open Iconic](https://useiconic.com/open/)
+
+## Attributions
+### Music
+- [Night Owl by Broke For Free](https://freemusicarchive.org/music/Broke_For_Free/Directionless_EP/Broke_For_Free_-_Directionless_EP_-_01_Night_Owl)
