@@ -33,3 +33,4 @@ This project uses the [Juniper `graphql-client` CLI tool](https://github.com/gra
 - [WebAssembly](https://webassembly.org/)
 - [Yew](https://yew.rs)
 - [Sass](https://sass-lang.com/)
+- [Open Iconic](https://useiconic.com/open/)

@@ -25,12 +25,11 @@ use super::{
     saving_throws::SavingThrows,
     skills::Skills,
     speed::Speed,
-    stat_block::StatBlock,
+    stat_block::{Stat, StatBlock},
     text_block::TextBlock,
 };
 use crate::{
-    components::Button,
-    dice_tower::tower::Tower,
+    components::{Button, ButtonType, Icon},
     services::{self, characters_query, delete_character_mutation, DeleteCharacterMutation},
     services::{CharactersQuery, GraphQLResponse},
     AppRoute,
@@ -40,7 +39,7 @@ use crate::{
 pub enum Msg {
     ReceiveResponse(Result<GraphQLResponse<CharacterList>, anyhow::Error>),
     Delete(i64),
-    RedirectMsg,
+    Redirect,
 }
 
 #[derive(Properties, Clone, Debug)]
@@ -185,7 +184,7 @@ impl Component for CharacterSheetPage {
                     |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
                         // TODO: Error pop up if delete fails
                         let Json(_data) = response.into_body();
-                        Msg::RedirectMsg
+                        Msg::Redirect
                     },
                 );
 
@@ -193,7 +192,7 @@ impl Component for CharacterSheetPage {
 
                 self.fetch_task = Some(task);
             }
-            Msg::RedirectMsg => {
+            Msg::Redirect => {
                 let route = Route::from(AppRoute::Characters);
                 self.route_agent.send(RouteRequest::ChangeRoute(route));
             }
@@ -222,13 +221,17 @@ impl Component for CharacterSheetPage {
                     alignment=character.alignment.clone()
                     experience_points=character.experience_points
                 />
-                <section id="stat-block" class="stats">
-                    <StatBlock name="Strength" value=character.strength />
-                    <StatBlock name="Dexterity" value=character.dexterity />
-                    <StatBlock name="Constitution" value=character.constitution />
-                    <StatBlock name="Intelligence" value=character.intelligence />
-                    <StatBlock name="Wisdom" value=character.wisdom />
-                    <StatBlock name="Charisma" value=character.charisma />
+                <section id="settings">
+                    <Icon name="cog" />
+                    <Button label="Delete" icon_name="trash".to_string() button_type=ButtonType::Danger on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
+                </section>
+                <section id="stat-blocks" class="stats">
+                    <StatBlock stat=Stat::Strength name="Strength" value=character.strength />
+                    <StatBlock stat=Stat::Dexterity name="Dexterity" value=character.dexterity />
+                    <StatBlock stat=Stat::Constitution name="Constitution" value=character.constitution />
+                    <StatBlock stat=Stat::Intelligence name="Intelligence" value=character.intelligence />
+                    <StatBlock stat=Stat::Wisdom name="Wisdom" value=character.wisdom />
+                    <StatBlock stat=Stat::Charisma name="Charisma" value=character.charisma />
                 </section>
                 <Inspiration value=character.has_inspiration />
                 <ProficiencyBonus value=character.proficiency_bonus />
@@ -268,10 +271,6 @@ impl Component for CharacterSheetPage {
                 <section id="features-traits">
                     <TextBlock name="Features & Traits" value=character.features_and_traits.clone() />
                 </section>
-                <section id="settings">
-                    <Button label="Delete" on_click=self.link.callback(move |_| Msg::Delete(delete_id)) />
-                </section>
-                <Tower />
             </section>
         }
     }

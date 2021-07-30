@@ -4,6 +4,8 @@ use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::{prelude::*, service::RouteService, Switch};
 
+use crate::components::Icon;
+use crate::dice_tower::tower::Tower;
 use crate::pages::{CharacterSheetPage, CharactersPage, HomePage};
 
 mod components;
@@ -71,8 +73,13 @@ impl Component for Dicebag {
                     <Router<AppRoute, ()> render = Router::render(routes) />
                 </main>
                 <footer>
-                    { "Powered by " }
-                    <a href="https://yew.rs">{ "Yew" }</a>
+                    <Tower />
+                    <a href="https://yew.rs">
+                        <img src="/assets/yew-logo.png" alt="yew logo" />
+                    </a>
+                    <a href="https://github.com/lanesawyer/dicebag">
+                        <img src="/assets/github-logo.png" alt="github logo" />
+                    </a>
                 </footer>
             </>
         }
@@ -89,17 +96,20 @@ impl Dicebag {
                 <ul>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/")} route=AppRoute::Home>
-                            { "🏠 Home" }
+                            <Icon name="home" />
+                            { "Home" }
                         </RouterAnchor<AppRoute>>
                     </li>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/characters")} route=AppRoute::Characters>
-                            { "⚔️ Characters" }
+                            <Icon name="people" />
+                            { "Characters" }
                         </RouterAnchor<AppRoute>>
                     </li>
                     <li>
                         <RouterAnchor<AppRoute> classes={set_active_route(&route, "/campaigns")} route=AppRoute::Campaigns>
-                            { "🗺️ Campaigns" }
+                            <Icon name="map" />
+                            { "Campaigns" }
                         </RouterAnchor<AppRoute>>
                     </li>
                 </ul>

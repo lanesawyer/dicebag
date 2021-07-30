@@ -40,7 +40,7 @@ impl Component for TextField {
 
     fn view(&self) -> Html {
         html! {
-            <div>
+            <div class="text-field">
                 <label>{ &self.props.label }</label>
                 <input
                     type="text"

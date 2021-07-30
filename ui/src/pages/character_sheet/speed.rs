@@ -1,5 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
+use crate::components::Icon;
+
 #[derive(Properties, Clone, PartialEq)]
 pub struct SpeedProps {
     pub value: i64,
@@ -34,7 +36,10 @@ impl Component for Speed {
         html! {
             <section id="speed" class="text-block">
                 <h3>{ "Speed" }</h3>
-                <div>{ self.props.value }</div>
+                <div>
+                    <Icon name="flash" />
+                    { self.props.value }
+                </div>
             </section>
         }
     }

@@ -11,7 +11,7 @@ pub fn build_bob() -> Character {
         background: Some("Construction worker".to_string()),
         race: "Human".to_string(),
         alignment: Some("Lawful Good".to_string()),
-        experience_points: 100,
+        experience_points: 1800,
         strength: 12,
         dexterity: 8,
         constitution: 14,
@@ -46,7 +46,7 @@ pub fn build_bob() -> Character {
     }
 }
 
-pub fn build_skills(character: &Character) -> Vec<Skill> {
+pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
     vec![
         Skill {
             has_proficiency: false,
@@ -74,6 +74,12 @@ pub fn build_skills(character: &Character) -> Vec<Skill> {
         },
         Skill {
             has_proficiency: false,
+            ability_score: character.wisdom,
+            name: "Wisdom".to_string(),
+            related_ability: None,
+        },
+        Skill {
+            has_proficiency: false,
             ability_score: character.charisma,
             name: "Charisma".to_string(),
             related_ability: None,
@@ -81,7 +87,7 @@ pub fn build_skills(character: &Character) -> Vec<Skill> {
     ]
 }
 
-pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
+pub fn build_skills(character: &Character) -> Vec<Skill> {
     vec![
         Skill {
             has_proficiency: false,
@@ -129,7 +135,7 @@ pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
             has_proficiency: false,
             ability_score: character.charisma,
             name: "Intimidation".to_string(),
-            related_ability: Some("Char".to_string()),
+            related_ability: Some("Cha".to_string()),
         },
         Skill {
             has_proficiency: false,

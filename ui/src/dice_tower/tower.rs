@@ -4,6 +4,8 @@ use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::dice_tower::Roll;
 
+use super::DiceType;
+
 pub enum RollMsg {
     D4,
     D6,
@@ -16,6 +18,7 @@ pub enum RollMsg {
 
 pub struct Tower {
     link: ComponentLink<Self>,
+    dice: DiceType,
 }
 
 impl Component for Tower {
@@ -23,7 +26,10 @@ impl Component for Tower {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
+        Self {
+            link,
+            dice: DiceType::D4,
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -43,6 +49,8 @@ impl Component for Tower {
         let result = Roll::roll(&Roll { number, dice });
 
         ConsoleService::log(&format!("{:?}", result));
+
+        self.dice = dice;
 
         true
     }
@@ -72,7 +80,7 @@ impl Component for Tower {
                 <button onclick=d100_click>{ "D100" }</button>
                 <div>{ Roll::roll(&Roll {
                     number: NonZeroU8::new(1).unwrap(),
-                    dice: crate::dice_tower::DiceType::D10,
+                    dice: self.dice,
                 }) }</div>
             </section>
         }

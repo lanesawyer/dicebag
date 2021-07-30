@@ -160,11 +160,7 @@ impl Component for CharactersPage {
                         }
                     }
                     <div class="add-character-panel">
-                        <div>
-                            <div>{ "➕" }</div>
-                            <div>{ "Create" }</div>
-                            { self.view_input() }
-                        </div>
+                        { self.view_input() }
                     </div>
                 </div>
             </section>
@@ -180,7 +176,7 @@ impl CharactersPage {
                 <TextField label="Race" value=self.new_race.clone() on_change=self.link.callback(Msg::UpdateRace) />
                 <TextField label="Class" value=self.new_class.clone() on_change=self.link.callback(Msg::UpdateClass) />
                 <TextField label="Image" value=self.new_image.clone() on_change=self.link.callback(Msg::UpdateImage) />
-                <Button label="Create" on_click=self.link.callback(|_| Msg::Add) />
+                <Button label="Create" icon_name="plus".to_string() on_click=self.link.callback(|_| Msg::Add) />
             </>
         }
     }

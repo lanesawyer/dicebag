@@ -1,5 +1,7 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
+use crate::components::Icon;
+
 #[derive(Properties, Clone, PartialEq)]
 pub struct HitPointsProps {
     pub maximum: i64,
@@ -36,10 +38,24 @@ impl Component for HitPoints {
         html! {
             <section id="hit-points" class="text-block">
                 <h3>{ "Hit Points" }</h3>
-                <div>{ format!("Maximum: {}", self.props.maximum) }</div>
+                <Icon name="pulse" />
+                <span>{ "0" }</span>
+                <meter
+                    min="0"
+                    low=self.calc_low_hp()
+                    max=self.props.maximum.to_string()
+                    value=self.props.current.to_string()></meter>
+                <span>{ self.props.maximum }</span>
                 <div>{ format!("Current: {}", self.props.current) }</div>
+                // TODO: Figure out extra bar to show temporary hit points
                 <div>{ format!("Temporary: {}", self.props.temporary) }</div>
             </section>
         }
+    }
+}
+
+impl HitPoints {
+    fn calc_low_hp(&self) -> String {
+        (self.props.maximum as f64 * 0.50).to_string()
     }
 }

@@ -32,9 +32,9 @@ impl Component for ProficiencyBonus {
 
     fn view(&self) -> Html {
         html! {
-            <section id="proficiency-bonus" class="single-value card">
-                <div class="stat-value">{ self.props.value }</div>
-                <div class="stat-name">{ "Proficiency Bonus" }</div>
+            <section id="proficiency-bonus" class="text-block">
+                <h3>{ "Proficiency Bonus" }</h3>
+                <div>{ self.props.value }</div>
             </section>
         }
     }

@@ -26,10 +26,28 @@ ul.skill-list {
     color: var(--black);
 }
 
+
+// Button
+
 button {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     border: none;
-    padding: var(--medium-spacing);
-    padding-left: var(--large-spacing);
-    // clip-path: polygon(100% 0, 35% 0, 0 100%, 100% 100%);
+    padding: var(--spacing-medium) var(--spacing-large);
+    margin: var(--spacing-small);
+    clip-path: polygon(100% 0, 30% 0, 0 100%, 70% 100%);
+}
+
+button.btn-danger {
+    background-color: var(--error-color);
+}
+
+// Text Field
+.text-field {
+    display: block;
+    text-align: left;
+    margin: var(--spacing-medium);
+}
+
+.text-field label {
+    display: block;
 }
