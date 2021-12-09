@@ -13,7 +13,7 @@ anyhow = "1.0.51"
 getrandom = { version = "0.2.3", features = ["js"] }
 graphql_client = "0.10.0"
 rand = "0.8.4"
-serde = "1.0.130"
+serde = "1.0.131"
 serde_json = "1.0.72"
 wasm-bindgen = "0.2.78"
 yew = "0.18.0"
