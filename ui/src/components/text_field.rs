@@ -1,10 +1,8 @@
 use yew::prelude::*;
 use yew::{html, Html};
+use web_sys::HtmlInputElement as InputElement;
 
-pub struct TextField {
-    props: TextFieldProps,
-    link: ComponentLink<Self>,
-}
+pub struct TextField;
 
 pub enum TextFieldMsg {
     ValueChanged(String),
@@ -21,31 +19,37 @@ impl Component for TextField {
     type Message = TextFieldMsg;
     type Properties = TextFieldProps;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { props, link }
+    fn create(ctx: &Context<Self>) -> Self {
+        Self
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            TextFieldMsg::ValueChanged(new_value) => self.props.on_change.emit(new_value),
+            TextFieldMsg::ValueChanged(new_value) => ctx.props().on_change.emit(new_value),
         }
 
         false
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        self.props = props;
-        true
-    }
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let onkeypress = ctx.link().batch_callback(|e: KeyboardEvent| {
+            if e.key() == "Enter" {
+                let input: InputElement = e.target_unchecked_into();
+                let value = input.value();
+                input.set_value("");
+                Some(TextFieldMsg::ValueChanged(value))
+            } else {
+                None
+            }
+        });
 
-    fn view(&self) -> Html {
         html! {
             <div class="text-field">
-                <label>{ &self.props.label }</label>
+                <label>{ &ctx.props().label }</label>
                 <input
                     type="text"
-                    value=self.props.value.clone()
-                    oninput=self.link.callback(|e: InputData| TextFieldMsg::ValueChanged(e.value))
+                    value={ctx.props().value.clone()}
+                    {onkeypress}
                 />
             </div>
         }

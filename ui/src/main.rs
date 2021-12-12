@@ -1,8 +1,8 @@
 #![recursion_limit = "1024"]
 
 use yew::prelude::*;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
-use yew_router::{prelude::*, service::RouteService, Switch};
+use yew::{html, Component, Html};
+use yew_router::prelude::*;
 
 use crate::components::Icon;
 use crate::dice_tower::tower::Tower;
@@ -16,19 +16,21 @@ mod utils;
 
 // Matches from most specific to least
 // so if you don't see the page, it's probably the wrong order
-#[derive(Switch, PartialEq, Clone, Debug)]
+#[derive(Routable, PartialEq, Clone, Debug)]
 pub enum AppRoute {
-    #[to = "/characters/{id}"]
-    CharacterSheet(i64),
-    #[to = "/characters"]
+    #[at("/characters/:id")]
+    CharacterSheet {
+        id: i64
+    },
+    #[at("/characters")]
     Characters,
-    #[to = "/campaigns"]
+    #[at("/campaigns")]
     Campaigns,
-    // #[not_found] isn't in 0.18 but it's coming
-    #[to = "/404"]
+    #[not_found]
+    #[at("/404")]
     NotFound,
     // Needs to go last otherwise it will match everything
-    #[to = "/"]
+    #[at("/")]
     Home,
 }
 
@@ -36,41 +38,34 @@ pub enum Msg {
     UpdateRoute,
 }
 
-pub struct Dicebag {
-    _route_agent: RouteAgentBridge,
-    _link: ComponentLink<Self>,
-}
+pub struct Dicebag;
 
 impl Component for Dicebag {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let callback = link.callback(|_| Msg::UpdateRoute);
-        let route_agent = RouteAgentBridge::new(callback);
+    fn create(ctx: &Context<Self>) -> Self {
+        let callback = ctx.link().send_message(Msg::UpdateRoute);
 
-        Self {
-            _route_agent: route_agent,
-            _link: link,
-        }
+        Self
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::UpdateRoute => true,
         }
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
-            <>
-                { self.view_nav() }
+            <BrowserRouter>
+                { self.view_nav(ctx) }
                 <main>
-                    <Router<AppRoute, ()> render = Router::render(routes) />
+                    <Switch<AppRoute> render={Switch::render(switch)} />
                 </main>
                 <footer>
                     <Tower />
@@ -81,36 +76,36 @@ impl Component for Dicebag {
                         <img src="/assets/github-logo.png" alt="github logo" />
                     </a>
                 </footer>
-            </>
+            </BrowserRouter>
         }
     }
 }
 
 impl Dicebag {
-    fn view_nav(&self) -> Html {
-        let route = RouteService::<()>::new().get_path();
-
+    fn view_nav(&self, ctx: &Context<Self>) -> Html {
+        // let route = ctx.link().location().expect("location was not available").pathname();
+        let route = "/";
         html! {
             <nav>
                 <h1>{ "🎲 Dicebag" }</h1>
                 <ul>
                     <li>
-                        <RouterAnchor<AppRoute> classes={set_active_route(&route, "/")} route=AppRoute::Home>
+                        <Link<AppRoute> classes={set_active_route(&route, "/")} to={AppRoute::Home}>
                             <Icon name="home" />
                             { "Home" }
-                        </RouterAnchor<AppRoute>>
+                        </Link<AppRoute>>
                     </li>
                     <li>
-                        <RouterAnchor<AppRoute> classes={set_active_route(&route, "/characters")} route=AppRoute::Characters>
+                        <Link<AppRoute> classes={set_active_route(&route, "/characters")} to={AppRoute::Characters}>
                             <Icon name="people" />
                             { "Characters" }
-                        </RouterAnchor<AppRoute>>
+                        </Link<AppRoute>>
                     </li>
                     <li>
-                        <RouterAnchor<AppRoute> classes={set_active_route(&route, "/campaigns")} route=AppRoute::Campaigns>
+                        <Link<AppRoute> classes={set_active_route(&route, "/campaigns")} to={AppRoute::Campaigns}>
                             <Icon name="map" />
                             { "Campaigns" }
-                        </RouterAnchor<AppRoute>>
+                        </Link<AppRoute>>
                     </li>
                 </ul>
             </nav>
@@ -118,11 +113,11 @@ impl Dicebag {
     }
 }
 
-fn routes(route: AppRoute) -> Html {
-    match route {
+fn switch(routes: &AppRoute) -> Html {
+    match routes {
         AppRoute::Home => html! { <HomePage /> },
-        AppRoute::Characters => html! { <CharactersPage /> },
-        AppRoute::CharacterSheet(id) => html! { <CharacterSheetPage id=id /> },
+        AppRoute::Characters => html!{ <CharactersPage /> },
+        AppRoute::CharacterSheet { id } => html!{ <CharacterSheetPage id={id.clone()} /> },
         AppRoute::Campaigns => html! { <>{ "Campaigns" }</> },
         AppRoute::NotFound => html! { <>{ "NOT FOUND" }</> },
     }
@@ -137,5 +132,5 @@ fn set_active_route(route: &str, path: &'static str) -> &'static str {
 }
 
 pub fn main() {
-    App::<Dicebag>::new().mount_to_body();
+    yew::start_app::<Dicebag>();
 }

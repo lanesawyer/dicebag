@@ -1,4 +1,4 @@
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{function_component, html, Html, Properties};
 
 use crate::{
     pages::character_sheet::text_block::TextBlock,
@@ -17,65 +17,38 @@ pub struct CharacterInfoProps {
     pub experience_points: i64,
 }
 
-pub struct CharacterInfo {
-    pub props: CharacterInfoProps,
-}
-
-impl Component for CharacterInfo {
-    type Message = ();
-    type Properties = CharacterInfoProps;
-
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { props }
-    }
-
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
-    }
-
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
-    }
-
-    fn view(&self) -> Html {
-        html! {
-            <section id="character-info" class="text-block">
-                <img src=self.props.image.clone() style={"width: 4em"}/>
+#[function_component(CharacterInfo)]
+pub fn character_info(props: &CharacterInfoProps) -> Html {
+    html! {
+        <section id="character-info" class="text-block">
+            <img src={props.image.clone()} style={"width: 4em"}/>
+            <div>
+                <h2>{ &props.name }</h2>
+                <span> { &props.race }</span>
+                <span> { &props.class }</span>
+                <span> { &props.level }</span>
                 <div>
-                    <h2>{ &self.props.name }</h2>
-                    <span> { &self.props.race }</span>
-                    <span> { &self.props.class }</span>
-                    <span> { &self.props.level }</span>
-                    <div>
-                        <label for="xp">{ "Experience Points:" }</label>
-                        <span>{ level_xp_display(self.props.level) }</span>
-                        <meter id="xp" min=0 max=1 value=self.calc_hp_bar_value()> { self.props.experience_points }</meter>
-                        <span>{ level_xp_display(self.props.level + 1) }</span>
-                    </div>
+                    <label for="xp">{ "Experience Points:" }</label>
+                    <span>{ level_xp_display(props.level) }</span>
+                    <meter id="xp" min={0} max={1} value={calc_hp_bar_value(props.level, props.experience_points)}> { props.experience_points }</meter>
+                    <span>{ level_xp_display(props.level + 1) }</span>
                 </div>
-                <TextBlock name="Background" value=self.props.background.clone() />
-                <TextBlock name="Alignment" value=self.props.alignment.clone() />
-            </section>
-        }
+            </div>
+            <TextBlock name="Background" value={props.background.clone()} />
+            <TextBlock name="Alignment" value={props.alignment.clone()} />
+        </section>
     }
 }
 
-impl CharacterInfo {
-    // The meter tag behaves poorly when the min is something like 900
-    // so I normalize it because 0 to 1 on the meter works great.
-    fn calc_hp_bar_value(&self) -> String {
-        let previous_level_xp = level_xp(self.props.level);
-        let next_level_xp = level_xp(self.props.level + 1);
-        let current_xp = self.props.experience_points;
+// The meter tag behaves poorly when the min is something like 900
+// so I normalize it because 0 to 1 on the meter works great.
+fn calc_hp_bar_value(level: i64, experience_points: i64) -> String {
+    let previous_level_xp = level_xp(level);
+    let next_level_xp = level_xp(level + 1);
+    let current_xp = experience_points;
 
-        let bar_value =
-            (current_xp - previous_level_xp) as f64 / (next_level_xp - previous_level_xp) as f64;
+    let bar_value =
+        (current_xp - previous_level_xp) as f64 / (next_level_xp - previous_level_xp) as f64;
 
-        bar_value.to_string()
-    }
+    bar_value.to_string()
 }

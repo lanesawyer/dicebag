@@ -3,10 +3,7 @@ use yew::{html, Html};
 
 use crate::components::Icon;
 
-pub struct Button {
-    props: ButtonProps,
-    link: ComponentLink<Self>,
-}
+pub struct Button;
 
 #[derive(Clone, PartialEq)]
 pub enum ButtonType {
@@ -33,36 +30,31 @@ impl Component for Button {
     type Message = ButtonMsg;
     type Properties = ButtonProps;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { props, link }
+    fn create(_ctx: &Context<Self>) -> Self {
+        Self
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            ButtonMsg::Clicked => self.props.on_click.emit(true),
+            ButtonMsg::Clicked => ctx.props().on_click.emit(true),
         }
 
         false
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        self.props = props;
-        true
-    }
-
-    fn view(&self) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
-            <button type="button" class=classes!(self.choose_class()) onclick=self.link.callback(|_| ButtonMsg::Clicked)>
+            <button type="button" class={classes!(self.choose_class(ctx))} onclick={ctx.link().callback(|_| ButtonMsg::Clicked)}>
                 {
-                    if let Some(icon_name) = &self.props.icon_name {
+                    if let Some(icon_name) = &ctx.props().icon_name {
                         html! {
-                            <Icon name=icon_name.clone() />
+                            <Icon name={icon_name.clone()} />
                         }
                     } else {
                         html! { <></> }
                     }
                 }
-                { &self.props.label }
+                { &ctx.props().label }
             </button>
         }
     }
@@ -70,8 +62,8 @@ impl Component for Button {
 
 impl Button {
     // chose class based on button type
-    fn choose_class(&self) -> String {
-        match self.props.button_type {
+    fn choose_class(&self, ctx: &Context<Self>) -> String {
+        match ctx.props().button_type {
             ButtonType::Primary => "btn-primary".to_string(),
             // ButtonType::Success => "btn-success".to_string(),
             ButtonType::Danger => "btn-danger".to_string(),
