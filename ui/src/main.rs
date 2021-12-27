@@ -45,7 +45,7 @@ impl Component for Dicebag {
     type Properties = ();
 
     fn create(ctx: &Context<Self>) -> Self {
-        let callback = ctx.link().send_message(Msg::UpdateRoute);
+        let _callback = ctx.link().send_message(Msg::UpdateRoute);
 
         Self
     }
@@ -82,7 +82,7 @@ impl Component for Dicebag {
 }
 
 impl Dicebag {
-    fn view_nav(&self, ctx: &Context<Self>) -> Html {
+    fn view_nav(&self, _ctx: &Context<Self>) -> Html {
         // let route = ctx.link().location().expect("location was not available").pathname();
         let route = "/";
         html! {
@@ -90,19 +90,19 @@ impl Dicebag {
                 <h1>{ "🎲 Dicebag" }</h1>
                 <ul>
                     <li>
-                        <Link<AppRoute> classes={set_active_route(&route, "/")} to={AppRoute::Home}>
+                        <Link<AppRoute> classes={set_active_route(route, "/")} to={AppRoute::Home}>
                             <Icon name="home" />
                             { "Home" }
                         </Link<AppRoute>>
                     </li>
                     <li>
-                        <Link<AppRoute> classes={set_active_route(&route, "/characters")} to={AppRoute::Characters}>
+                        <Link<AppRoute> classes={set_active_route(route, "/characters")} to={AppRoute::Characters}>
                             <Icon name="people" />
                             { "Characters" }
                         </Link<AppRoute>>
                     </li>
                     <li>
-                        <Link<AppRoute> classes={set_active_route(&route, "/campaigns")} to={AppRoute::Campaigns}>
+                        <Link<AppRoute> classes={set_active_route(route, "/campaigns")} to={AppRoute::Campaigns}>
                             <Icon name="map" />
                             { "Campaigns" }
                         </Link<AppRoute>>
@@ -117,7 +117,7 @@ fn switch(routes: &AppRoute) -> Html {
     match routes {
         AppRoute::Home => html! { <HomePage /> },
         AppRoute::Characters => html!{ <CharactersPage /> },
-        AppRoute::CharacterSheet { id } => html!{ <CharacterSheetPage id={id.clone()} /> },
+        AppRoute::CharacterSheet { id } => html!{ <CharacterSheetPage id={*id} /> },
         AppRoute::Campaigns => html! { <>{ "Campaigns" }</> },
         AppRoute::NotFound => html! { <>{ "NOT FOUND" }</> },
     }

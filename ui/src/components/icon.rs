@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew::{function_component, html, Html};
+use yew::{function_component, html};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct IconProps {

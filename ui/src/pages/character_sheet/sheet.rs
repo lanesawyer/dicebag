@@ -1,9 +1,8 @@
 use gloo_console::log;
 use graphql_client::GraphQLQuery;
-use reqwest::Response;
 use serde::Deserialize;
 use serde_json::json;
-use yew::{html, Component, Html, Properties, Context};
+use yew::{html, Component, Properties, Context, Html};
 use yew_router::prelude::*;
 
 use super::{
@@ -185,7 +184,7 @@ impl Component for CharacterSheetPage {
                     let request_json = &json!(request_body);
                     let request = services::build_request(request_json).await;
                     if let Ok(response) = request {
-                        let json = response.json::<GraphQLResponse<bool>>().await;
+                        let _json = response.json::<GraphQLResponse<bool>>().await;
                         Msg::Redirect
                     } else {
                         Msg::Error

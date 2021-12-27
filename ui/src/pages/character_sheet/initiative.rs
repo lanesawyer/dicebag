@@ -1,5 +1,5 @@
 use crate::utils::calculate_modifier_display;
-use yew::{function_component, html, Html, Properties};
+use yew::{function_component, html, Properties};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct InitiativeProps {

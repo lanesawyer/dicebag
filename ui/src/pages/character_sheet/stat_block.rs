@@ -1,5 +1,5 @@
 use crate::utils::calculate_modifier_display;
-use yew::{classes, function_component, html, Html, Properties};
+use yew::{classes, function_component, html, Properties};
 
 #[derive(PartialEq, Clone)]
 pub enum Stat {

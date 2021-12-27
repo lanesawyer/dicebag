@@ -1,4 +1,4 @@
-use yew::{function_component, html, Html, Properties};
+use yew::{function_component, html, Properties};
 
 use crate::{
     pages::character_sheet::text_block::TextBlock,

@@ -19,7 +19,7 @@ impl Component for TextField {
     type Message = TextFieldMsg;
     type Properties = TextFieldProps;
 
-    fn create(ctx: &Context<Self>) -> Self {
+    fn create(_ctx: &Context<Self>) -> Self {
         Self
     }
 
