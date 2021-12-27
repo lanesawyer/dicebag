@@ -38,78 +38,58 @@ pub enum Msg {
     UpdateRoute,
 }
 
-pub struct Dicebag;
+#[derive(Properties, Clone, PartialEq, Default)]
+pub struct DicebagProps;
 
-impl Component for Dicebag {
-    type Message = Msg;
-    type Properties = ();
-
-    fn create(ctx: &Context<Self>) -> Self {
-        let _callback = ctx.link().send_message(Msg::UpdateRoute);
-
-        Self
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::UpdateRoute => true,
-        }
-    }
-
-    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
-        false
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        html! {
-            <BrowserRouter>
-                { self.view_nav(ctx) }
-                <main>
-                    <Switch<AppRoute> render={Switch::render(switch)} />
-                </main>
-                <footer>
-                    <Tower />
-                    <a href="https://yew.rs">
-                        <img src="/assets/yew-logo.png" alt="yew logo" />
-                    </a>
-                    <a href="https://github.com/lanesawyer/dicebag">
-                        <img src="/assets/github-logo.png" alt="github logo" />
-                    </a>
-                </footer>
-            </BrowserRouter>
-        }
+#[function_component(Dicebag)]
+pub fn dicebag(_props: &DicebagProps) -> Html {
+    html! {
+        <BrowserRouter>
+            { view_nav() }
+            <main>
+                <Switch<AppRoute> render={Switch::render(switch)} />
+            </main>
+            <footer>
+                <Tower />
+                <a href="https://yew.rs">
+                    <img src="/assets/yew-logo.png" alt="yew logo" />
+                </a>
+                <a href="https://github.com/lanesawyer/dicebag">
+                    <img src="/assets/github-logo.png" alt="github logo" />
+                </a>
+            </footer>
+        </BrowserRouter>
     }
 }
 
-impl Dicebag {
-    fn view_nav(&self, _ctx: &Context<Self>) -> Html {
-        // let route = ctx.link().location().expect("location was not available").pathname();
-        let route = "/";
-        html! {
-            <nav>
-                <h1>{ "🎲 Dicebag" }</h1>
-                <ul>
-                    <li>
-                        <Link<AppRoute> classes={set_active_route(route, "/")} to={AppRoute::Home}>
-                            <Icon name="home" />
-                            { "Home" }
-                        </Link<AppRoute>>
-                    </li>
-                    <li>
-                        <Link<AppRoute> classes={set_active_route(route, "/characters")} to={AppRoute::Characters}>
-                            <Icon name="people" />
-                            { "Characters" }
-                        </Link<AppRoute>>
-                    </li>
-                    <li>
-                        <Link<AppRoute> classes={set_active_route(route, "/campaigns")} to={AppRoute::Campaigns}>
-                            <Icon name="map" />
-                            { "Campaigns" }
-                        </Link<AppRoute>>
-                    </li>
-                </ul>
-            </nav>
-        }
+fn view_nav() -> Html {
+    // let location = use_location().expect("location was not available");
+    // let route = location.route::<AppRoute>();
+    let route = AppRoute::Home;
+    html! {
+        <nav>
+            <h1>{ "🎲 Dicebag" }</h1>
+            <ul>
+                <li>
+                    <Link<AppRoute> classes={set_active_route(&route, &AppRoute::Home)} to={AppRoute::Home}>
+                        <Icon name="home" />
+                        { "Home" }
+                    </Link<AppRoute>>
+                </li>
+                <li>
+                    <Link<AppRoute> classes={set_active_route(&route, &AppRoute::Characters)} to={AppRoute::Characters}>
+                        <Icon name="people" />
+                        { "Characters" }
+                    </Link<AppRoute>>
+                </li>
+                <li>
+                    <Link<AppRoute> classes={set_active_route(&route, &AppRoute::Campaigns)} to={AppRoute::Campaigns}>
+                        <Icon name="map" />
+                        { "Campaigns" }
+                    </Link<AppRoute>>
+                </li>
+            </ul>
+        </nav>
     }
 }
 
@@ -123,11 +103,11 @@ fn switch(routes: &AppRoute) -> Html {
     }
 }
 
-fn set_active_route(route: &str, path: &'static str) -> &'static str {
-    match path {
-        "/" if route == path => "active",
-        _ if path != "/" && route.starts_with(path) => "active",
-        _ => "",
+fn set_active_route(current_route: &AppRoute, route: &AppRoute) -> &'static str {
+    if current_route == route {
+        "active"
+    } else {
+        ""
     }
 }
 
