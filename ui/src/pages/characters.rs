@@ -176,9 +176,7 @@ impl Component for CharactersPage {
                 // let task = FetchService::fetch(request, callback).expect("failed to start request");
                 // self.fetch_task = Some(task);
             }
-            Msg::Error => {
-                ()
-            }
+            Msg::Error => {}
         }
         true
     }

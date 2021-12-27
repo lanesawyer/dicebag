@@ -213,9 +213,7 @@ impl Component for CharacterSheetPage {
                 let history = ctx.link().history().unwrap();
                 history.push(AppRoute::Characters);
             }
-            Msg::Error => {
-                ()
-            }
+            Msg::Error => {}
         }
         true
     }
