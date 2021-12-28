@@ -1,4 +1,4 @@
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{function_component, html, Properties};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct TextBlockProps {
@@ -6,37 +6,12 @@ pub struct TextBlockProps {
     pub value: Option<String>,
 }
 
-pub struct TextBlock {
-    pub props: TextBlockProps,
-}
-
-impl Component for TextBlock {
-    type Message = ();
-    type Properties = TextBlockProps;
-
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { props }
-    }
-
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
-    }
-
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
-    }
-
-    fn view(&self) -> Html {
-        html! {
-            <section class="text-block">
-                <h3>{ &self.props.name }</h3>
-                <div>{ &self.props.value.as_ref().unwrap_or(&"".to_string()) }</div>
-            </section>
-        }
+#[function_component(TextBlock)]
+pub fn text_block(props: &TextBlockProps) -> Html {
+    html! {
+        <section class="text-block">
+            <h3>{ &props.name }</h3>
+            <div>{ &props.value.as_ref().unwrap_or(&"".to_string()) }</div>
+        </section>
     }
 }

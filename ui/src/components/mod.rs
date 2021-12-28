@@ -20,7 +20,7 @@ pub struct Skill {
 pub fn skill_display(skill: &Skill) -> Html {
     let related_ability_node = if let Some(related_ability) = &skill.related_ability {
         html! {
-            <span class=classes!("related-ability", stat_color_class(related_ability))>
+            <span class={classes!("related-ability", stat_color_class(related_ability))}>
                 { format!("({})", related_ability) }
             </span>
         }
@@ -30,9 +30,9 @@ pub fn skill_display(skill: &Skill) -> Html {
 
     html! {
         <li class="skill-display">
-            <input type="checkbox" class="skill-proficiency" checked=skill.has_proficiency disabled=true />
+            <input type="checkbox" class="skill-proficiency" checked={skill.has_proficiency} disabled={true} />
             <span class="skill-modifier">{calculate_modifier_display(skill.ability_score)}</span>
-            <span class=classes!("skill-name", stat_color_class(&skill.name))>{&skill.name}</span>
+            <span class={classes!("skill-name", stat_color_class(&skill.name))}>{&skill.name}</span>
             {
                 related_ability_node
             }

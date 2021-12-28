@@ -1,5 +1,5 @@
 use crate::utils::calculate_modifier_display;
-use yew::{classes, html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{classes, function_component, html, Properties};
 
 #[derive(PartialEq, Clone)]
 pub enum Stat {
@@ -18,51 +18,24 @@ pub struct StatBlockProps {
     pub stat: Stat,
 }
 
-pub struct StatBlock {
-    props: StatBlockProps,
-}
-
-impl Component for StatBlock {
-    type Message = ();
-    type Properties = StatBlockProps;
-
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { props }
-    }
-
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
-    }
-
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
-    }
-
-    fn view(&self) -> Html {
-        html! {
-            <div class=classes!("stat-block", self.stat_class())>
-                <div class="stat-name">{ &self.props.name }</div>
-                <div class="stat-value">{ self.props.value }</div>
-                <div class="stat-modifier">{ calculate_modifier_display(self.props.value) }</div>
-            </div>
-        }
+#[function_component(StatBlock)]
+pub fn stat_block(props: &StatBlockProps) -> Html {
+    html! {
+        <div class={classes!("stat-block", stat_class(&props.stat))}>
+            <div class="stat-name">{ &props.name }</div>
+            <div class="stat-value">{ props.value }</div>
+            <div class="stat-modifier">{ calculate_modifier_display(props.value) }</div>
+        </div>
     }
 }
 
-impl StatBlock {
-    fn stat_class(&self) -> String {
-        match self.props.stat {
-            Stat::Strength => "strength".to_string(),
-            Stat::Dexterity => "dexterity".to_string(),
-            Stat::Constitution => "constitution".to_string(),
-            Stat::Intelligence => "intelligence".to_string(),
-            Stat::Wisdom => "wisdom".to_string(),
-            Stat::Charisma => "charisma".to_string(),
-        }
+fn stat_class(stat: &Stat) -> String {
+    match stat {
+        Stat::Strength => "strength".to_string(),
+        Stat::Dexterity => "dexterity".to_string(),
+        Stat::Constitution => "constitution".to_string(),
+        Stat::Intelligence => "intelligence".to_string(),
+        Stat::Wisdom => "wisdom".to_string(),
+        Stat::Charisma => "charisma".to_string(),
     }
 }

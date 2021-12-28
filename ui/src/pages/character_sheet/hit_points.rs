@@ -1,4 +1,4 @@
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{function_component, html, Properties};
 
 use crate::components::Icon;
 
@@ -9,53 +9,26 @@ pub struct HitPointsProps {
     pub temporary: i64,
 }
 
-pub struct HitPoints {
-    pub props: HitPointsProps,
-}
-
-impl Component for HitPoints {
-    type Message = ();
-    type Properties = HitPointsProps;
-
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { props }
-    }
-
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
-    }
-
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
-    }
-
-    fn view(&self) -> Html {
-        html! {
-            <section id="hit-points" class="text-block">
-                <h3>{ "Hit Points" }</h3>
-                <Icon name="pulse" />
-                <span>{ "0" }</span>
-                <meter
-                    min="0"
-                    low=self.calc_low_hp()
-                    max=self.props.maximum.to_string()
-                    value=self.props.current.to_string()></meter>
-                <span>{ self.props.maximum }</span>
-                <div>{ format!("Current: {}", self.props.current) }</div>
-                // TODO: Figure out extra bar to show temporary hit points
-                <div>{ format!("Temporary: {}", self.props.temporary) }</div>
-            </section>
-        }
+#[function_component(HitPoints)]
+pub fn hit_points(props: &HitPointsProps) -> Html {
+    html! {
+        <section id="hit-points" class="text-block">
+            <h3>{ "Hit Points" }</h3>
+            <Icon name="pulse" />
+            <span>{ "0" }</span>
+            <meter
+                min="0"
+                low={calc_low_hp(props.maximum)}
+                max={props.maximum.to_string()}
+                value={props.current.to_string()}></meter>
+            <span>{ props.maximum }</span>
+            <div>{ format!("Current: {}", props.current) }</div>
+            // TODO: Figure out extra bar to show temporary hit points
+            <div>{ format!("Temporary: {}", props.temporary) }</div>
+        </section>
     }
 }
 
-impl HitPoints {
-    fn calc_low_hp(&self) -> String {
-        (self.props.maximum as f64 * 0.50).to_string()
-    }
+fn calc_low_hp(maximum: i64) -> String {
+    (maximum as f64 * 0.50).to_string()
 }

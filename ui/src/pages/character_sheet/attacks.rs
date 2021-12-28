@@ -1,4 +1,4 @@
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{function_component, html, Html, Properties};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct AttackProps {
@@ -12,46 +12,20 @@ pub struct Attack {
     pub damage: i64,
 }
 
-#[derive(Properties, Clone)]
-pub struct Attacks {
-    pub props: AttackProps,
-}
-
-impl Component for Attacks {
-    type Message = ();
-    type Properties = AttackProps;
-
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Self { props }
-    }
-
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
-    }
-
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
-    }
-
-    fn view(&self) -> Html {
-        html! {
-            <section id="attacks-and-spellcasting" class="text-block">
-                <h3>{"Attacks & Spellcasting"}</h3>
-                <ul>
-                { self.props.attacks.iter().map(|attack| html! {
-                    <li>
-                        <span>{&attack.name}</span>
-                        <span>{attack.bonus}</span>
-                        <span>{&attack.damage}</span>
-                    </li>
-                }).collect::<Html>() }
-                </ul>
-            </section>
-        }
+#[function_component(Attacks)]
+pub fn attacks(props: &AttackProps) -> Html {
+    html! {
+        <section id="attacks-and-spellcasting" class="text-block">
+            <h3>{"Attacks & Spellcasting"}</h3>
+            <ul>
+            { props.attacks.iter().map(|attack| html! {
+                <li>
+                    <span>{&attack.name}</span>
+                    <span>{attack.bonus}</span>
+                    <span>{&attack.damage}</span>
+                </li>
+            }).collect::<Html>() }
+            </ul>
+        </section>
     }
 }
