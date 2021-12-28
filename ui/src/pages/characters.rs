@@ -58,7 +58,6 @@ impl Component for CharactersPage {
 
         Self {
             characters: Some(vec![build_bob()]),
-            // fetch_task: Some(task),
             error: None,
             new_name: "".to_string(),
             new_race: "".to_string(),
