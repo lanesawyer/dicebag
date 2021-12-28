@@ -106,6 +106,7 @@ pub struct CharacterList {
     pub characters: Vec<Character>,
 }
 
+// TODO: Convert to functional component
 impl Component for CharacterSheetPage {
     type Message = Msg;
     type Properties = CharacterSheetProps;

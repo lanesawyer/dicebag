@@ -37,6 +37,7 @@ pub struct CharactersPage {
     new_image: String,
 }
 
+// TODO: Convert to functional component
 impl Component for CharactersPage {
     type Message = Msg;
     type Properties = ();
