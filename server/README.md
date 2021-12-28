@@ -33,3 +33,4 @@ The database data will be saved in the `postgres-data` Docker volume between run
 ## Technologies Used
 - [Rocket](https://rocket.rs/)
 - [Juniper](https://github.com/graphql-rust/juniper)
+- [Diesel](https://diesel.rs/)
