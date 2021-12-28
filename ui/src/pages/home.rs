@@ -1,10 +1,7 @@
-use yew::{function_component, html, Properties};
-
-#[derive(Properties, Clone, PartialEq)]
-pub struct HomePageProps;
+use yew::{function_component, html};
 
 #[function_component(HomePage)]
-pub fn home_page(_props: &HomePageProps) -> Html {
+pub fn home_page() -> Html {
     html! {
         <>
             { "Welcome to Dicebag!" }
