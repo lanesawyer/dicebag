@@ -1,28 +1,13 @@
-use yew::{html, Component, Html, Context};
+use yew::{html, function_component, Properties};
 
-pub struct HomePage;
+#[derive(Properties, Clone, PartialEq)]
+pub struct HomePageProps;
 
-impl Component for HomePage {
-    type Message = ();
-    type Properties = ();
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        false
-    }
-
-    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
-        false
-    }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        html! {
-            <>
-                { "Welcome to Dicebag!" }
-            </>
-        }
-    }
+#[function_component(HomePage)]
+pub fn home_page(_props: &HomePageProps) -> Html {
+    html! {
+        <>
+            { "Welcome to Dicebag!" }
+        </>
+    } 
 }

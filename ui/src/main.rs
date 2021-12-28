@@ -1,7 +1,7 @@
 #![recursion_limit = "1024"]
 
 use yew::prelude::*;
-use yew::{html, Component, Html};
+use yew::{html, Html};
 use yew_router::prelude::*;
 
 use crate::components::Icon;
@@ -45,7 +45,7 @@ pub struct DicebagProps;
 pub fn dicebag(_props: &DicebagProps) -> Html {
     html! {
         <BrowserRouter>
-            { view_nav() }
+            <ViewNav />
             <main>
                 <Switch<AppRoute> render={Switch::render(switch)} />
             </main>
@@ -62,28 +62,31 @@ pub fn dicebag(_props: &DicebagProps) -> Html {
     }
 }
 
-fn view_nav() -> Html {
-    // let location = use_location().expect("location was not available");
-    // let route = location.route::<AppRoute>();
-    let route = AppRoute::Home;
+#[derive(Properties, PartialEq, Clone, Debug)]
+pub struct ViewNavProps;
+
+#[function_component(ViewNav)]
+pub fn view_nav(_props: &ViewNavProps) -> Html {
+    let location = use_location().expect("location should be available");
+    let route = location.pathname();
     html! {
         <nav>
             <h1>{ "🎲 Dicebag" }</h1>
             <ul>
                 <li>
-                    <Link<AppRoute> classes={set_active_route(&route, &AppRoute::Home)} to={AppRoute::Home}>
+                    <Link<AppRoute> classes={set_active_route(&route, "/")} to={AppRoute::Home}>
                         <Icon name="home" />
                         { "Home" }
                     </Link<AppRoute>>
                 </li>
                 <li>
-                    <Link<AppRoute> classes={set_active_route(&route, &AppRoute::Characters)} to={AppRoute::Characters}>
+                    <Link<AppRoute> classes={set_active_route(&route, "/characters")} to={AppRoute::Characters}>
                         <Icon name="people" />
                         { "Characters" }
                     </Link<AppRoute>>
                 </li>
                 <li>
-                    <Link<AppRoute> classes={set_active_route(&route, &AppRoute::Campaigns)} to={AppRoute::Campaigns}>
+                    <Link<AppRoute> classes={set_active_route(&route, "campaigns")} to={AppRoute::Campaigns}>
                         <Icon name="map" />
                         { "Campaigns" }
                     </Link<AppRoute>>
@@ -103,11 +106,11 @@ fn switch(routes: &AppRoute) -> Html {
     }
 }
 
-fn set_active_route(current_route: &AppRoute, route: &AppRoute) -> &'static str {
-    if current_route == route {
-        "active"
-    } else {
-        ""
+fn set_active_route(current_route: &str, path: &'static str) -> &'static str {
+    match path {
+        "/" if current_route == path => "active",
+        _ if path != "/" && current_route.starts_with(path) => "active",
+        _ => "",
     }
 }
 
