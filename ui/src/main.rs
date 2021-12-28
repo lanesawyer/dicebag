@@ -19,9 +19,7 @@ mod utils;
 #[derive(Routable, PartialEq, Clone, Debug)]
 pub enum AppRoute {
     #[at("/characters/:id")]
-    CharacterSheet {
-        id: i64
-    },
+    CharacterSheet { id: i64 },
     #[at("/characters")]
     Characters,
     #[at("/campaigns")]
@@ -86,7 +84,7 @@ pub fn view_nav(_props: &ViewNavProps) -> Html {
                     </Link<AppRoute>>
                 </li>
                 <li>
-                    <Link<AppRoute> classes={set_active_route(&route, "campaigns")} to={AppRoute::Campaigns}>
+                    <Link<AppRoute> classes={set_active_route(&route, "/campaigns")} to={AppRoute::Campaigns}>
                         <Icon name="map" />
                         { "Campaigns" }
                     </Link<AppRoute>>
@@ -99,8 +97,8 @@ pub fn view_nav(_props: &ViewNavProps) -> Html {
 fn switch(routes: &AppRoute) -> Html {
     match routes {
         AppRoute::Home => html! { <HomePage /> },
-        AppRoute::Characters => html!{ <CharactersPage /> },
-        AppRoute::CharacterSheet { id } => html!{ <CharacterSheetPage id={*id} /> },
+        AppRoute::Characters => html! { <CharactersPage /> },
+        AppRoute::CharacterSheet { id } => html! { <CharacterSheetPage id={*id} /> },
         AppRoute::Campaigns => html! { <>{ "Campaigns" }</> },
         AppRoute::NotFound => html! { <>{ "NOT FOUND" }</> },
     }

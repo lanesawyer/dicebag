@@ -1,10 +1,7 @@
 use gloo_console::log;
 use graphql_client::GraphQLQuery;
 use serde_json::json;
-use yew::{
-    html,
-    Component, Html, Context,
-};
+use yew::{html, Component, Context, Html};
 use yew_router::components::Link;
 
 use crate::{
@@ -33,7 +30,6 @@ pub enum Msg {
 #[derive(Debug)]
 pub struct CharactersPage {
     pub characters: Option<Vec<Character>>,
-    // fetch_task: Option<FetchTask>,
     error: Option<String>,
     new_name: String,
     new_race: String,
@@ -46,12 +42,11 @@ impl Component for CharactersPage {
     type Properties = ();
 
     fn create(ctx: &Context<Self>) -> Self {
-
         ctx.link().send_future(async move {
             let variables = characters_query::Variables {};
             let request_body = CharactersQuery::build_query(variables);
             let request_json = &json!(request_body);
-            
+
             let request = services::build_request(request_json).await;
             if let Ok(response) = request {
                 let json = response.json::<GraphQLResponse<CharacterList>>().await;
@@ -60,22 +55,6 @@ impl Component for CharactersPage {
                 Msg::Error
             }
         });
-
-        // let request = services::build_request(request_json);
-        // ctx.link().send_future(request);
-        // if let Ok(response) = request {
-        //     let json = response.json::<GraphQLResponse<CharacterList>>();
-        //     ctx.link().send_message(Msg::ReceiveResponse(json));
-        // }
-        // let callback = ctx.link().callback(
-        //     |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
-        //         let Json(data) = response.into_body();
-        //         Msg::ReceiveResponse(data)
-        //     },
-        // );
-        // callback.call();
-
-        // let task = FetchService::fetch(request, callback).expect("failed to start request");
 
         Self {
             characters: Some(vec![build_bob()]),
@@ -90,18 +69,15 @@ impl Component for CharactersPage {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::ReceiveResponse(response) => {
-                match response {
-                    Ok(character) => {
-                        self.characters = Some(character.data.characters);
-                    }
-                    Err(error) => {
-                        self.error = Some(error.to_string());
-                        log!(&format!("error {:?}", error));
-                    }
+            Msg::ReceiveResponse(response) => match response {
+                Ok(character) => {
+                    self.characters = Some(character.data.characters);
                 }
-                // self.fetch_task = None;
-            }
+                Err(error) => {
+                    self.error = Some(error.to_string());
+                    log!(&format!("error {:?}", error));
+                }
+            },
             Msg::UpdateName(new_value) => self.new_name = new_value,
             Msg::UpdateRace(new_value) => self.new_race = new_value,
             Msg::UpdateClass(new_value) => self.new_class = new_value,
@@ -130,16 +106,6 @@ impl Component for CharactersPage {
                         Msg::Error
                     }
                 });
-
-                // let callback = ctx.link().callback(
-                //     |response: Response<Json<Result<GraphQLResponse<bool>, reqwest::Error>>>| {
-                //         let Json(data) = response.into_body();
-                //         Msg::ReceiveNewCharacterResponse(data)
-                //     },
-                // );
-
-                // let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // self.fetch_task = Some(task);
             }
             Msg::ReceiveNewCharacterResponse(_result) => {
                 // TODO: Error popup if new character fails
@@ -156,25 +122,6 @@ impl Component for CharactersPage {
                         Msg::Error
                     }
                 });
-
-                // let request = services::build_request(request_json);
-
-                // if let Ok(response) = request {
-                //     let json = response.json::<GraphQLResponse<CharacterList>>();
-                //     ctx.link().send_message(Msg::ReceiveResponse(json));
-                // }
-
-                // let callback = ctx.link().callback(
-                //     |response: Response<
-                //         Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>,
-                //     >| {
-                //         let Json(data) = response.into_body();
-                //         Msg::ReceiveResponse(data)
-                //     },
-                // );
-
-                // let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // self.fetch_task = Some(task);
             }
             Msg::Error => {}
         }

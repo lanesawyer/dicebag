@@ -1,6 +1,5 @@
 use std::num::NonZeroU8;
-use gloo_console::log;
-use yew::{html, Component, Html, Context};
+use yew::{html, Component, Context, Html};
 
 use crate::dice_tower::Roll;
 
@@ -25,13 +24,11 @@ impl Component for Tower {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            dice: DiceType::D4,
-        }
+        Self { dice: DiceType::D4 }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let (number, dice) = match msg {
+        let (_number, dice) = match msg {
             RollMsg::D4 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D4),
             RollMsg::D6 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D6),
             RollMsg::D8 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D8),
@@ -43,10 +40,6 @@ impl Component for Tower {
                 crate::dice_tower::DiceType::D100,
             ),
         };
-
-        let result = Roll::roll(&Roll { number, dice });
-
-        log!(&format!("{:?}", result));
 
         self.dice = dice;
 

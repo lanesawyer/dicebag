@@ -1,5 +1,5 @@
 use crate::components::{skill_display, Skill};
-use yew::{function_component, html, Properties, Html};
+use yew::{function_component, html, Html, Properties};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct SavingThrowsProps {

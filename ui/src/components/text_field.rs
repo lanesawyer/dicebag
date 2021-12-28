@@ -1,12 +1,7 @@
+use wasm_bindgen::{JsCast, UnwrapThrowExt};
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew::{html, Html};
-use web_sys::HtmlInputElement as InputElement;
-
-pub struct TextField;
-
-pub enum TextFieldMsg {
-    ValueChanged(String),
-}
+use yew::{function_component, html};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct TextFieldProps {
@@ -15,43 +10,33 @@ pub struct TextFieldProps {
     pub on_change: Callback<String>,
 }
 
-impl Component for TextField {
-    type Message = TextFieldMsg;
-    type Properties = TextFieldProps;
+#[function_component(TextField)]
+pub fn text_field(props: &TextFieldProps) -> Html {
+    let TextFieldProps {
+        label,
+        value,
+        on_change,
+    } = props.clone();
 
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self
+    let oninput = Callback::from(move |input_event: InputEvent| {
+        on_change.emit(get_value_from_input_event(input_event));
+    });
+
+    html! {
+        <div class="text-field">
+            <label>{ &label }</label>
+            <input
+                type="text"
+                {value}
+                {oninput}
+            />
+        </div>
     }
+}
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            TextFieldMsg::ValueChanged(new_value) => ctx.props().on_change.emit(new_value),
-        }
-
-        false
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let onkeypress = ctx.link().batch_callback(|e: KeyboardEvent| {
-            if e.key() == "Enter" {
-                let input: InputElement = e.target_unchecked_into();
-                let value = input.value();
-                input.set_value("");
-                Some(TextFieldMsg::ValueChanged(value))
-            } else {
-                None
-            }
-        });
-
-        html! {
-            <div class="text-field">
-                <label>{ &ctx.props().label }</label>
-                <input
-                    type="text"
-                    value={ctx.props().value.clone()}
-                    {onkeypress}
-                />
-            </div>
-        }
-    }
+fn get_value_from_input_event(e: InputEvent) -> String {
+    let event: Event = e.dyn_into().unwrap_throw();
+    let event_target = event.target().unwrap_throw();
+    let target: HtmlInputElement = event_target.dyn_into().unwrap_throw();
+    target.value()
 }

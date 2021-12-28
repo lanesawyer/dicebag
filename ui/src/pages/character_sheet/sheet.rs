@@ -2,7 +2,7 @@ use gloo_console::log;
 use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
-use yew::{html, Component, Properties, Context, Html};
+use yew::{html, Component, Context, Html, Properties};
 use yew_router::prelude::*;
 
 use super::{
@@ -47,7 +47,6 @@ pub struct CharacterSheetProps {
 #[derive(Debug)]
 pub struct CharacterSheetPage {
     pub character: Option<Character>,
-    // fetch_task: Option<FetchTask>,
     error: Option<String>,
 }
 
@@ -112,11 +111,10 @@ impl Component for CharacterSheetPage {
     type Properties = CharacterSheetProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-
         ctx.link().send_future(async {
             let variables = characters_query::Variables {};
             let query = CharactersQuery::build_query(variables);
-            
+
             let request_json = &json!(query);
             log!(&format!("{:?}", &request_json));
 
@@ -128,54 +126,31 @@ impl Component for CharacterSheetPage {
                 Msg::Error
             }
         });
-        // let request = services::build_request(request_json);
-
-        // if let Ok(response) = request {
-        //     let json = response.json::<GraphQLResponse<CharacterList>>();
-        //     ctx.link().send_message(Msg::ReceiveResponse(json));
-        // }
-        // let callback = ctx.link().callback(
-        //     |response: Response<Json<Result<GraphQLResponse<CharacterList>, anyhow::Error>>>| {
-        //         let Json(data) = response.into_body();
-        //         Msg::ReceiveResponse(data)
-        //     },
-        // );
-
-        // let task = FetchService::fetch(request, callback).expect("failed to start request");
-
-        // let task = services::post(query,
-        //     link,
-        //     Box::new(|data| Msg::ReceiveResponse(data))
-        // );
 
         Self {
             character: Some(build_bob()),
-            // fetch_task: Some(task),
             error: None,
         }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::ReceiveResponse(response) => {
-                match response {
-                    Ok(character) => {
-                        self.character = Some(
-                            character
-                                .data
-                                .characters
-                                .into_iter()
-                                .find(|character| character.id == ctx.props().id)
-                                .unwrap(),
-                        );
-                    }
-                    Err(error) => {
-                        self.error = Some(error.to_string());
-                        log!(&format!("error {:?}", error));
-                    }
+            Msg::ReceiveResponse(response) => match response {
+                Ok(character) => {
+                    self.character = Some(
+                        character
+                            .data
+                            .characters
+                            .into_iter()
+                            .find(|character| character.id == ctx.props().id)
+                            .unwrap(),
+                    );
                 }
-                // self.fetch_task = None;
-            }
+                Err(error) => {
+                    self.error = Some(error.to_string());
+                    log!(&format!("error {:?}", error));
+                }
+            },
             Msg::Delete(delete_id) => {
                 let variables = delete_character_mutation::Variables { delete_id };
                 let request_body = DeleteCharacterMutation::build_query(variables);
@@ -190,24 +165,6 @@ impl Component for CharacterSheetPage {
                         Msg::Error
                     }
                 });
-                // let request = services::build_request(request_json);
-
-                // if let Ok(response) = request {
-                //     let json = response.json::<GraphQLResponse<bool>>();
-                //     ctx.link().send_message(Msg::Redirect)
-                // }
-
-                // let callback = self.link.callback(
-                //     |response: Response<Json<Result<GraphQLResponse<bool>, anyhow::Error>>>| {
-                //         // TODO: Error pop up if delete fails
-                //         let Json(_data) = response.into_body();
-                //         Msg::Redirect
-                //     },
-                // );
-
-                // let task = FetchService::fetch(request, callback).expect("failed to start request");
-
-                // self.fetch_task = Some(task);
             }
             Msg::Redirect => {
                 let history = ctx.link().history().unwrap();
