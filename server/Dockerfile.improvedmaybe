@@ -1,0 +1,28 @@
+FROM rust:1.53 as builder
+
+# create a new empty shell project
+RUN USER=root cargo new --bin dicebag-api
+WORKDIR /dicebag-api
+
+# copy over your manifests
+COPY ./Cargo.toml ./Cargo.toml
+
+# this build step will cache your dependencies
+RUN cargo build --release
+RUN rm src/*.rs
+
+# copy your source tree
+COPY ./src ./src
+
+# build for release
+# RUN rm ./target/release/deps/dicebag-api*
+RUN cargo build --release
+
+# our final base
+FROM rust:1.53-slim-buster
+
+# copy the build artifact from the build stage
+COPY --from=builder /dicebag-api/target/release/dicebag-api .
+
+# set the startup command to run your binary
+CMD ["./dicebag-api"]
