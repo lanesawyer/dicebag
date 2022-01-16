@@ -1,5 +1,6 @@
 extern crate diesel;
 
+use crate::schema::campaign::NewCampaign;
 use crate::schema::character::NewCharacter;
 use crate::{context::Database, schema::character::Character};
 use juniper::{graphql_object, graphql_value, FieldError, FieldResult};
@@ -63,6 +64,29 @@ impl Mutation {
             Err(_) => Err(FieldError::new(
                 "Unable to create character",
                 graphql_value!({ "internal_error": "Database delete failed" }),
+            )),
+        }
+    }
+
+    pub async fn new_campaign(
+        context: &Database,
+        new_campaign: NewCampaign,
+    ) -> FieldResult<bool> {
+        use crate::schema::db::campaigns::dsl::*;
+
+        // TODO: Clean up
+        match context
+            .run(|c| {
+                diesel::insert_into(campaigns)
+                    .values(new_campaign)
+                    .execute(c)
+            })
+            .await
+        {
+            Ok(_) => Ok(true),
+            Err(_) => Err(FieldError::new(
+                "Unable to create campaign",
+                graphql_value!({ "internal_error": "Database insert failed" }),
             )),
         }
     }
