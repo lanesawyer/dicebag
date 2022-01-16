@@ -1,6 +1,6 @@
 extern crate diesel;
 
-use crate::schema::campaign::NewCampaign;
+use crate::schema::campaign::{NewCampaign, Campaign};
 use crate::schema::character::NewCharacter;
 use crate::{context::Database, schema::character::Character};
 use juniper::{graphql_object, graphql_value, FieldError, FieldResult};
@@ -17,6 +17,19 @@ impl Query {
             .run(|c| {
                 characters
                     .load::<Character>(c)
+                    .expect("Error loading characters")
+            })
+            .await;
+
+        Ok(results)
+    }
+
+    pub async fn campaigns(context: &Database) -> FieldResult<Vec<Campaign>> {
+        use crate::schema::db::campaigns::dsl::*;
+        let results = context
+            .run(|c| {
+                campaigns
+                    .load::<Campaign>(c)
                     .expect("Error loading characters")
             })
             .await;
