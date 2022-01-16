@@ -41,6 +41,14 @@ query CharactersQuery {
     }
 }
 
+query CampaignsQuery {
+    campaigns {
+        id
+        name
+        description
+    }
+}
+
 mutation NewCharacterMutation($newCharacter: NewCharacter!) {
     newCharacter(newCharacter: $newCharacter)
 }

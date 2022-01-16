@@ -15,6 +15,13 @@ pub struct CharactersQuery;
     schema_path = "src/graphql/schema.json",
     query_path = "src/graphql/queries.graphql"
 )]
+pub struct CampaignsQuery;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
 pub struct NewCharacterMutation;
 
 #[derive(GraphQLQuery)]
