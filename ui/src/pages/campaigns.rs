@@ -8,7 +8,7 @@ use yew_router::prelude::Link;
 use crate::{
     components::{Button, TextField},
     navigation::AppRoute,
-    services::{self, campaigns_query, CampaignsQuery, GraphQLResponse},
+    services::{self, campaigns_query, CampaignsQuery, GraphQLResponse, new_campaign_mutation::{self, NewCampaign}, NewCampaignMutation}
 };
 
 #[derive(Clone, Debug, Deserialize)]
@@ -40,7 +40,7 @@ fn use_query() -> MyGraphQLRequest {
 
     use_effect(move || {
         // TODO: Is there a better way to keep it from making infinite network requests?
-        if effect_state.data.is_none() {
+        if effect_state.data.is_none() || effect_state.error.is_none() {
             spawn_local(async move {
                 let variables = campaigns_query::Variables {};
                 let request_body = CampaignsQuery::build_query(variables);
@@ -54,7 +54,10 @@ fn use_query() -> MyGraphQLRequest {
                             data: Some(responser.data.campaigns),
                             error: None,
                         }),
-                        Err(_error) => todo!(),
+                        Err(error) => effect_state.set(MyGraphQLRequest {
+                            data: None,
+                            error: Some(error.to_string()),
+                        }),
                     }
                 }
             });
@@ -74,15 +77,51 @@ pub fn campaigns_page() -> Html {
     let new_name = use_state(|| "".to_string());
     let new_description = use_state(|| "".to_string());
 
-    let onchange_name = {
+    let on_change_name = {
         let new_name = new_name.clone();
         Callback::from(move |input| new_name.set(input))
     };
 
-    let onchange_description = {
+    let on_change_description = {
         let new_description = new_description.clone();
         Callback::from(move |input| new_description.set(input))
     };
+
+    // let on_submit = {
+    //     use_effect(move || {
+    //         // TODO: Is there a better way to keep it from making infinite network requests?
+    //         if effect_state.data.is_none() || effect_state.error.is_none() {
+    //             spawn_local(async move {
+    //                 let variables = new_campaign_mutation::Variables {
+    //                     new_campaign: NewCampaign {
+    //                         name: *(new_name).clone(),
+    //                         description: *(new_description).clone(),
+    //                     }
+    //                 };
+    //                 let request_body = NewCampaignMutation::build_query(variables);
+    //                 let request_json = &json!(request_body);
+
+    //                 let request = services::build_request(request_json).await;
+    //                 if let Ok(response) = request {
+    //                     let json = response.json::<GraphQLResponse<CampaignList>>().await;
+    //                     match json {
+    //                         Ok(responser) => effect_state.set(MyGraphQLRequest {
+    //                             data: Some(responser.data.campaigns),
+    //                             error: None,
+    //                         }),
+    //                         Err(error) => effect_state.set(MyGraphQLRequest {
+    //                             data: None,
+    //                             error: Some(error.to_string()),
+    //                         }),
+    //                     }
+    //                 }
+    //             });
+    //         }
+
+    //         // TODO: Figure out if I need to return something else here
+    //         || ()
+    //     });
+    // };
 
     html! {
         <section class="list-page">
@@ -95,8 +134,8 @@ pub fn campaigns_page() -> Html {
                 }
             }
             <div class="list-item add-character-panel">
-                <TextField label="Name" value={(*new_name).clone()} on_change={onchange_name} />
-                <TextField label="Description" value={(*new_description).clone()} on_change={onchange_description} />
+                <TextField label="Name" value={(*new_name).clone()} on_change={on_change_name} />
+                <TextField label="Description" value={(*new_description).clone()} on_change={on_change_description} />
                 <Button label="Create" icon_name={"plus".to_string()} on_click={Callback::from(move |_| new_description.set("hi".to_string()))} />
             </div>
         </section>
