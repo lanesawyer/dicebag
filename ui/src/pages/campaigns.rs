@@ -75,7 +75,7 @@ pub fn campaigns_page() -> Html {
     let query = use_query();
 
     let new_name = use_state(|| "".to_string());
-    let new_description = use_state(|| "".to_string());
+    let new_description = use_state(|| Some("".to_string()));
 
     let on_change_name = {
         let new_name = new_name.clone();
@@ -88,38 +88,24 @@ pub fn campaigns_page() -> Html {
     };
 
     // let on_submit = {
-    //     use_effect(move || {
-    //         // TODO: Is there a better way to keep it from making infinite network requests?
-    //         if effect_state.data.is_none() || effect_state.error.is_none() {
-    //             spawn_local(async move {
-    //                 let variables = new_campaign_mutation::Variables {
-    //                     new_campaign: NewCampaign {
-    //                         name: *(new_name).clone(),
-    //                         description: *(new_description).clone(),
-    //                     }
-    //                 };
-    //                 let request_body = NewCampaignMutation::build_query(variables);
-    //                 let request_json = &json!(request_body);
+    //     spawn_local(async move {
+    //         let variables = new_campaign_mutation::Variables {
+    //             new_campaign: NewCampaign {
+    //                 name: *(new_name).clone(),
+    //                 description: *(new_description).clone(),
+    //             }
+    //         };
+    //         let request_body = NewCampaignMutation::build_query(variables);
+    //         let request_json = &json!(request_body);
 
-    //                 let request = services::build_request(request_json).await;
-    //                 if let Ok(response) = request {
-    //                     let json = response.json::<GraphQLResponse<CampaignList>>().await;
-    //                     match json {
-    //                         Ok(responser) => effect_state.set(MyGraphQLRequest {
-    //                             data: Some(responser.data.campaigns),
-    //                             error: None,
-    //                         }),
-    //                         Err(error) => effect_state.set(MyGraphQLRequest {
-    //                             data: None,
-    //                             error: Some(error.to_string()),
-    //                         }),
-    //                     }
-    //                 }
-    //             });
+    //         let request = services::build_request(request_json).await;
+    //         if let Ok(response) = request {
+    //             let json = response.json::<GraphQLResponse<bool>>().await;
+    //             match json {
+    //                 Ok(responser) => (),
+    //                 Err(error) => (),
+    //             }
     //         }
-
-    //         // TODO: Figure out if I need to return something else here
-    //         || ()
     //     });
     // };
 
@@ -135,8 +121,8 @@ pub fn campaigns_page() -> Html {
             }
             <div class="list-item add-character-panel">
                 <TextField label="Name" value={(*new_name).clone()} on_change={on_change_name} />
-                <TextField label="Description" value={(*new_description).clone()} on_change={on_change_description} />
-                <Button label="Create" icon_name={"plus".to_string()} on_click={Callback::from(move |_| new_description.set("hi".to_string()))} />
+                // <TextField label="Description" value={(*new_description).clone()} on_change={on_change_description} />
+                <Button label="Create" icon_name={"plus".to_string()} on_click={Callback::from(move |_| new_name.set("hi".to_string()))} />
             </div>
         </section>
     }
