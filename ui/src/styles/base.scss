@@ -99,3 +99,14 @@ h3 {
     width: 1em;
     height: 1em;
 }
+
+.list-page {
+    display: flex;
+    flex-direction: row;
+    margin: var(--spacing-medium);
+    gap: var(--spacing-medium);
+}
+
+.list-item {
+    flex: 1;
+}

@@ -85,22 +85,19 @@ pub fn campaigns_page() -> Html {
     };
 
     html! {
-        // TODO: Make list page panels generic CSS
-        <section id="characters-page">
-            <div id="characters">
-                {
-                    if let Some(campaigns) = &query.data {
-                        campaigns.iter().map(|c| view_campaign(c)).collect::<Html>()
-                    } else {
-                        // TODO: Character skeleton while loading
-                        html! { <></> }
-                    }
+        <section class="list-page">
+            {
+                if let Some(campaigns) = &query.data {
+                    campaigns.iter().map(|c| view_campaign(c)).collect::<Html>()
+                } else {
+                    // TODO: Character skeleton while loading
+                    html! { <></> }
                 }
-                <div class="add-character-panel">
-                    <TextField label="Name" value={(*new_name).clone()} on_change={onchange_name} />
-                    <TextField label="Description" value={(*new_description).clone()} on_change={onchange_description} />
-                    <Button label="Create" icon_name={"plus".to_string()} on_click={Callback::from(move |_| new_description.set("hi".to_string()))} />
-                </div>
+            }
+            <div class="list-item add-character-panel">
+                <TextField label="Name" value={(*new_name).clone()} on_change={onchange_name} />
+                <TextField label="Description" value={(*new_description).clone()} on_change={onchange_description} />
+                <Button label="Create" icon_name={"plus".to_string()} on_click={Callback::from(move |_| new_description.set("hi".to_string()))} />
             </div>
         </section>
     }
@@ -108,11 +105,13 @@ pub fn campaigns_page() -> Html {
 
 fn view_campaign(campaign: &Campaign) -> Html {
     html! {
-        <Link<AppRoute> to={AppRoute::Campaign { id: campaign.id }}>
-            <div class="character-panel">
-                <span class="character-name">{campaign.name.clone()}</span>
-                // <span class="character-class">{campaign.description.clone()}</span>
-            </div>
-        </Link<AppRoute>>
+        <div class="list-item">
+            <Link<AppRoute> to={AppRoute::Campaign { id: campaign.id }}>
+                <div class="list-item character-panel">
+                    <span class="character-name">{campaign.name.clone()}</span>
+                    // <span class="character-class">{campaign.description.clone()}</span>
+                </div>
+            </Link<AppRoute>>
+        </div>
     }
 }

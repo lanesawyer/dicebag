@@ -134,19 +134,17 @@ impl Component for CharactersPage {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
-            <section id="characters-page">
-                <div id="characters">
-                    {
-                        if let Some(characters) = &self.characters {
-                            characters.iter().map(|c| self.view_characters(c)).collect::<Html>()
-                        } else {
-                            // TODO: Character skeleton while loading
-                            html! { <></> }
-                        }
+            <section class="list-page">
+                {
+                    if let Some(characters) = &self.characters {
+                        characters.iter().map(|c| self.view_characters(c)).collect::<Html>()
+                    } else {
+                        // TODO: Character skeleton while loading
+                        html! { <></> }
                     }
-                    <div class="add-character-panel">
-                        { self.view_input(ctx) }
-                    </div>
+                }
+                <div class="list-item add-character-panel">
+                    { self.view_input(ctx) }
                 </div>
             </section>
         }
@@ -168,14 +166,16 @@ impl CharactersPage {
 
     fn view_characters(&self, character: &Character) -> Html {
         html! {
-            <Link<AppRoute> to={AppRoute::CharacterSheet { id: character.id }}>
-                <div class="character-panel">
-                    <img class="character-image" src={character.image.clone()}/>
-                    <span class="character-name">{character.name.clone()}</span>
-                    <span class="character-class">{character.class.clone()}</span>
-                    <span class="character-level">{character.level}</span>
-                </div>
-            </Link<AppRoute>>
+            <div class="list-item">
+                <Link<AppRoute> to={AppRoute::CharacterSheet { id: character.id }}>
+                    <div class="character-panel">
+                        <img class="character-image" src={character.image.clone()}/>
+                        <span class="character-name">{character.name.clone()}</span>
+                        <span class="character-class">{character.class.clone()}</span>
+                        <span class="character-level">{character.level}</span>
+                    </div>
+                </Link<AppRoute>>
+            </div>
         }
     }
 }
