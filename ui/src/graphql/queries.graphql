@@ -53,6 +53,10 @@ mutation NewCharacterMutation($newCharacter: NewCharacter!) {
     newCharacter(newCharacter: $newCharacter)
 }
 
+mutation NewCampaignMutation($newCampaign: NewCampaign!) {
+    newCampaign(newCampaign: $newCampaign)
+}
+
 mutation DeleteCharacterMutation($deleteId: Int!) {
     deleteCharacter(deleteId: $deleteId)
 }

@@ -29,6 +29,13 @@ pub struct NewCharacterMutation;
     schema_path = "src/graphql/schema.json",
     query_path = "src/graphql/queries.graphql"
 )]
+pub struct NewCampaignMutation;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
 pub struct DeleteCharacterMutation;
 
 // TODO: I should be able to use the auto-generated ones,

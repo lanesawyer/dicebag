@@ -3,7 +3,7 @@ pub mod characters_query {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "CharactersQuery";
-    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
+    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation NewCampaignMutation($newCampaign: NewCampaign!) {\n    newCampaign(newCampaign: $newCampaign)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
@@ -90,7 +90,7 @@ pub mod campaigns_query {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "CampaignsQuery";
-    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
+    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation NewCampaignMutation($newCampaign: NewCampaign!) {\n    newCampaign(newCampaign: $newCampaign)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
@@ -130,7 +130,7 @@ pub mod new_character_mutation {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "NewCharacterMutation";
-    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
+    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation NewCampaignMutation($newCampaign: NewCampaign!) {\n    newCampaign(newCampaign: $newCampaign)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
@@ -171,12 +171,56 @@ impl graphql_client::GraphQLQuery for NewCharacterMutation {
         }
     }
 }
+pub struct NewCampaignMutation;
+pub mod new_campaign_mutation {
+    #![allow(dead_code)]
+    use std::result::Result;
+    pub const OPERATION_NAME: &str = "NewCampaignMutation";
+    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation NewCampaignMutation($newCampaign: NewCampaign!) {\n    newCampaign(newCampaign: $newCampaign)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
+    use super::*;
+    use serde::{Deserialize, Serialize};
+    #[allow(dead_code)]
+    type Boolean = bool;
+    #[allow(dead_code)]
+    type Float = f64;
+    #[allow(dead_code)]
+    type Int = i64;
+    #[allow(dead_code)]
+    type ID = String;
+    #[derive(Serialize)]
+    pub struct NewCampaign {
+        pub name: String,
+        pub description: Option<String>,
+    }
+    #[derive(Serialize)]
+    pub struct Variables {
+        #[serde(rename = "newCampaign")]
+        pub new_campaign: NewCampaign,
+    }
+    impl Variables {}
+    #[derive(Deserialize)]
+    pub struct ResponseData {
+        #[serde(rename = "newCampaign")]
+        pub new_campaign: Boolean,
+    }
+}
+impl graphql_client::GraphQLQuery for NewCampaignMutation {
+    type Variables = new_campaign_mutation::Variables;
+    type ResponseData = new_campaign_mutation::ResponseData;
+    fn build_query(variables: Self::Variables) -> ::graphql_client::QueryBody<Self::Variables> {
+        graphql_client::QueryBody {
+            variables,
+            query: new_campaign_mutation::QUERY,
+            operation_name: new_campaign_mutation::OPERATION_NAME,
+        }
+    }
+}
 pub struct DeleteCharacterMutation;
 pub mod delete_character_mutation {
     #![allow(dead_code)]
     use std::result::Result;
     pub const OPERATION_NAME: &str = "DeleteCharacterMutation";
-    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
+    pub const QUERY : & str = "query CharactersQuery {\n    characters {\n        id\n        image\n        name\n        class\n        level\n        background\n        race\n        alignment\n        experiencePoints\n        strength\n        dexterity\n        constitution\n        intelligence\n        wisdom\n        charisma\n        proficiencyBonus\n        hasInspiration\n        personalityTraits\n        ideals\n        bonds\n        flaws\n        featuresAndTraits\n        otherProficienciesAndLanguages\n        armorClass\n        speed\n        hitPoints\n        currentHitPoints\n        temporaryHitPoints\n        hitDice\n        usedHitDice\n        saves\n        failures\n        equipment\n        copper\n        silver\n        electrum\n        platinum\n        gold\n    }\n}\n\nquery CampaignsQuery {\n    campaigns {\n        id\n        name\n        description\n    }\n}\n\nmutation NewCharacterMutation($newCharacter: NewCharacter!) {\n    newCharacter(newCharacter: $newCharacter)\n}\n\nmutation NewCampaignMutation($newCampaign: NewCampaign!) {\n    newCampaign(newCampaign: $newCampaign)\n}\n\nmutation DeleteCharacterMutation($deleteId: Int!) {\n    deleteCharacter(deleteId: $deleteId)\n}\n" ;
     use super::*;
     use serde::{Deserialize, Serialize};
     #[allow(dead_code)]
