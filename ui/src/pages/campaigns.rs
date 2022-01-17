@@ -87,16 +87,15 @@ pub fn campaigns_page() -> Html {
     html! {
         // TODO: Make list page panels generic CSS
         <section id="characters-page">
-            { "Campaigns!" }
-            {
-                if let Some(campaigns) = &query.data {
-                    campaigns.iter().map(|c| view_campaign(c)).collect::<Html>()
-                } else {
-                    // TODO: Character skeleton while loading
-                    html! { <></> }
-                }
-            }
             <div id="characters">
+                {
+                    if let Some(campaigns) = &query.data {
+                        campaigns.iter().map(|c| view_campaign(c)).collect::<Html>()
+                    } else {
+                        // TODO: Character skeleton while loading
+                        html! { <></> }
+                    }
+                }
                 <div class="add-character-panel">
                     <TextField label="Name" value={(*new_name).clone()} on_change={onchange_name} />
                     <TextField label="Description" value={(*new_description).clone()} on_change={onchange_description} />
