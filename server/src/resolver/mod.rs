@@ -1,6 +1,6 @@
 extern crate diesel;
 
-use crate::schema::campaign::{NewCampaign, Campaign};
+use crate::schema::campaign::{Campaign, NewCampaign};
 use crate::schema::character::NewCharacter;
 use crate::{context::Database, schema::character::Character};
 use juniper::{graphql_object, graphql_value, FieldError, FieldResult};
@@ -81,10 +81,7 @@ impl Mutation {
         }
     }
 
-    pub async fn new_campaign(
-        context: &Database,
-        new_campaign: NewCampaign,
-    ) -> FieldResult<bool> {
+    pub async fn new_campaign(context: &Database, new_campaign: NewCampaign) -> FieldResult<bool> {
         use crate::schema::db::campaigns::dsl::*;
 
         // TODO: Clean up

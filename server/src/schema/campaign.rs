@@ -4,7 +4,7 @@ use juniper::{GraphQLInputObject, GraphQLObject};
 
 use crate::schema::db::campaigns;
 
-#[derive(Clone, Default, GraphQLObject,  Queryable, Insertable)]
+#[derive(Clone, Default, GraphQLObject, Queryable, Insertable)]
 pub struct Campaign {
     pub id: i32,
     pub name: String,
