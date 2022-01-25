@@ -46,7 +46,7 @@ pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
 
     let on_click = {
         let new_initiative = new_initiative.clone();
-        Callback::from(move |_: bool| {
+        Callback::from(move |_| {
             gloo_console::log!("{}", new_initiative.initiative);
         })
     };
