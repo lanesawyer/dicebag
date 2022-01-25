@@ -30,7 +30,7 @@ impl Query {
             .run(|c| {
                 campaigns
                     .load::<Campaign>(c)
-                    .expect("Error loading characters")
+                    .expect("Error loading campaigns")
             })
             .await;
 

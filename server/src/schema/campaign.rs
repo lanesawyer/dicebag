@@ -33,6 +33,7 @@ impl From<NewCampaign> for Campaign {
     fn from(new_campaign: NewCampaign) -> Self {
         Campaign {
             name: new_campaign.name,
+            description: new_campaign.description,
             ..Default::default()
         }
     }
