@@ -81,14 +81,14 @@ nav ul li a.active {
 
 main {
     grid-area: main;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 footer {
     grid-area: footer;
     background-color: var(--primary-color);
     padding: var(--spacing-medium);
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 h3 {

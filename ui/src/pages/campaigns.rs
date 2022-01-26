@@ -188,8 +188,14 @@ fn view_campaign(campaign: &Campaign) -> Html {
         <div class="list-item">
             <Link<AppRoute> to={AppRoute::Campaign { id: campaign.id }}>
                 <div class="list-item character-panel">
-                    <span class="character-name">{campaign.name.clone()}</span>
-                    <span class="character-class">{campaign.description.clone()}</span>
+                    <div class="campaign-info">
+                        <div class="character-name">{campaign.name.clone()}</div>
+                        <div class="character-class">{campaign.description.clone()}</div>
+                    </div>
+                    <div></div> // Used for flex justify effect and future image
+                    <div class="characters">
+                        { "Characters here eventually" }
+                    </div>
                 </div>
             </Link<AppRoute>>
         </div>
