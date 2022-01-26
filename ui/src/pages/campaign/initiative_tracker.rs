@@ -13,7 +13,6 @@ pub struct InitiativeInfo {
 #[derive(Properties, Clone, PartialEq)]
 pub struct InitiativeTrackerProps {
     pub characters: HashMap<String, InitiativeInfo>,
-    pub add: Callback<bool>,
 }
 
 #[function_component(InitiativeTracker)]

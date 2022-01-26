@@ -60,3 +60,7 @@ mutation NewCampaignMutation($newCampaign: NewCampaign!) {
 mutation DeleteCharacterMutation($deleteId: Int!) {
     deleteCharacter(deleteId: $deleteId)
 }
+
+mutation DeleteCampaignMutation($deleteId: Int!) {
+    deleteCampaign(deleteId: $deleteId)
+}
