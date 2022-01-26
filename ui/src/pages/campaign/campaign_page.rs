@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use graphql_client::GraphQLQuery;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
@@ -66,14 +68,19 @@ pub struct CampaignProps {
 pub fn campaign_page(props: &CampaignProps) -> Html {
     let characters = use_characters_query();
 
-    let characters: Vec<InitiativeInfo> = characters
+    if characters.data.is_none() {
+        return html! { <></> };
+    }
+
+    let characters: HashMap<i64, InitiativeInfo> = characters
         .data
         .unwrap_or_default()
         .iter()
-        .map(|character| InitiativeInfo {
+        .map(|character| (character.id, InitiativeInfo {
+            id: character.id,
             name: character.name.clone(),
             initiative: 1,
-        })
+        }))
         .collect();
 
     html! {
