@@ -2,7 +2,7 @@ use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
-use yew::{function_component, html, use_effect, use_state, Callback, Html};
+use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
 use yew_router::prelude::Link;
 
 use crate::{
@@ -23,7 +23,7 @@ pub struct Campaign {
     pub description: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct CampaignList {
     pub campaigns: Vec<Campaign>,
 }
@@ -34,7 +34,7 @@ struct MyGraphQLRequest {
     pub error: Option<String>,
 }
 
-fn use_query() -> MyGraphQLRequest {
+fn use_campaigns_query() -> MyGraphQLRequest {
     let state = use_state(|| MyGraphQLRequest {
         data: None,
         error: None,
@@ -42,9 +42,8 @@ fn use_query() -> MyGraphQLRequest {
 
     let effect_state = state.clone();
 
-    use_effect(move || {
-        // TODO: Is there a better way to keep it from making infinite network requests?
-        if effect_state.data.is_none() || effect_state.error.is_none() {
+    use_effect_with_deps(
+        move |_| {
             spawn_local(async move {
                 let variables = campaigns_query::Variables {};
                 let request_body = CampaignsQuery::build_query(variables);
@@ -65,18 +64,59 @@ fn use_query() -> MyGraphQLRequest {
                     }
                 }
             });
-        }
 
-        // TODO: Figure out if I need to return something else here
-        || ()
-    });
+            || ()
+        },
+        (),
+    );
 
     (*state).clone()
 }
 
+// TODO: Do a more generalized query function
+// #[derive(Clone)]
+// struct MySmallerGraphQLRequest<T> {
+//     pub data: Option<T>,
+//     pub error: Option<String>,
+// }
+
+// fn use_smaller_query<'a, T>(request_json: &serde_json::Value) -> MySmallerGraphQLRequest<T>
+// where T: Deserialize<'a> + Clone {
+//     let state = use_state(|| MySmallerGraphQLRequest {
+//         data: None,
+//         error: None,
+//     });
+
+//     let effect_state = state.clone();
+
+//     let request_json = request_json.clone();
+//     use_effect_with_deps(move |_| {
+//         spawn_local(async move {
+//             let request = services::build_request(&request_json).await;
+//             if let Ok(response) = request {
+//                 let json = response.json::<GraphQLResponse<T>>().await;
+//                 match json {
+//                     Ok(responser) => effect_state.set(MySmallerGraphQLRequest {
+//                         data: Some(responser.data),
+//                         error: None,
+//                     }),
+//                     Err(error) => effect_state.set(MySmallerGraphQLRequest {
+//                         data: None,
+//                         error: Some(error.to_string()),
+//                     }),
+//                 }
+//             }
+//         });
+
+//         || ()
+//     }, ());
+
+//     (*state).clone()
+// }
+
 #[function_component(CampaignsPage)]
 pub fn campaigns_page() -> Html {
-    let query = use_query();
+    let query = use_campaigns_query();
 
     let new_name = use_state(|| "".to_string());
     let new_description = use_state(|| "".to_string());
@@ -124,8 +164,6 @@ pub fn campaigns_page() -> Html {
         })
     };
 
-    let dumb_extra_compiler_wanted = &*(new_description).clone();
-
     html! {
         <section class="list-page">
             {
@@ -138,7 +176,7 @@ pub fn campaigns_page() -> Html {
             }
             <div class="list-item add-character-panel">
                 <TextField label="Name" value={(*new_name).clone()} on_change={on_change_name} />
-                <TextField label="Description" value={dumb_extra_compiler_wanted.clone()} on_change={on_change_description} />
+                <TextField label="Description" value={(*new_description).clone()} on_change={on_change_description} />
                 <Button label="Create" icon_name={"plus".to_string()} on_click={on_submit} />
             </div>
         </section>
