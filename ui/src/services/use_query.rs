@@ -28,18 +28,24 @@ where
         move |_| {
             spawn_local(async move {
                 let request = build_request(&request_json).await;
-                if let Ok(response) = request {
-                    let json = response.json::<GraphQLResponse<T>>().await;
-                    match json {
-                        Ok(responser) => effect_state.set(QueryResponse {
-                            data: Some(responser.data),
-                            error: None,
-                        }),
-                        Err(error) => effect_state.set(QueryResponse {
-                            data: None,
-                            error: Some(error.to_string()),
-                        }),
-                    }
+                match request {
+                    Ok(response) => {
+                        let json = response.json::<GraphQLResponse<T>>().await;
+                        match json {
+                            Ok(responser) => effect_state.set(QueryResponse {
+                                data: Some(responser.data),
+                                error: None,
+                            }),
+                            Err(error) => effect_state.set(QueryResponse {
+                                data: None,
+                                error: Some(error.to_string()),
+                            }),
+                        }
+                    },
+                    Err(error) => effect_state.set(QueryResponse {
+                        data: None,
+                        error: Some(error.to_string()),
+                    }),
                 }
             });
 
