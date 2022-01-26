@@ -1,5 +1,6 @@
 CREATE TABLE characters (
     id SERIAL PRIMARY KEY,
+    campaign_id INT REFERENCES campaigns,
     image VARCHAR,
     name VARCHAR NOT NULL,
     class VARCHAR NOT NULL,

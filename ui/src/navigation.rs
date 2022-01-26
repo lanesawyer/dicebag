@@ -5,7 +5,7 @@ use yew_router::prelude::*;
 use yew_router::Routable;
 
 use crate::components::Icon;
-use crate::pages::{CharacterSheetPage, CharactersPage, HomePage};
+use crate::pages::{CampaignPage, CampaignsPage, CharacterSheetPage, CharactersPage, HomePage};
 
 // Matches from most specific to least
 // so if you don't see the page, it's probably the wrong order
@@ -15,6 +15,8 @@ pub enum AppRoute {
     CharacterSheet { id: i64 },
     #[at("/characters")]
     Characters,
+    #[at("/campaigns/:id")]
+    Campaign { id: i64 },
     #[at("/campaigns")]
     Campaigns,
     #[not_found]
@@ -61,7 +63,8 @@ pub fn switch(routes: &AppRoute) -> Html {
         AppRoute::Home => html! { <HomePage /> },
         AppRoute::Characters => html! { <CharactersPage /> },
         AppRoute::CharacterSheet { id } => html! { <CharacterSheetPage id={*id} /> },
-        AppRoute::Campaigns => html! { <>{ "Campaigns" }</> },
+        AppRoute::Campaigns => html! { <CampaignsPage /> },
+        AppRoute::Campaign { id } => html! { <CampaignPage id={*id} /> },
         AppRoute::NotFound => html! { <>{ "NOT FOUND" }</> },
     }
 }

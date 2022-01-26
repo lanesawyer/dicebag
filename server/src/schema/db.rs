@@ -1,6 +1,15 @@
 table! {
+    campaigns (id) {
+        id -> Int4,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+    }
+}
+
+table! {
     characters (id) {
         id -> Int4,
+        campaign_id -> Nullable<Int4>,
         image -> Nullable<Varchar>,
         name -> Varchar,
         class -> Varchar,
@@ -40,3 +49,7 @@ table! {
         gold -> Int4,
     }
 }
+
+joinable!(characters -> campaigns (campaign_id));
+
+allow_tables_to_appear_in_same_query!(campaigns, characters,);

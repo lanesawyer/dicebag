@@ -30,6 +30,10 @@ docker compose up
 
 The database data will be saved in the `postgres-data` Docker volume between runs.
 
+### Known Issues
+- The code isn't updating on restart so I've been removing the image and re-running `docker compose up` to get the latest. I know there's a way to get around it but I haven't gotten to fixing it yet since I don't do a ton of API updates right now.
+
 ## Technologies Used
 - [Rocket](https://rocket.rs/)
 - [Juniper](https://github.com/graphql-rust/juniper)
+- [Diesel](https://diesel.rs/)

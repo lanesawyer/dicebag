@@ -7,6 +7,7 @@ use crate::schema::db::characters;
 #[derive(Clone, Default, GraphQLObject, Queryable, Insertable)]
 pub struct Character {
     pub id: i32,
+    pub campaign_id: Option<i32>,
     pub image: Option<String>,
 
     // Info

@@ -15,6 +15,13 @@ pub struct CharactersQuery;
     schema_path = "src/graphql/schema.json",
     query_path = "src/graphql/queries.graphql"
 )]
+pub struct CampaignsQuery;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
 pub struct NewCharacterMutation;
 
 #[derive(GraphQLQuery)]
@@ -22,7 +29,21 @@ pub struct NewCharacterMutation;
     schema_path = "src/graphql/schema.json",
     query_path = "src/graphql/queries.graphql"
 )]
+pub struct NewCampaignMutation;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
 pub struct DeleteCharacterMutation;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries.graphql"
+)]
+pub struct DeleteCampaignMutation;
 
 // TODO: I should be able to use the auto-generated ones,
 // but I'm running into deserialization issues with Yew's Fetch

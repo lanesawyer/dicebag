@@ -1,0 +1,26 @@
+.campaign-info {
+    background-color: var(--secondary-color);
+    color: var(--black);
+    padding-top: var(--spacing-medium);
+    padding-bottom: var(--spacing-medium);
+    width: 100%;
+}
+
+.characters {
+    background-color: var(--secondary-color);
+    color: var(--black);
+    width: 100%;
+}
+
+.initiative {
+    width: 100em;
+}
+
+.initiative-row {
+    display: flex;
+    align-items: center;
+}
+
+.initiative-row-name {
+    flex-grow: 4;
+}

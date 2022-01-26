@@ -19,7 +19,7 @@ pub enum ButtonMsg {
 #[derive(Properties, Clone, PartialEq)]
 pub struct ButtonProps {
     pub label: String,
-    pub on_click: Callback<bool>,
+    pub on_click: Callback<()>,
     #[prop_or(ButtonType::Primary)]
     pub button_type: ButtonType,
     #[prop_or_default]
@@ -36,7 +36,7 @@ impl Component for Button {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            ButtonMsg::Clicked => ctx.props().on_click.emit(true),
+            ButtonMsg::Clicked => ctx.props().on_click.emit(()),
         }
 
         false

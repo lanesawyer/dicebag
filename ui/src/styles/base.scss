@@ -81,14 +81,14 @@ nav ul li a.active {
 
 main {
     grid-area: main;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 footer {
     grid-area: footer;
     background-color: var(--primary-color);
     padding: var(--spacing-medium);
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 h3 {
@@ -98,4 +98,19 @@ h3 {
 .icon {
     width: 1em;
     height: 1em;
+}
+
+.list-page {
+    display: flex;
+    flex-direction: row;
+    margin: var(--spacing-medium);
+    gap: var(--spacing-medium);
+}
+
+.list-item {
+    flex: 1;
+}
+
+.list-item a {
+    text-decoration: none;
 }
