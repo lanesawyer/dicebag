@@ -72,15 +72,14 @@ pub fn campaign_page(props: &CampaignProps) -> Html {
         return html! { <></> };
     }
 
-    let characters: HashMap<i64, InitiativeInfo> = characters
+    let characters: HashMap<String, InitiativeInfo> = characters
         .data
         .unwrap_or_default()
         .iter()
         .map(|character| {
             (
-                character.id,
+                character.name.clone(),
                 InitiativeInfo {
-                    id: character.id,
                     name: character.name.clone(),
                     initiative: 1,
                 },

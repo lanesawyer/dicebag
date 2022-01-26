@@ -6,14 +6,13 @@ use crate::components::{Button, TextField};
 
 #[derive(Clone, PartialEq)]
 pub struct InitiativeInfo {
-    pub id: i64,
     pub name: String,
     pub initiative: i64,
 }
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct InitiativeTrackerProps {
-    pub characters: HashMap<i64, InitiativeInfo>,
+    pub characters: HashMap<String, InitiativeInfo>,
     pub add: Callback<bool>,
 }
 
@@ -22,7 +21,6 @@ pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
     let initiative_list = use_state(|| props.characters.clone());
 
     let new_initiative = use_state(|| InitiativeInfo {
-        id: 1223,
         name: "".to_string(),
         initiative: 0,
     });
@@ -43,7 +41,6 @@ pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
             let initiative = initiative.parse::<i64>();
             if let Ok(initiative) = initiative {
                 new_initiative.set(InitiativeInfo {
-                    id: 1235,
                     name: (*new_initiative.name).to_string(),
                     initiative,
                 });
@@ -52,9 +49,13 @@ pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
     };
 
     let on_click = {
+        let cloned_initiative_list = initiative_list.clone();
         let new_initiative = new_initiative.clone();
         Callback::from(move |_| {
-            gloo_console::log!("{}", new_initiative.initiative);
+            let it = (*new_initiative).clone();
+            let mut new_one = (*cloned_initiative_list).clone();
+            new_one.insert(it.name.clone(), it);
+            cloned_initiative_list.set(new_one);
         })
     };
 
@@ -76,9 +77,8 @@ pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
                                 let character = character.clone();
                                 let initiative = initiative.parse::<i64>();
                                 if let Ok(initiative) = initiative {
-                                    let mut new_one = HashMap::from((*cloned_initiative_list).clone());
-                                    new_one.insert(character.id, InitiativeInfo {
-                                        id: character.id,
+                                    let mut new_one = (*cloned_initiative_list).clone();
+                                    new_one.insert(character.name.clone(), InitiativeInfo {
                                         name: character.name.clone(),
                                         initiative
                                     });
