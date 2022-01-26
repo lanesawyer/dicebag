@@ -20,7 +20,7 @@ pub struct InitiativeTrackerProps {
 #[function_component(InitiativeTracker)]
 pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
     let initiative_list = use_state(|| props.characters.clone());
-    
+
     let new_initiative = use_state(|| InitiativeInfo {
         id: 1223,
         name: "".to_string(),

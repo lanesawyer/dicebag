@@ -76,11 +76,16 @@ pub fn campaign_page(props: &CampaignProps) -> Html {
         .data
         .unwrap_or_default()
         .iter()
-        .map(|character| (character.id, InitiativeInfo {
-            id: character.id,
-            name: character.name.clone(),
-            initiative: 1,
-        }))
+        .map(|character| {
+            (
+                character.id,
+                InitiativeInfo {
+                    id: character.id,
+                    name: character.name.clone(),
+                    initiative: 1,
+                },
+            )
+        })
         .collect();
 
     html! {
