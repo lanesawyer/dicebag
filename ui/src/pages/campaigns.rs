@@ -156,8 +156,8 @@ pub fn campaigns_page() -> Html {
                 if let Ok(response) = request {
                     let json = response.json::<GraphQLResponse<bool>>().await;
                     match json {
-                        Ok(responser) => (),
-                        Err(error) => (),
+                        Ok(_responser) => (),
+                        Err(_error) => (),
                     }
                 }
             });
@@ -166,6 +166,7 @@ pub fn campaigns_page() -> Html {
 
     html! {
         <section class="list-page">
+            <>{query.error.unwrap_or_else(|| "".to_string())}</>
             {
                 if let Some(campaigns) = &query.data {
                     campaigns.iter().map(view_campaign).collect::<Html>()

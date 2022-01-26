@@ -12,12 +12,12 @@ pub struct InitiativeInfo {
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct InitiativeTrackerProps {
-    pub characters: HashMap<String, InitiativeInfo>,
+    pub characters_initiative: HashMap<String, InitiativeInfo>,
 }
 
 #[function_component(InitiativeTracker)]
 pub fn initiative_tracker(props: &InitiativeTrackerProps) -> Html {
-    let initiative_list = use_state(|| props.characters.clone());
+    let initiative_list = use_state(|| props.characters_initiative.clone());
 
     let new_initiative = use_state(|| InitiativeInfo {
         name: "".to_string(),

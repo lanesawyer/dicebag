@@ -102,14 +102,16 @@ impl Mutation {
     }
 
     pub async fn delete_campaign(context: &Database, delete_id: i32) -> FieldResult<bool> {
-        use crate::schema::db::characters::dsl::{characters, campaign_id};
         use crate::schema::db::campaigns::dsl::*;
+        use crate::schema::db::characters::dsl::{campaign_id, characters};
 
         // TODO: Clean up
         match context
             .run(move |c| {
                 let characters_target = characters.filter(campaign_id.eq(delete_id));
-                diesel::update(characters_target).set(campaign_id.eq(None::<i32>)).execute(c)?;
+                diesel::update(characters_target)
+                    .set(campaign_id.eq(None::<i32>))
+                    .execute(c)?;
                 diesel::delete(campaigns.filter(id.eq(delete_id))).execute(c)
             })
             .await
