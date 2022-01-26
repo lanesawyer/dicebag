@@ -75,7 +75,7 @@ impl Mutation {
         {
             Ok(_) => Ok(true),
             Err(_) => Err(FieldError::new(
-                "Unable to create character",
+                "Unable to delete character",
                 graphql_value!({ "internal_error": "Database delete failed" }),
             )),
         }
@@ -97,6 +97,27 @@ impl Mutation {
             Err(_) => Err(FieldError::new(
                 "Unable to create campaign",
                 graphql_value!({ "internal_error": "Database insert failed" }),
+            )),
+        }
+    }
+
+    pub async fn delete_campaign(context: &Database, delete_id: i32) -> FieldResult<bool> {
+        use crate::schema::db::characters::dsl::{characters, campaign_id};
+        use crate::schema::db::campaigns::dsl::*;
+
+        // TODO: Clean up
+        match context
+            .run(move |c| {
+                let characters_target = characters.filter(campaign_id.eq(delete_id));
+                diesel::update(characters_target).set(campaign_id.eq(None::<i32>)).execute(c)?;
+                diesel::delete(campaigns.filter(id.eq(delete_id))).execute(c)
+            })
+            .await
+        {
+            Ok(_) => Ok(true),
+            Err(_) => Err(FieldError::new(
+                "Unable to delete campaign",
+                graphql_value!({ "internal_error": "Database delete failed" }),
             )),
         }
     }
