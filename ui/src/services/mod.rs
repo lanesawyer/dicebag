@@ -3,6 +3,8 @@ use reqwest::{Error, Response};
 use serde::Deserialize;
 use serde_json::Value;
 
+pub mod use_query;
+
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/graphql/schema.json",
