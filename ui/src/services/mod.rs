@@ -3,7 +3,9 @@ use reqwest::{Error, Response};
 use serde::Deserialize;
 use serde_json::Value;
 
-pub mod use_query;
+mod use_query;
+
+pub use use_query::use_query;
 
 #[derive(GraphQLQuery)]
 #[graphql(

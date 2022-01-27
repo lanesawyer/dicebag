@@ -1,5 +1,6 @@
+use graphql_client::GraphQLQuery;
 use serde::Deserialize;
-use serde_json::Value;
+use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
 use yew::{use_effect_with_deps, use_state};
 
@@ -11,11 +12,11 @@ pub struct QueryResponse<T> {
     pub error: Option<String>,
 }
 
-// TODO: Make even more generic so we can pass in the variables and the query we want to use instead of the serialized JSON
-// TODO: Get it to refresh when I want to. Not sure if it'll happen in here or be wrapped in something else?
-pub fn use_query<T>(request_json: &Value) -> QueryResponse<T>
+// TODO: Use Q::ResponseData instead of another type
+pub fn use_query<Q, Resp>(variables: Q::Variables) -> QueryResponse<Resp>
 where
-    T: for<'de> Deserialize<'de> + Clone + 'static,
+    Q: GraphQLQuery + 'static,
+    Resp: for<'de> Deserialize<'de> + Clone + 'static,
 {
     let state = use_state(|| QueryResponse {
         data: None,
@@ -24,14 +25,15 @@ where
 
     let effect_state = state.clone();
 
-    let request_json = request_json.clone();
     use_effect_with_deps(
         move |_| {
             spawn_local(async move {
-                let request = build_request(&request_json).await;
+                let request_body = Q::build_query(variables);
+                let request_json = &json!(request_body);
+                let request = build_request(request_json).await;
                 match request {
                     Ok(response) => {
-                        let json = response.json::<GraphQLResponse<T>>().await;
+                        let json = response.json::<GraphQLResponse<Resp>>().await;
                         match json {
                             Ok(responser) => effect_state.set(QueryResponse {
                                 data: Some(responser.data),
@@ -42,7 +44,7 @@ where
                                 error: Some(error.to_string()),
                             }),
                         }
-                    },
+                    }
                     Err(error) => effect_state.set(QueryResponse {
                         data: None,
                         error: Some(error.to_string()),

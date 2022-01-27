@@ -1,25 +1,22 @@
 use graphql_client::GraphQLQuery;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
-use yew::{html, Html, function_component, use_state, Callback};
+use yew::{function_component, html, use_state, Callback, Html};
 use yew_router::components::Link;
 
 use crate::{
     components::{Button, TextField},
     pages::character_sheet::sheet::{Character, CharacterList},
     services::{
-        self, characters_query, new_character_mutation, CharactersQuery, GraphQLResponse,
-        NewCharacterMutation, use_query::use_query,
+        self, characters_query::Variables, new_character_mutation, use_query, CharactersQuery,
+        GraphQLResponse, NewCharacterMutation,
     },
     AppRoute,
 };
 
 #[function_component(CharactersPage)]
 pub fn characters_page() -> Html {
-    let variables = characters_query::Variables {};
-    let request_body = CharactersQuery::build_query(variables);
-    let request_json = &json!(request_body);
-    let query = use_query::<CharacterList>(request_json);
+    let query = use_query::<CharactersQuery, CharacterList>(Variables {});
 
     // TODO: Better form management
     let new_name = use_state(|| "".to_string());

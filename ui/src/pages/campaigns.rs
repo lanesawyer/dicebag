@@ -11,8 +11,7 @@ use crate::{
     services::{
         self, campaigns_query,
         new_campaign_mutation::{self, NewCampaign},
-        use_query::use_query,
-        CampaignsQuery, GraphQLResponse, NewCampaignMutation,
+        use_query, CampaignsQuery, GraphQLResponse, NewCampaignMutation,
     },
 };
 
@@ -31,10 +30,7 @@ pub struct CampaignList {
 
 #[function_component(CampaignsPage)]
 pub fn campaigns_page() -> Html {
-    let variables = campaigns_query::Variables {};
-    let request_body = CampaignsQuery::build_query(variables);
-    let request_json = &json!(request_body);
-    let query = use_query::<CampaignList>(request_json);
+    let query = use_query::<CampaignsQuery, CampaignList>(campaigns_query::Variables {});
 
     let new_name = use_state(|| "".to_string());
     let new_description = use_state(|| "".to_string());

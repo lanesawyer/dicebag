@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use graphql_client::GraphQLQuery;
+use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, html, Callback, Properties};
@@ -15,7 +16,7 @@ use crate::{
         character_sheet::sheet::CharacterList,
     },
     services::{
-        self, characters_query, delete_campaign_mutation, use_query::use_query, CharactersQuery,
+        self, characters_query, delete_campaign_mutation, use_query, CharactersQuery,
         DeleteCampaignMutation, GraphQLResponse,
     },
 };
@@ -27,10 +28,7 @@ pub struct CampaignProps {
 
 #[function_component(CampaignPage)]
 pub fn campaign_page(props: &CampaignProps) -> Html {
-    let variables = characters_query::Variables {};
-    let request_body = CharactersQuery::build_query(variables);
-    let request_json = &json!(request_body);
-    let characters = use_query::<CharacterList>(request_json);
+    let characters = use_query::<CharactersQuery, CharacterList>(characters_query::Variables {});
     let history = use_history().expect("history should be available");
 
     if characters.data.is_none() {
@@ -44,22 +42,18 @@ pub fn campaign_page(props: &CampaignProps) -> Html {
                 let variables = delete_campaign_mutation::Variables { delete_id };
                 let request_body = DeleteCampaignMutation::build_query(variables);
                 let request_json = &json!(request_body);
-
                 let request = services::build_request(request_json).await;
 
                 if let Ok(response) = request {
-                    let json = response.json::<GraphQLResponse<bool>>().await;
+                    let json = response
+                        .json::<GraphQLResponse<delete_campaign_mutation::ResponseData>>()
+                        .await;
                     match json {
-                        Ok(_responser) => {
-                            // TODO: Redirect here instead of assuming it works
-                            // history.push(AppRoute::Campaigns);
-                        }
+                        Ok(_response) => history.push(AppRoute::Campaigns),
                         Err(_error) => (),
                     }
                 }
             });
-            // TODO: Figure out how to do a redirect within the local thread
-            history.push(AppRoute::Campaigns);
         })
     };
 
