@@ -58,13 +58,13 @@ pub fn campaigns_page() -> Html {
             let submit_description = submit_description.clone();
 
             spawn_local(async move {
-                let submit_name = &*(submit_name).clone();
-                let submit_description = &*(submit_description).clone();
+                let submit_name = (*submit_name).clone();
+                let submit_description = (*submit_description).clone();
                 let variables = new_campaign_mutation::Variables {
                     new_campaign: NewCampaign {
-                        name: submit_name.to_string(),
+                        name: submit_name,
                         // TODO: Figure out a better way to use an Option through the whole component
-                        description: Some(submit_description.to_string()),
+                        description: Some(submit_description),
                     },
                 };
                 let request_body = NewCampaignMutation::build_query(variables);
@@ -89,7 +89,7 @@ pub fn campaigns_page() -> Html {
                 if let Some(campaign_list) = &query.data {
                     campaign_list.campaigns.iter().map(view_campaign).collect::<Html>()
                 } else {
-                    // TODO: Character skeleton while loading
+                    // TODO: Campaign skeleton while loading
                     html! { <></> }
                 }
             }

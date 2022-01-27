@@ -12,6 +12,7 @@ pub struct QueryResponse<T> {
 }
 
 // TODO: Make even more generic so we can pass in the variables and the query we want to use instead of the serialized JSON
+// TODO: Get it to refresh when I want to. Not sure if it'll happen in here or be wrapped in something else?
 pub fn use_query<T>(request_json: &Value) -> QueryResponse<T>
 where
     T: for<'de> Deserialize<'de> + Clone + 'static,
