@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use graphql_client::GraphQLQuery;
-use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, html, Callback, Properties};
@@ -37,7 +36,8 @@ pub fn campaign_page(props: &CampaignProps) -> Html {
 
     let delete_campaign = {
         let delete_id = props.id;
-        Callback::once(move |_| {
+        Callback::from(move |_| {
+            let delete_history = history.clone();
             spawn_local(async move {
                 let variables = delete_campaign_mutation::Variables { delete_id };
                 let request_body = DeleteCampaignMutation::build_query(variables);
@@ -49,7 +49,7 @@ pub fn campaign_page(props: &CampaignProps) -> Html {
                         .json::<GraphQLResponse<delete_campaign_mutation::ResponseData>>()
                         .await;
                     match json {
-                        Ok(_response) => history.push(AppRoute::Campaigns),
+                        Ok(_response) => delete_history.push(AppRoute::Campaigns),
                         Err(_error) => (),
                     }
                 }
