@@ -101,7 +101,7 @@ pub struct Character {
     pub gold: i64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default, Clone)]
 pub struct CharacterList {
     pub characters: Vec<Character>,
 }

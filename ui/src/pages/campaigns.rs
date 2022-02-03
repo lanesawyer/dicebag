@@ -2,16 +2,17 @@ use graphql_client::GraphQLQuery;
 use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
-use yew::{function_component, html, use_effect_with_deps, use_state, Callback, Html};
+use yew::{function_component, html, use_state, Callback, Html};
 use yew_router::prelude::Link;
 
 use crate::{
     components::{Button, TextField},
     navigation::AppRoute,
     services::{
-        self, campaigns_query,
+        self,
+        campaigns_query::{self, CampaignsQueryCampaigns},
         new_campaign_mutation::{self, NewCampaign},
-        CampaignsQuery, GraphQLResponse, NewCampaignMutation,
+        use_query_improved, CampaignsQuery, GraphQLResponse, NewCampaignMutation,
     },
 };
 
@@ -28,95 +29,10 @@ pub struct CampaignList {
     pub campaigns: Vec<Campaign>,
 }
 
-#[derive(Clone)]
-struct MyGraphQLRequest {
-    pub data: Option<Vec<Campaign>>,
-    pub error: Option<String>,
-}
-
-fn use_campaigns_query() -> MyGraphQLRequest {
-    let state = use_state(|| MyGraphQLRequest {
-        data: None,
-        error: None,
-    });
-
-    let effect_state = state.clone();
-
-    use_effect_with_deps(
-        move |_| {
-            spawn_local(async move {
-                let variables = campaigns_query::Variables {};
-                let request_body = CampaignsQuery::build_query(variables);
-                let request_json = &json!(request_body);
-
-                let request = services::build_request(request_json).await;
-                if let Ok(response) = request {
-                    let json = response.json::<GraphQLResponse<CampaignList>>().await;
-                    match json {
-                        Ok(responser) => effect_state.set(MyGraphQLRequest {
-                            data: Some(responser.data.campaigns),
-                            error: None,
-                        }),
-                        Err(error) => effect_state.set(MyGraphQLRequest {
-                            data: None,
-                            error: Some(error.to_string()),
-                        }),
-                    }
-                }
-            });
-
-            || ()
-        },
-        (),
-    );
-
-    (*state).clone()
-}
-
-// TODO: Do a more generalized query function
-// #[derive(Clone)]
-// struct MySmallerGraphQLRequest<T> {
-//     pub data: Option<T>,
-//     pub error: Option<String>,
-// }
-
-// fn use_smaller_query<'a, T>(request_json: &serde_json::Value) -> MySmallerGraphQLRequest<T>
-// where T: Deserialize<'a> + Clone {
-//     let state = use_state(|| MySmallerGraphQLRequest {
-//         data: None,
-//         error: None,
-//     });
-
-//     let effect_state = state.clone();
-
-//     let request_json = request_json.clone();
-//     use_effect_with_deps(move |_| {
-//         spawn_local(async move {
-//             let request = services::build_request(&request_json).await;
-//             if let Ok(response) = request {
-//                 let json = response.json::<GraphQLResponse<T>>().await;
-//                 match json {
-//                     Ok(responser) => effect_state.set(MySmallerGraphQLRequest {
-//                         data: Some(responser.data),
-//                         error: None,
-//                     }),
-//                     Err(error) => effect_state.set(MySmallerGraphQLRequest {
-//                         data: None,
-//                         error: Some(error.to_string()),
-//                     }),
-//                 }
-//             }
-//         });
-
-//         || ()
-//     }, ());
-
-//     (*state).clone()
-// }
-
 #[function_component(CampaignsPage)]
 pub fn campaigns_page() -> Html {
-    let query = use_campaigns_query();
+    let variables = campaigns_query::Variables {};
+    let query = use_query_improved::<CampaignsQuery>(variables);
 
     let new_name = use_state(|| "".to_string());
     let new_description = use_state(|| "".to_string());
@@ -140,13 +56,13 @@ pub fn campaigns_page() -> Html {
             let submit_description = submit_description.clone();
 
             spawn_local(async move {
-                let submit_name = &*(submit_name).clone();
-                let submit_description = &*(submit_description).clone();
+                let submit_name = (*submit_name).clone();
+                let submit_description = (*submit_description).clone();
                 let variables = new_campaign_mutation::Variables {
                     new_campaign: NewCampaign {
-                        name: submit_name.to_string(),
+                        name: submit_name,
                         // TODO: Figure out a better way to use an Option through the whole component
-                        description: Some(submit_description.to_string()),
+                        description: Some(submit_description),
                     },
                 };
                 let request_body = NewCampaignMutation::build_query(variables);
@@ -168,10 +84,10 @@ pub fn campaigns_page() -> Html {
         <section class="list-page">
             <>{query.error.unwrap_or_else(|| "".to_string())}</>
             {
-                if let Some(campaigns) = &query.data {
-                    campaigns.iter().map(view_campaign).collect::<Html>()
+                if let Some(campaigns_list) = &query.data {
+                    campaigns_list.campaigns.iter().map(view_campaign).collect::<Html>()
                 } else {
-                    // TODO: Character skeleton while loading
+                    // TODO: Campaign skeleton while loading
                     html! { <></> }
                 }
             }
@@ -184,14 +100,14 @@ pub fn campaigns_page() -> Html {
     }
 }
 
-fn view_campaign(campaign: &Campaign) -> Html {
+fn view_campaign(campaign: &CampaignsQueryCampaigns) -> Html {
     html! {
         <div class="list-item">
             <Link<AppRoute> to={AppRoute::Campaign { id: campaign.id }}>
                 <div class="list-item character-panel">
                     <div class="campaign-info">
                         <div class="character-name">{campaign.name.clone()}</div>
-                        <div class="character-class">{campaign.description.clone()}</div>
+                        <div class="character-class">{campaign.description.as_ref().unwrap_or(&"".to_string()).clone()}</div>
                     </div>
                     <div></div> // Used for flex justify effect and future image
                     <div class="characters">
