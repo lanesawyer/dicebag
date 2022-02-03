@@ -8,7 +8,7 @@ edition = "2018"
 diesel = { version = "1.4.8", features = ["postgres", "64-column-tables"] }
 diesel_migrations = "1.4.0"
 dotenv = "0.15.0"
-juniper = "0.15.8"
+juniper = "0.15.9"
 juniper_rocket = "0.8.0"
 rocket = "0.5.0-rc.1"
 rocket_sync_db_pools = { version = "0.1.0-rc.1", features = ["diesel_postgres_pool"] }
