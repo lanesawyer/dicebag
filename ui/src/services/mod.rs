@@ -6,6 +6,8 @@ use serde_json::Value;
 mod use_query;
 
 pub use use_query::use_query;
+// TODO: Replace original use_query calls with this improved one
+pub use use_query::use_query_improved;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -17,14 +19,16 @@ pub struct CharactersQuery;
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/graphql/schema.json",
-    query_path = "src/graphql/queries.graphql"
+    query_path = "src/graphql/queries.graphql",
+    response_derives = "Clone"
 )]
 pub struct CampaignsQuery;
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/graphql/schema.json",
-    query_path = "src/graphql/queries.graphql"
+    query_path = "src/graphql/queries.graphql",
+    response_derives = "Clone"
 )]
 pub struct NewCharacterMutation;
 

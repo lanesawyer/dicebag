@@ -9,9 +9,10 @@ use crate::{
     components::{Button, TextField},
     navigation::AppRoute,
     services::{
-        self, campaigns_query,
+        self,
+        campaigns_query::{self, CampaignsQueryCampaigns},
         new_campaign_mutation::{self, NewCampaign},
-        use_query, CampaignsQuery, GraphQLResponse, NewCampaignMutation,
+        use_query_improved, CampaignsQuery, GraphQLResponse, NewCampaignMutation,
     },
 };
 
@@ -30,7 +31,8 @@ pub struct CampaignList {
 
 #[function_component(CampaignsPage)]
 pub fn campaigns_page() -> Html {
-    let query = use_query::<CampaignsQuery, CampaignList>(campaigns_query::Variables {});
+    let variables = campaigns_query::Variables {};
+    let query = use_query_improved::<CampaignsQuery>(variables);
 
     let new_name = use_state(|| "".to_string());
     let new_description = use_state(|| "".to_string());
@@ -82,8 +84,8 @@ pub fn campaigns_page() -> Html {
         <section class="list-page">
             <>{query.error.unwrap_or_else(|| "".to_string())}</>
             {
-                if let Some(campaign_list) = &query.data {
-                    campaign_list.campaigns.iter().map(view_campaign).collect::<Html>()
+                if let Some(campaigns_list) = &query.data {
+                    campaigns_list.campaigns.iter().map(view_campaign).collect::<Html>()
                 } else {
                     // TODO: Campaign skeleton while loading
                     html! { <></> }
@@ -98,14 +100,14 @@ pub fn campaigns_page() -> Html {
     }
 }
 
-fn view_campaign(campaign: &Campaign) -> Html {
+fn view_campaign(campaign: &CampaignsQueryCampaigns) -> Html {
     html! {
         <div class="list-item">
             <Link<AppRoute> to={AppRoute::Campaign { id: campaign.id }}>
                 <div class="list-item character-panel">
                     <div class="campaign-info">
                         <div class="character-name">{campaign.name.clone()}</div>
-                        <div class="character-class">{campaign.description.clone()}</div>
+                        <div class="character-class">{campaign.description.as_ref().unwrap_or(&"".to_string()).clone()}</div>
                     </div>
                     <div></div> // Used for flex justify effect and future image
                     <div class="characters">
