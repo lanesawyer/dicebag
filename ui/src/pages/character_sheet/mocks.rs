@@ -1,7 +1,8 @@
 use crate::components::Skill;
 use crate::pages::character_sheet::sheet::Character;
+use crate::services::characters_query::CharactersQueryCharacters;
 
-pub fn build_bob() -> Character {
+pub fn _build_bob() -> Character {
     Character {
         id: 1,
         image: Some("https://wallpapercave.com/wp/wp2255801.jpg".to_string()),
@@ -46,7 +47,8 @@ pub fn build_bob() -> Character {
     }
 }
 
-pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
+// TODO: Get from server
+pub fn build_saving_throws(character: &CharactersQueryCharacters) -> Vec<Skill> {
     vec![
         Skill {
             has_proficiency: false,
@@ -87,7 +89,8 @@ pub fn build_saving_throws(character: &Character) -> Vec<Skill> {
     ]
 }
 
-pub fn build_skills(character: &Character) -> Vec<Skill> {
+// TODO: Get from server
+pub fn build_skills(character: &CharactersQueryCharacters) -> Vec<Skill> {
     vec![
         Skill {
             has_proficiency: false,

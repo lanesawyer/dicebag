@@ -12,7 +12,8 @@ pub use use_query::use_query_improved;
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/graphql/schema.json",
-    query_path = "src/graphql/queries.graphql"
+    query_path = "src/graphql/queries.graphql",
+    response_derives = "Clone"
 )]
 pub struct CharactersQuery;
 
