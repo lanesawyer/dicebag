@@ -9,6 +9,7 @@ use super::build_request;
 pub struct QueryResponse<T> {
     pub data: Option<T>,
     pub error: Option<String>,
+    pub loading: bool,
 }
 
 pub fn use_query<Q>(variables: Q::Variables) -> QueryResponse<Q::ResponseData>
@@ -20,6 +21,7 @@ where
     let state = use_state(|| QueryResponse {
         data: None,
         error: None,
+        loading: true,
     });
 
     let effect_state = state.clone();
@@ -37,16 +39,19 @@ where
                             Ok(response) => effect_state.set(QueryResponse {
                                 data: response.data,
                                 error: None,
+                                loading: false,
                             }),
                             Err(error) => effect_state.set(QueryResponse {
                                 data: None,
                                 error: Some(error.to_string()),
+                                loading: false,
                             }),
                         }
                     }
                     Err(error) => effect_state.set(QueryResponse {
                         data: None,
                         error: Some(error.to_string()),
+                        loading: false,
                     }),
                 }
             });

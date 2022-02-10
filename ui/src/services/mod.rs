@@ -53,7 +53,8 @@ pub struct DeleteCharacterMutation;
 pub struct DeleteCampaignMutation;
 
 // TODO: I should be able to use the auto-generated ones,
-// but I'm running into deserialization issues with Yew's Fetch
+// but I haven't quite figured out how to use them
+// outside of the use_query hook
 #[derive(Debug, Deserialize)]
 pub struct GraphQLResponse<T> {
     pub data: T,

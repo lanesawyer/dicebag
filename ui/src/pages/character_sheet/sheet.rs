@@ -44,10 +44,15 @@ pub fn character_sheet_page(props: &CharacterSheetProps) -> Html {
     let variables = characters_query::Variables {};
     let query = use_query::<CharactersQuery>(variables);
 
+    if query.loading {
+        return html! { <>{"Loading..."}</>};
+    }
+
     let delete_character = {
         let delete_id = props.id;
+        let delete_history = history.clone();
         Callback::from(move |_| {
-            let delete_history = history.clone();
+            let delete_history = delete_history.clone();
             spawn_local(async move {
                 let variables = delete_character_mutation::Variables { delete_id };
                 let request_body = DeleteCharacterMutation::build_query(variables);
@@ -76,8 +81,8 @@ pub fn character_sheet_page(props: &CharacterSheetProps) -> Html {
     };
 
     if character.is_none() {
-        // TODO: Better 404 page
-        return html! {<>{"No Character Found"}</>};
+        history.push(AppRoute::NotFound);
+        return html! {};
     }
 
     let character = character.unwrap();
