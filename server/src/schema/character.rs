@@ -12,11 +12,11 @@ pub struct Character {
 
     // Info
     pub name: String,
-    pub class: String, // TODO: enum
+    pub class: String,
     pub level: i32,
     pub background: Option<String>,
-    pub race: String,              // TODO: enum?
-    pub alignment: Option<String>, // TODO: enum
+    pub race: String,
+    pub alignment: Option<String>,
     pub experience_points: i32,
 
     // Stats

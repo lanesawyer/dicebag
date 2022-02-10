@@ -10,10 +10,7 @@ use yew_router::hooks::use_history;
 use crate::{
     components::{Button, ButtonType, Icon},
     navigation::AppRoute,
-    pages::{
-        campaign::initiative_tracker::{InitiativeInfo, InitiativeTracker},
-        character_sheet::sheet::CharacterList,
-    },
+    pages::campaign::initiative_tracker::{InitiativeInfo, InitiativeTracker},
     services::{
         self, characters_query, delete_campaign_mutation, use_query, CharactersQuery,
         DeleteCampaignMutation, GraphQLResponse,
@@ -27,11 +24,13 @@ pub struct CampaignProps {
 
 #[function_component(CampaignPage)]
 pub fn campaign_page(props: &CampaignProps) -> Html {
-    let characters = use_query::<CharactersQuery, CharacterList>(characters_query::Variables {});
+    let variables = characters_query::Variables {};
+    let characters = use_query::<CharactersQuery>(variables);
     let history = use_history().expect("history should be available");
 
+    // TODO: Don't display nothing if there aren't characters for initiative
     if characters.data.is_none() {
-        return html! { <></> };
+        return html! { <>{"No characters, I think this is a bug"}</> };
     }
 
     let delete_campaign = {

@@ -12,7 +12,7 @@ use crate::{
         self,
         campaigns_query::{self, CampaignsQueryCampaigns},
         new_campaign_mutation::{self, NewCampaign},
-        use_query_improved, CampaignsQuery, GraphQLResponse, NewCampaignMutation,
+        use_query, CampaignsQuery, GraphQLResponse, NewCampaignMutation,
     },
 };
 
@@ -32,7 +32,7 @@ pub struct CampaignList {
 #[function_component(CampaignsPage)]
 pub fn campaigns_page() -> Html {
     let variables = campaigns_query::Variables {};
-    let query = use_query_improved::<CampaignsQuery>(variables);
+    let query = use_query::<CampaignsQuery>(variables);
 
     let new_name = use_state(|| "".to_string());
     let new_description = use_state(|| "".to_string());

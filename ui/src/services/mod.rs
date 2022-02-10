@@ -6,13 +6,12 @@ use serde_json::Value;
 mod use_query;
 
 pub use use_query::use_query;
-// TODO: Replace original use_query calls with this improved one
-pub use use_query::use_query_improved;
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/graphql/schema.json",
-    query_path = "src/graphql/queries.graphql"
+    query_path = "src/graphql/queries.graphql",
+    response_derives = "Clone, Default"
 )]
 pub struct CharactersQuery;
 
@@ -54,7 +53,8 @@ pub struct DeleteCharacterMutation;
 pub struct DeleteCampaignMutation;
 
 // TODO: I should be able to use the auto-generated ones,
-// but I'm running into deserialization issues with Yew's Fetch
+// but I haven't quite figured out how to use them
+// outside of the use_query hook
 #[derive(Debug, Deserialize)]
 pub struct GraphQLResponse<T> {
     pub data: T,

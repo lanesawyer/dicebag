@@ -6,17 +6,18 @@ use yew_router::components::Link;
 
 use crate::{
     components::{Button, TextField},
-    pages::character_sheet::sheet::{Character, CharacterList},
     services::{
-        self, characters_query::Variables, new_character_mutation, use_query, CharactersQuery,
-        GraphQLResponse, NewCharacterMutation,
+        self,
+        characters_query::{CharactersQueryCharacters, Variables},
+        new_character_mutation, use_query, CharactersQuery, GraphQLResponse, NewCharacterMutation,
     },
     AppRoute,
 };
 
 #[function_component(CharactersPage)]
 pub fn characters_page() -> Html {
-    let query = use_query::<CharactersQuery, CharacterList>(Variables {});
+    let variables = Variables {};
+    let query = use_query::<CharactersQuery>(variables);
 
     // TODO: Better form management
     let new_name = use_state(|| "".to_string());
@@ -107,7 +108,7 @@ pub fn characters_page() -> Html {
     }
 }
 
-fn view_characters(character: &Character) -> Html {
+fn view_characters(character: &CharactersQueryCharacters) -> Html {
     html! {
         <div class="list-item">
             <Link<AppRoute> to={AppRoute::CharacterSheet { id: character.id }}>

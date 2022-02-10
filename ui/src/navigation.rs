@@ -5,7 +5,9 @@ use yew_router::prelude::*;
 use yew_router::Routable;
 
 use crate::components::Icon;
-use crate::pages::{CampaignPage, CampaignsPage, CharacterSheetPage, CharactersPage, HomePage};
+use crate::pages::{
+    CampaignPage, CampaignsPage, CharacterSheetPage, CharactersPage, HomePage, NotFoundPage,
+};
 
 // Matches from most specific to least
 // so if you don't see the page, it's probably the wrong order
@@ -65,7 +67,8 @@ pub fn switch(routes: &AppRoute) -> Html {
         AppRoute::CharacterSheet { id } => html! { <CharacterSheetPage id={*id} /> },
         AppRoute::Campaigns => html! { <CampaignsPage /> },
         AppRoute::Campaign { id } => html! { <CampaignPage id={*id} /> },
-        AppRoute::NotFound => html! { <>{ "NOT FOUND" }</> },
+        AppRoute::NotFound => html! { <NotFoundPage /> },
+        // TODO: Unauthorized page, something like "you failed to pick the lock"
     }
 }
 
