@@ -1,5 +1,4 @@
 use graphql_client::GraphQLQuery;
-use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, html, Callback, Properties};
@@ -27,8 +26,7 @@ use super::{
 use crate::{
     components::{Button, ButtonType, Icon},
     services::{
-        self, characters_query, delete_character_mutation, use_query_improved,
-        DeleteCharacterMutation,
+        self, characters_query, delete_character_mutation, use_query, DeleteCharacterMutation,
     },
     services::{CharactersQuery, GraphQLResponse},
     AppRoute,
@@ -39,68 +37,12 @@ pub struct CharacterSheetProps {
     pub id: i64,
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Character {
-    pub id: i64,
-    pub image: Option<String>,
-
-    // Info
-    pub name: String,
-    pub class: String,
-    pub level: i64,
-    pub background: Option<String>,
-    pub race: String,
-    pub alignment: Option<String>,
-    pub experience_points: i64,
-
-    // Stats
-    pub strength: i64,
-    pub dexterity: i64,
-    pub constitution: i64,
-    pub intelligence: i64,
-    pub wisdom: i64,
-    pub charisma: i64,
-
-    // Other
-    pub proficiency_bonus: i64,
-    pub has_inspiration: bool,
-
-    pub personality_traits: Option<String>,
-    pub ideals: Option<String>,
-    pub bonds: Option<String>,
-    pub flaws: Option<String>,
-    pub features_and_traits: Option<String>,
-    pub other_proficiencies_and_languages: Option<String>,
-
-    pub armor_class: i64,
-    pub speed: i64,
-    pub hit_points: i64,
-    pub current_hit_points: i64,
-    pub temporary_hit_points: i64,
-    pub hit_dice: i64,
-    pub used_hit_dice: i64,
-    pub saves: i64,
-    pub failures: i64,
-    pub equipment: Option<String>,
-    pub copper: i64,
-    pub silver: i64,
-    pub electrum: i64,
-    pub platinum: i64,
-    pub gold: i64,
-}
-
-#[derive(Debug, Deserialize, Default, Clone)]
-pub struct CharacterList {
-    pub characters: Vec<Character>,
-}
-
 #[function_component(CharacterSheetPage)]
 pub fn character_sheet_page(props: &CharacterSheetProps) -> Html {
     let history = use_history().expect("history should be available");
 
     let variables = characters_query::Variables {};
-    let query = use_query_improved::<CharactersQuery>(variables);
+    let query = use_query::<CharactersQuery>(variables);
 
     let delete_character = {
         let delete_id = props.id;

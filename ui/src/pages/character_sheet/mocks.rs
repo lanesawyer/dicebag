@@ -1,9 +1,8 @@
 use crate::components::Skill;
-use crate::pages::character_sheet::sheet::Character;
 use crate::services::characters_query::CharactersQueryCharacters;
 
-pub fn _build_bob() -> Character {
-    Character {
+pub fn _build_bob() -> CharactersQueryCharacters {
+    CharactersQueryCharacters {
         id: 1,
         image: Some("https://wallpapercave.com/wp/wp2255801.jpg".to_string()),
         name: "Bob the Builder".to_string(),
