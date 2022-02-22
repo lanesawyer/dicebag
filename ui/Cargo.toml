@@ -9,7 +9,7 @@ edition = "2018"
 lto = true
 
 [dependencies]
-anyhow = "1.0.54"
+anyhow = "1.0.55"
 getrandom = { version = "0.2.4", features = ["js"] }
 gloo-console = "0.2.1"
 graphql_client = "0.10.0"
