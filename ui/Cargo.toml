@@ -10,7 +10,7 @@ lto = true
 
 [dependencies]
 anyhow = "1.0.56"
-getrandom = { version = "0.2.5", features = ["js"] }
+getrandom = { version = "0.2.6", features = ["js"] }
 gloo-console = "0.2.1"
 graphql_client = "0.10.0"
 rand = "0.8.5"
