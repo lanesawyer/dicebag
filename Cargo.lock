@@ -1029,9 +1029,9 @@ dependencies = [
 
 [[package]]
 name = "juniper_rocket"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c24868ce3d00537b353d2e18882133a317f504782730bb2979df00c1bfcc575c"
+checksum = "cf70a2ac6acfdd7b6e24d42b8ad8b99fbb60eb12d0c08b388d829e99c0ee08f9"
 dependencies = [
  "futures",
  "juniper",
