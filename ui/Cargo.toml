@@ -11,7 +11,7 @@ lto = true
 [dependencies]
 anyhow = "1.0.86"
 core = { path = "../core" }
-getrandom = { version = "0.2.7", features = ["js"] }
+getrandom = { version = "0.2.15", features = ["js"] }
 gloo-console = "0.2.1"
 graphql_client = "0.11.0"
 rand = "0.8.5"
