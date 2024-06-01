@@ -60,6 +60,7 @@ pub fn navigation() -> Html {
     }
 }
 
+#[allow(clippy::let_unit_value)]
 pub fn switch(routes: &AppRoute) -> Html {
     match routes {
         AppRoute::Home => html! { <HomePage /> },

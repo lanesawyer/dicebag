@@ -82,7 +82,7 @@ pub fn campaigns_page() -> Html {
 
     html! {
         <section class="list-page">
-            <>{query.error.unwrap_or_else(|| "".to_string())}</>
+            <>{query.error.unwrap_or_default()}</>
             {
                 if let Some(campaigns_list) = &query.data {
                     campaigns_list.campaigns.iter().map(view_campaign).collect::<Html>()

@@ -1,26 +1,14 @@
 use std::num::NonZeroU8;
 use yew::{html, Component, Context, Html};
 
-use crate::dice_tower::Roll;
-
-use super::DiceType;
-
-pub enum RollMsg {
-    D4,
-    D6,
-    D8,
-    D10,
-    D12,
-    D20,
-    D100,
-}
+use core::{DiceType, Roll};
 
 pub struct Tower {
     dice: DiceType,
 }
 
 impl Component for Tower {
-    type Message = RollMsg;
+    type Message = DiceType;
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
@@ -29,16 +17,15 @@ impl Component for Tower {
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         let (_number, dice) = match msg {
-            RollMsg::D4 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D4),
-            RollMsg::D6 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D6),
-            RollMsg::D8 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D8),
-            RollMsg::D10 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D10),
-            RollMsg::D12 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D12),
-            RollMsg::D20 => (NonZeroU8::new(1).unwrap(), crate::dice_tower::DiceType::D20),
-            RollMsg::D100 => (
-                NonZeroU8::new(1).unwrap(),
-                crate::dice_tower::DiceType::D100,
-            ),
+            DiceType::D4 => (NonZeroU8::new(1).unwrap(), DiceType::D4),
+            DiceType::D6 => (NonZeroU8::new(1).unwrap(), DiceType::D6),
+            DiceType::D8 => (NonZeroU8::new(1).unwrap(), DiceType::D8),
+            DiceType::D10 => (NonZeroU8::new(1).unwrap(), DiceType::D10),
+            DiceType::D12 => (NonZeroU8::new(1).unwrap(), DiceType::D12),
+            DiceType::D20 => (NonZeroU8::new(1).unwrap(), DiceType::D20),
+            DiceType::D100 => (NonZeroU8::new(1).unwrap(), DiceType::D100),
+            // Other dice types are not supported
+            _ => return false,
         };
 
         self.dice = dice;
@@ -51,13 +38,13 @@ impl Component for Tower {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let d4_click = ctx.link().callback(|_| RollMsg::D4);
-        let d6_click = ctx.link().callback(|_| RollMsg::D6);
-        let d8_click = ctx.link().callback(|_| RollMsg::D8);
-        let d10_click = ctx.link().callback(|_| RollMsg::D10);
-        let d12_click = ctx.link().callback(|_| RollMsg::D12);
-        let d20_click = ctx.link().callback(|_| RollMsg::D20);
-        let d100_click = ctx.link().callback(|_| RollMsg::D100);
+        let d4_click = ctx.link().callback(|_| DiceType::D4);
+        let d6_click = ctx.link().callback(|_| DiceType::D6);
+        let d8_click = ctx.link().callback(|_| DiceType::D8);
+        let d10_click = ctx.link().callback(|_| DiceType::D10);
+        let d12_click = ctx.link().callback(|_| DiceType::D12);
+        let d20_click = ctx.link().callback(|_| DiceType::D20);
+        let d100_click = ctx.link().callback(|_| DiceType::D100);
 
         html! {
             <section id="dice-tower" class="text-block">
@@ -69,7 +56,7 @@ impl Component for Tower {
                 <button onclick={d12_click}>{ "D12" }</button>
                 <button onclick={d20_click}>{ "D20" }</button>
                 <button onclick={d100_click}>{ "D100" }</button>
-                <div>{ Roll::roll(&Roll {
+                <div>{ core::Roll::roll(&Roll {
                     number: NonZeroU8::new(1).unwrap(),
                     dice: self.dice,
                 }) }</div>

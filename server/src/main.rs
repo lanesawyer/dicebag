@@ -30,7 +30,7 @@ async fn get_graphql_handler(
     request: juniper_rocket::GraphQLRequest,
     schema: &State<Schema>,
 ) -> juniper_rocket::GraphQLResponse {
-    request.execute(&*schema, &context).await
+    request.execute(schema, &context).await
 }
 
 #[rocket::post("/graphql", data = "<request>")]
@@ -39,7 +39,7 @@ async fn post_graphql_handler(
     request: juniper_rocket::GraphQLRequest,
     schema: &State<Schema>,
 ) -> juniper_rocket::GraphQLResponse {
-    request.execute(&*schema, &context).await
+    request.execute(schema, &context).await
 }
 
 #[rocket::post("/")]
