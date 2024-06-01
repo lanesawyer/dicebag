@@ -77,7 +77,7 @@ pub fn campaign_page(props: &CampaignProps) -> Html {
             <h1>
                 { format!("Campaign number {}!", props.id) }
             </h1>
-            <>{characters.error.unwrap_or_else(|| "".to_string())}</>
+            <>{characters.error.unwrap_or_default()}</>
             <section id="settings">
                 <Icon name="cog" />
                 <Button label="Delete" icon_name={"trash".to_string()} button_type={ButtonType::Danger} on_click={delete_campaign} />

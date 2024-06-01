@@ -15,7 +15,6 @@ cargo test
 - [] Campaign CRUD
 - [] Entities CRUD (Entities are information to be tracked, the base of everything--characters, items, spells, attacks, etc.)
 - [] Sections CRUD (Sections are collections of entities, like a character sheet or campaign notes)
-- []
 - [] Dice Rolls
 - [] Dice Roll History
 - [] Dice Roll Statistics

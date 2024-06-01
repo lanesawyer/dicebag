@@ -1,5 +1,4 @@
-
-struct Campaign {
+pub struct Campaign {
     id: i32,
     name: String,
     description: String,
@@ -32,13 +31,5 @@ impl Campaign {
 
     pub fn set_description(&mut self, description: String) {
         self.description = description;
-    }
-
-    pub fn to_string(&self) -> String {
-        format!("{}: {}", self.name, self.description)
-    }
-
-    pub fn to_string_with_id(&self) -> String {
-        format!("{}: {} ({})", self.id, self.name, self.description)
     }
 }

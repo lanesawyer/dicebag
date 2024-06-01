@@ -16,14 +16,18 @@ mod utils;
 
 #[function_component(Dicebag)]
 pub fn dicebag() -> Html {
+    #[allow(clippy::let_unit_value)]
+    let navigation = html! { <Navigation /> };
+    #[allow(clippy::let_unit_value)]
+    let tower = html! { <Tower /> };
     html! {
         <BrowserRouter>
-            <Navigation />
+            { navigation }
             <main>
                 <Switch<AppRoute> render={Switch::render(switch)} />
             </main>
             <footer>
-                <Tower />
+                { tower }
                 <a href="https://yew.rs">
                     <img src="/assets/yew-logo.png" alt="yew logo" />
                 </a>

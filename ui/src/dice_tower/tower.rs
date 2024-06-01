@@ -23,10 +23,7 @@ impl Component for Tower {
             DiceType::D10 => (NonZeroU8::new(1).unwrap(), DiceType::D10),
             DiceType::D12 => (NonZeroU8::new(1).unwrap(), DiceType::D12),
             DiceType::D20 => (NonZeroU8::new(1).unwrap(), DiceType::D20),
-            DiceType::D100 => (
-                NonZeroU8::new(1).unwrap(),
-                DiceType::D100,
-            ),
+            DiceType::D100 => (NonZeroU8::new(1).unwrap(), DiceType::D100),
             // Other dice types are not supported
             _ => return false,
         };

@@ -1,5 +1,4 @@
-
-struct Player {
+pub struct Player {
     id: i32,
     name: String,
     // Collection of stuff
@@ -24,9 +23,5 @@ impl Player {
 
     pub fn set_name(&mut self, name: String) {
         self.name = name;
-    }
-
-    pub fn to_string(&self) -> String {
-        format!("{}: {}", self.id, self.name)
     }
 }

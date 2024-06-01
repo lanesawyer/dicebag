@@ -1,8 +1,10 @@
-mod dice;
 mod campaign;
+mod dice;
 mod player;
 
+pub use campaign::Campaign;
 pub use dice::{DiceType, Roll};
+pub use player::Player;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
