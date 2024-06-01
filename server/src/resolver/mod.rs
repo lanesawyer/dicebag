@@ -105,8 +105,7 @@ impl Mutation {
         use crate::schema::db::campaigns::dsl::*;
         use crate::schema::db::characters::dsl::{campaign_id, characters};
 
-        // TODO: Clean up
-        match context
+        let delete_result = context
             .run(move |c| {
                 let characters_target = characters.filter(campaign_id.eq(delete_id));
                 diesel::update(characters_target)
@@ -114,8 +113,10 @@ impl Mutation {
                     .execute(c)?;
                 diesel::delete(campaigns.filter(id.eq(delete_id))).execute(c)
             })
-            .await
-        {
+            .await;
+
+        // TODO: Clean up
+        match delete_result {
             Ok(_) => Ok(true),
             Err(_) => Err(FieldError::new(
                 "Unable to delete campaign",
