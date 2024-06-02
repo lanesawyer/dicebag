@@ -1,7 +1,7 @@
 use rand::{thread_rng, Rng};
-use std::num::NonZeroU8;
+use std::{num::NonZeroU8, str::FromStr};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 #[non_exhaustive]
 pub enum DiceType {
     D4,
@@ -13,6 +13,28 @@ pub enum DiceType {
     D100,
 }
 
+impl FromStr for DiceType {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "d4" => Ok(DiceType::D4),
+            "d6" => Ok(DiceType::D6),
+            "d8" => Ok(DiceType::D8),
+            "d10" => Ok(DiceType::D10),
+            "d12" => Ok(DiceType::D12),
+            "d20" => Ok(DiceType::D20),
+            "d100" => Ok(DiceType::D100),
+            _ => Err("Invalid dice type"),
+        }
+    }
+}
+
+fn random_number(die: DiceType) -> i64 {
+    let mut rng = thread_rng();
+    rng.gen_range(1..=die.into())
+}
+
 pub struct Roll {
     pub number: NonZeroU8,
     pub dice: DiceType,
@@ -20,10 +42,13 @@ pub struct Roll {
 
 impl Roll {
     pub fn roll(roll: &Roll) -> Vec<i64> {
-        let mut rng = thread_rng();
         (0..roll.number.into())
-            .map(|_| rng.gen_range(1..=roll.dice.into()))
+            .map(|_| random_number(roll.dice))
             .collect::<Vec<i64>>()
+    }
+
+    pub fn roll_one(dice: DiceType) -> i64 {
+        random_number(dice)
     }
 }
 
