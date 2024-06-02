@@ -2,7 +2,7 @@
 name = "dicebag-server"
 version = "0.1.0"
 authors = ["Lane Sawyer <github@lanesaywer.dev>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 diesel = { version = "1.4.8", features = ["postgres", "64-column-tables"] }
