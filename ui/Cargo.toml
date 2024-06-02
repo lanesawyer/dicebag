@@ -2,7 +2,7 @@
 name = "dicebag"
 version = "0.1.0"
 authors = ["Lane Sawyer <github@lanesawyer.dev>"]
-edition = "2018"
+edition = "2021"
 
 [profile.release]
 # Increases execution speed at the cost of compile time
