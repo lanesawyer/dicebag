@@ -6,18 +6,23 @@ The idea behind this is to provide a grab bag of tooling that groups can choose 
 This is also an experiment in writing a web app using WASM and Rust with a GraphQL-powered backend.
 
 ## Roadmap
-- Character Sheet: In Progress
 - Dice Roller: In Progress
+- Character Sheet: Not Started
 - Encounter Builder: Not Started
 - Campaign Manager: Not Started
-- Server-side storage: In Progress
-- What else is missing?
+- Local Storage: Not Started
+- Server-side Storage: Not Started
 
 ## Getting Started
-The project is split into two main sections, `ui` and `server`.
+The project is split into two main sections, `core` and `cli`.
 
-### UI
-See [the README](./ui/README.md) for more details.
+The idea behind `core` is to contain all the logic and data structures that other parts of the project will use. Then, when there's more than just a `cli`, it'll be easier to add in functionality to a different front-end.
 
-### Server
-See [the README](./server/README.md) for more details.
+To get started, you'll need to clone the repository and build the project.
+
+```bash
+cargo build
+```
+
+### What happened to the web UI?
+This project used to have a Yew and Rocket.rs frontend and backend, but they were no longer buildable. It was an ambitious project and I want to start with the core before adding a full website. I'd rather focus on something that works over the local network anyway, since this is intended to be for in-person play enhancers.
