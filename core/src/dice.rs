@@ -1,4 +1,4 @@
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use std::{num::NonZeroU8, str::FromStr};
 
 #[derive(Clone, Copy, Debug)]
@@ -31,8 +31,8 @@ impl FromStr for DiceType {
 }
 
 fn random_number(die: DiceType) -> i64 {
-    let mut rng = thread_rng();
-    rng.gen_range(1..=die.into())
+    let mut rng = rng();
+    rng.random_range(1..=die.into())
 }
 
 pub struct Roll {
