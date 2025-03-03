@@ -1,4 +1,4 @@
-use rand::{rng, Rng};
+use rand::{Rng, rng};
 use std::{num::NonZeroU8, str::FromStr};
 
 #[derive(Clone, Copy, Debug)]
