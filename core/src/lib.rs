@@ -1,8 +1,10 @@
 mod campaign;
+mod db;
 mod dice;
 mod player;
 
 pub use campaign::Campaign;
+pub use db::Persistable;
 pub use dice::{DiceType, Roll};
 pub use player::Player;
 

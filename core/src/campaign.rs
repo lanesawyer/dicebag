@@ -1,7 +1,12 @@
+use crate::{Player, db::Persistable};
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct Campaign {
     id: i32,
     name: String,
     description: String,
+    players: Vec<Player>,
 }
 
 impl Campaign {
@@ -10,6 +15,7 @@ impl Campaign {
             id,
             name,
             description,
+            players: vec![],
         }
     }
 
@@ -32,4 +38,10 @@ impl Campaign {
     pub fn set_description(&mut self, description: String) {
         self.description = description;
     }
+
+    pub fn add_player(&mut self, player: Player) {
+        self.players.push(player);
+    }
 }
+
+impl Persistable for Campaign {}
