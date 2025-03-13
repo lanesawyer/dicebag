@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use std::num::NonZeroU8;
 
-use core::{Campaign, DiceType, Roll};
+use core::{Campaign, DiceType, Persistable, Roll};
 
 /// Dicebag's CLI interface
 #[derive(Parser)]
@@ -41,17 +41,28 @@ enum Commands {
 fn main() {
     let cli = Cli::parse();
 
-    match &cli.command {
-        Some(Commands::Campaign { name, description }) => {
-            let campaign = Campaign::new(0, name.clone(), description.clone());
-            // TODO: Save the campaign
-            println!("{}: {}", campaign.name(), campaign.description());
+    if let Some(command) = &cli.command {
+        handle_command(command);
+    } else {
+        // TODO: Start the application in REPL mode
+        println!("Start the app!");
+    }
+}
+
+fn handle_command(command: &Commands) {
+    match command {
+        Commands::Campaign { name, description } => {
+            let campaign = Campaign::new(0, name.to_string(), description.to_string());
+            println!("Saved campaign: {}", campaign.name());
+            campaign
+                .save_to_ron_file(&format!("{}.ron", campaign.name()))
+                .expect("Failed to save campaign");
         }
-        Some(Commands::Player { name }) => {
+        Commands::Player { name } => {
             // TODO: Save the player
             println!("Hello, {}!", name);
         }
-        Some(Commands::Roll { dice, number }) => match dice.parse::<DiceType>() {
+        Commands::Roll { dice, number } => match dice.parse::<DiceType>() {
             Ok(d) => {
                 // TODO: Store history somewhere
                 if number.is_none() {
@@ -71,9 +82,5 @@ fn main() {
                 println!("Invalid dice type: {}", d);
             }
         },
-        None => {
-            // TODO: Start the application
-            println!("Start the app!");
-        }
     }
 }
