@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cargo fmt --all 2>/dev/null || true",
+            "statusMessage": "Formatting..."
+          },
+          {
+            "type": "command",
+            "command": "cargo clippy --all 2>&1 || true",
+            "statusMessage": "Linting..."
+          }
+        ]
+      }
+    ]
+  }
+}
