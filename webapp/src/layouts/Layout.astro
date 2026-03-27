@@ -29,8 +29,14 @@ if (identity?.role === 'player') {
     <nav class="navbar is-dark" aria-label="main navigation">
       <div class="navbar-brand">
         <a class="navbar-item has-text-weight-bold" href="/">🎲 Dicebag</a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
       </div>
-      <div class="navbar-menu">
+      <div id="navbar-menu" class="navbar-menu">
         <div class="navbar-start">
           <a class="navbar-item" href="/campaigns">Campaigns</a>
         </div>
@@ -50,6 +56,12 @@ if (identity?.role === 'player') {
         </div>
       </div>
     </nav>
+    <script is:inline>
+      document.querySelector('.navbar-burger')?.addEventListener('click', function() {
+        this.classList.toggle('is-active');
+        document.getElementById('navbar-menu')?.classList.toggle('is-active');
+      });
+    </script>
     <main class="section">
       <div class="container">
         <slot />
