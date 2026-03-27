@@ -1,4 +1,4 @@
-use crate::{Player, db::Persistable};
+use crate::{Entity, Player, db::Persistable};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -7,6 +7,7 @@ pub struct Campaign {
     name: String,
     description: String,
     players: Vec<Player>,
+    entities: Vec<Entity>,
 }
 
 impl Campaign {
@@ -16,6 +17,7 @@ impl Campaign {
             name,
             description,
             players: vec![],
+            entities: vec![],
         }
     }
 
@@ -41,6 +43,26 @@ impl Campaign {
 
     pub fn add_player(&mut self, player: Player) {
         self.players.push(player);
+    }
+
+    pub fn player(&self, id: i32) -> Option<&Player> {
+        self.players.iter().find(|p| p.id() == id)
+    }
+
+    pub fn players(&self) -> &[Player] {
+        &self.players
+    }
+
+    pub fn add_entity(&mut self, entity: Entity) {
+        self.entities.push(entity);
+    }
+
+    pub fn entity(&self, id: i32) -> Option<&Entity> {
+        self.entities.iter().find(|e| e.id() == id)
+    }
+
+    pub fn entities(&self) -> &[Entity] {
+        &self.entities
     }
 }
 
