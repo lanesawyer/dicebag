@@ -1,5 +1,5 @@
 use ron::de::from_str;
-use ron::ser::to_string;
+use ron::ser::{PrettyConfig, to_string_pretty};
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{self, Read, Write};
@@ -9,7 +9,7 @@ use std::io::{self, Read, Write};
 pub trait Persistable: Serialize + for<'de> Deserialize<'de> {
     fn save_to_ron_file(&self, filename: &str) -> io::Result<()> {
         let mut file = File::create(filename.replace(" ", "-"))?;
-        let ron = to_string(self).expect("Serialization failed");
+        let ron = to_string_pretty(self, PrettyConfig::default()).expect("Serialization failed");
         file.write_all(ron.as_bytes())?;
         Ok(())
     }
