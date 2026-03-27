@@ -1,10 +1,13 @@
+mod persistence;
+
 use clap::{Parser, Subcommand};
 use std::num::NonZeroU8;
 
 use core::{
-    Campaign, CombatantRef, DiceType, Encounter, Entity, EntityKind, Participant, Persistable,
-    Player, Roll,
+    Campaign, CombatantRef, DiceType, Encounter, Entity, EntityKind, EntityRoster, Participant,
+    Player, PlayerRoster, Roll,
 };
+use persistence::{data_dir, load, save};
 
 /// Dicebag's CLI interface
 #[derive(Parser)]
@@ -28,7 +31,7 @@ enum Commands {
     Player {
         #[arg(short, long)]
         name: String,
-        /// Campaign file to add the player to (e.g. my-campaign.ron)
+        /// Campaign file (e.g. my-campaign.ron)
         #[arg(short, long)]
         campaign: String,
     },
@@ -131,37 +134,68 @@ fn main() {
     }
 }
 
-fn resolve_name<'a>(source: &CombatantRef, campaign: &'a Campaign) -> &'a str {
-    match source {
-        CombatantRef::Player(id) => campaign
-            .player(*id)
-            .map(|p| p.name())
-            .unwrap_or("Unknown Player"),
-        CombatantRef::Entity(id) => campaign
-            .entity(*id)
-            .map(|e| e.name())
-            .unwrap_or("Unknown Entity"),
-    }
+fn players_filename(campaign_name: &str) -> String {
+    format!(
+        "{}-players.ron",
+        campaign_name.to_lowercase().replace(' ', "-")
+    )
+}
+
+fn entities_filename(campaign_name: &str) -> String {
+    format!(
+        "{}-entities.ron",
+        campaign_name.to_lowercase().replace(' ', "-")
+    )
 }
 
 fn encounter_filename(name: &str) -> String {
     format!("{}.ron", name.to_lowercase().replace(' ', "-"))
 }
 
+fn campaign_filename(name: &str) -> String {
+    format!("{}.ron", name.to_lowercase().replace(' ', "-"))
+}
+
+fn resolve_name<'a>(
+    source: &CombatantRef,
+    players: &'a PlayerRoster,
+    entities: &'a EntityRoster,
+) -> &'a str {
+    match source {
+        CombatantRef::Player(id) => players
+            .get(*id)
+            .map(|p| p.name())
+            .unwrap_or("Unknown Player"),
+        CombatantRef::Entity(id) => entities
+            .get(*id)
+            .map(|e| e.name())
+            .unwrap_or("Unknown Entity"),
+    }
+}
+
 fn handle_command(command: &Commands) {
     match command {
         Commands::Campaign { name, description } => {
             let campaign = Campaign::new(0, name.to_string(), description.to_string());
-            let filename = format!("{}.ron", campaign.name().to_lowercase().replace(' ', "-"));
-            campaign
-                .save_to_ron_file(&filename)
-                .expect("Failed to save campaign");
-            println!("Saved campaign '{}' to {}", campaign.name(), filename);
+            let filename = campaign_filename(campaign.name());
+            save(&campaign, &filename).expect("Failed to save campaign");
+            // Initialize empty rosters
+            save(&PlayerRoster::new(), &players_filename(campaign.name()))
+                .expect("Failed to save player roster");
+            save(&EntityRoster::new(), &entities_filename(campaign.name()))
+                .expect("Failed to save entity roster");
+            println!(
+                "Saved campaign '{}' to {}",
+                campaign.name(),
+                data_dir().join(&filename).display()
+            );
         }
 
         Commands::Player { name, campaign } => {
-            let mut c = Campaign::load_from_ron_file(campaign).expect("Failed to load campaign");
-            let id = c.players().len() as i32 + 1;
+            let c: Campaign = load(campaign).expect("Failed to load campaign");
+            let roster_file = players_filename(c.name());
+            let mut roster: PlayerRoster = load(&roster_file).unwrap_or_default();
+            let id = roster.next_id();
             let player = Player::new(id, name.to_string());
             println!(
                 "Added player '{}' (id={}) to '{}'",
@@ -169,10 +203,8 @@ fn handle_command(command: &Commands) {
                 player.id(),
                 c.name()
             );
-            c.add_player(player);
-            let filename = format!("{}.ron", c.name().to_lowercase().replace(' ', "-"));
-            c.save_to_ron_file(&filename)
-                .expect("Failed to save campaign");
+            roster.add(player);
+            save(&roster, &roster_file).expect("Failed to save player roster");
         }
 
         Commands::AddEntity {
@@ -181,12 +213,14 @@ fn handle_command(command: &Commands) {
             max_hp,
             campaign,
         } => {
-            let mut c = Campaign::load_from_ron_file(campaign).expect("Failed to load campaign");
+            let c: Campaign = load(campaign).expect("Failed to load campaign");
+            let roster_file = entities_filename(c.name());
+            let mut roster: EntityRoster = load(&roster_file).unwrap_or_default();
             let entity_kind = match kind.as_str() {
                 "npc" => EntityKind::AllyNpc,
                 _ => EntityKind::Enemy,
             };
-            let id = c.entities().len() as i32 + 1;
+            let id = roster.next_id();
             let entity = Entity::new(id, name.to_string(), entity_kind, *max_hp);
             println!(
                 "Added entity '{}' (id={}, kind={}, max_hp={}) to '{}'",
@@ -196,15 +230,14 @@ fn handle_command(command: &Commands) {
                 max_hp,
                 c.name()
             );
-            c.add_entity(entity);
-            let filename = format!("{}.ron", c.name().to_lowercase().replace(' ', "-"));
-            c.save_to_ron_file(&filename)
-                .expect("Failed to save campaign");
+            roster.add(entity);
+            save(&roster, &roster_file).expect("Failed to save entity roster");
         }
 
         Commands::ListEntities { campaign } => {
-            let c = Campaign::load_from_ron_file(campaign).expect("Failed to load campaign");
-            let entities = c.entities();
+            let c: Campaign = load(campaign).expect("Failed to load campaign");
+            let roster: EntityRoster = load(&entities_filename(c.name())).unwrap_or_default();
+            let entities = roster.entities();
             if entities.is_empty() {
                 println!("No entities in '{}'", c.name());
             } else {
@@ -227,12 +260,15 @@ fn handle_command(command: &Commands) {
         }
 
         Commands::AddEncounter { name, campaign } => {
-            let c = Campaign::load_from_ron_file(campaign).expect("Failed to load campaign");
+            let c: Campaign = load(campaign).expect("Failed to load campaign");
             let enc = Encounter::new(0, name.to_string(), c.id());
             let filename = encounter_filename(name);
-            enc.save_to_ron_file(&filename)
-                .expect("Failed to save encounter");
-            println!("Saved encounter '{}' to {}", name, filename);
+            save(&enc, &filename).expect("Failed to save encounter");
+            println!(
+                "Saved encounter '{}' to {}",
+                name,
+                data_dir().join(&filename).display()
+            );
         }
 
         Commands::AddParticipant {
@@ -242,26 +278,26 @@ fn handle_command(command: &Commands) {
             kind,
             max_hp,
         } => {
-            let c = Campaign::load_from_ron_file(campaign).expect("Failed to load campaign");
-            let mut enc =
-                Encounter::load_from_ron_file(encounter).expect("Failed to load encounter");
+            let c: Campaign = load(campaign).expect("Failed to load campaign");
+            let players: PlayerRoster = load(&players_filename(c.name())).unwrap_or_default();
+            let entities: EntityRoster = load(&entities_filename(c.name())).unwrap_or_default();
+            let mut enc: Encounter = load(encounter).expect("Failed to load encounter");
             let participant_id = enc.participants().len() as i32 + 1;
             let participant = match kind.as_str() {
                 "player" => {
-                    let player = c
-                        .player(*id)
+                    let player = players
+                        .get(*id)
                         .unwrap_or_else(|| panic!("No player with id={}", id));
-                    let hp = max_hp.unwrap_or(0); // players need explicit HP since Player has no max_hp yet
-                    Participant::from_player(participant_id, player, hp)
+                    Participant::from_player(participant_id, player, max_hp.unwrap_or(0))
                 }
                 _ => {
-                    let entity = c
-                        .entity(*id)
+                    let entity = entities
+                        .get(*id)
                         .unwrap_or_else(|| panic!("No entity with id={}", id));
                     Participant::from_entity(participant_id, entity, *max_hp)
                 }
             };
-            let name = resolve_name(participant.source(), &c);
+            let name = resolve_name(participant.source(), &players, &entities);
             println!(
                 "Added '{}' to encounter '{}' (participant id={})",
                 name,
@@ -269,8 +305,7 @@ fn handle_command(command: &Commands) {
                 participant.id()
             );
             enc.add_participant(participant);
-            enc.save_to_ron_file(encounter)
-                .expect("Failed to save encounter");
+            save(&enc, encounter).expect("Failed to save encounter");
         }
 
         Commands::SetInitiative {
@@ -278,15 +313,13 @@ fn handle_command(command: &Commands) {
             id,
             initiative,
         } => {
-            let mut enc =
-                Encounter::load_from_ron_file(encounter).expect("Failed to load encounter");
+            let mut enc: Encounter = load(encounter).expect("Failed to load encounter");
             let p = enc
                 .participant_mut(*id)
                 .unwrap_or_else(|| panic!("No participant with id={}", id));
             p.set_initiative(*initiative);
             println!("Set initiative {} for participant id={}", initiative, id);
-            enc.save_to_ron_file(encounter)
-                .expect("Failed to save encounter");
+            save(&enc, encounter).expect("Failed to save encounter");
         }
 
         Commands::HpChange {
@@ -294,8 +327,7 @@ fn handle_command(command: &Commands) {
             id,
             delta,
         } => {
-            let mut enc =
-                Encounter::load_from_ron_file(encounter).expect("Failed to load encounter");
+            let mut enc: Encounter = load(encounter).expect("Failed to load encounter");
             let p = enc
                 .participant_mut(*id)
                 .unwrap_or_else(|| panic!("No participant with id={}", id));
@@ -313,20 +345,21 @@ fn handle_command(command: &Commands) {
                 p.max_hp(),
                 if !p.is_alive() { " [DEAD]" } else { "" }
             );
-            enc.save_to_ron_file(encounter)
-                .expect("Failed to save encounter");
+            save(&enc, encounter).expect("Failed to save encounter");
         }
 
         Commands::ShowEncounter {
             encounter,
             campaign,
         } => {
-            let c = Campaign::load_from_ron_file(campaign).expect("Failed to load campaign");
-            let enc = Encounter::load_from_ron_file(encounter).expect("Failed to load encounter");
+            let c: Campaign = load(campaign).expect("Failed to load campaign");
+            let players: PlayerRoster = load(&players_filename(c.name())).unwrap_or_default();
+            let entities: EntityRoster = load(&entities_filename(c.name())).unwrap_or_default();
+            let enc: Encounter = load(encounter).expect("Failed to load encounter");
             println!("Encounter: {}", enc.name());
             println!("Initiative order:");
             for p in enc.initiative_order() {
-                let name = resolve_name(p.source(), &c);
+                let name = resolve_name(p.source(), &players, &entities);
                 let init = p
                     .initiative()
                     .map(|i| i.to_string())

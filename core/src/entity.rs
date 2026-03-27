@@ -50,3 +50,36 @@ impl Entity {
         self.notes = notes;
     }
 }
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct EntityRoster {
+    entities: Vec<Entity>,
+}
+
+impl EntityRoster {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn entities(&self) -> &[Entity] {
+        &self.entities
+    }
+
+    pub fn get(&self, id: i32) -> Option<&Entity> {
+        self.entities.iter().find(|e| e.id == id)
+    }
+
+    pub fn add(&mut self, entity: Entity) {
+        self.entities.push(entity);
+    }
+
+    pub fn remove(&mut self, id: i32) -> bool {
+        let before = self.entities.len();
+        self.entities.retain(|e| e.id != id);
+        self.entities.len() < before
+    }
+
+    pub fn next_id(&self) -> i32 {
+        self.entities.iter().map(|e| e.id).max().unwrap_or(0) + 1
+    }
+}

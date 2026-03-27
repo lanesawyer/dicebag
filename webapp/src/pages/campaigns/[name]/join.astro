@@ -1,0 +1,55 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Box, Button, Notification } from 'astro-bulma';
+import { actions } from 'astro:actions';
+import { getCampaign, getPlayerRoster } from '../../../lib/campaigns';
+import { getClaim } from '../../../lib/claims';
+
+const campaignName = decodeURIComponent(Astro.params.name ?? '');
+const campaign = await getCampaign(campaignName);
+if (!campaign) return Astro.redirect('/campaigns');
+
+const identity = await Astro.session!.get('identity');
+if (identity) return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}`);
+
+const result = Astro.getActionResult(actions.claimPlayer);
+if (result && !result.error) return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}`);
+
+const roster = await getPlayerRoster(campaignName);
+const players = await Promise.all(
+  roster.players.map(async p => ({ ...p, claimed: await getClaim(campaignName, p.id) }))
+);
+---
+
+<Layout title={`Join ${campaign.name}`}>
+  <div style="max-width: 28rem; margin: 4rem auto;">
+    <h1 class="title">Join {campaign.name}</h1>
+    <p class="subtitle">Choose your character</p>
+
+    {result?.error && <Notification color="danger">{result.error.message}</Notification>}
+
+    {players.length === 0 ? (
+      <Notification color="info">No players have been added to this campaign yet.</Notification>
+    ) : (
+      <Box>
+        {players.map(p => (
+          <form method="POST" action={actions.claimPlayer} class="mb-3">
+            <input type="hidden" name="campaignName" value={campaignName} />
+            <input type="hidden" name="playerId" value={p.id} />
+            <Button
+              color={p.claimed ? 'light' : 'primary'}
+              type="submit"
+              disabled={p.claimed}
+            >
+              {p.name}{p.claimed ? ' (taken)' : ''}
+            </Button>
+          </form>
+        ))}
+      </Box>
+    )}
+
+    <p class="mt-4">
+      Are you the GM? <a href="/login/gm">Login here</a>
+    </p>
+  </div>
+</Layout>

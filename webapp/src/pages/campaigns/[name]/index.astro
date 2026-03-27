@@ -1,0 +1,96 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Button, Notification } from 'astro-bulma';
+import { getCampaign, listEncounters, getPlayerRoster } from '../../../lib/campaigns';
+import { getClaim } from '../../../lib/claims';
+import { actions } from 'astro:actions';
+
+const campaignName = decodeURIComponent(Astro.params.name ?? '');
+const campaign = await getCampaign(campaignName);
+if (!campaign) return Astro.redirect('/campaigns');
+
+const encounters = await listEncounters(campaignName);
+const encoded = encodeURIComponent(campaignName);
+const identity = await Astro.session!.get('identity');
+
+const claimResult = Astro.getActionResult(actions.claimPlayer);
+if (claimResult && !claimResult.error) {
+  return Astro.redirect(`/campaigns/${encoded}`);
+}
+
+const roster = await getPlayerRoster(campaignName);
+const players = await Promise.all(
+  roster.players.map(async p => ({ ...p, claimed: await getClaim(campaignName, p.id) }))
+);
+---
+
+<Layout title={campaign.name}>
+  <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+    <div>
+      <h1 class="title mb-0">{campaign.name}</h1>
+      {campaign.description && <p class="subtitle mt-1">{campaign.description}</p>}
+    </div>
+    <div class="buttons">
+      <Button href={`/campaigns/${encoded}/edit`} color="light">Edit</Button>
+      <Button href="/campaigns" color="light">All Campaigns</Button>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column">
+      <div class="box">
+        <p class="heading mb-3">Players</p>
+        {claimResult?.error && <p class="has-text-danger mb-3">{claimResult.error.message}</p>}
+        {players.length === 0 ? (
+          <p class="has-text-grey mb-3">No players yet.</p>
+        ) : (
+          <ul class="mb-3">
+            {players.map(p => (
+              <li class="is-flex is-align-items-center mb-2" style="gap: 0.75rem">
+                <a href={`/campaigns/${encoded}/players/${p.id}`}>{p.name}</a>
+                {!identity && (
+                  p.claimed ? (
+                    <span class="tag">Taken</span>
+                  ) : (
+                    <form method="POST" action={actions.claimPlayer}>
+                      <input type="hidden" name="campaignName" value={campaignName} />
+                      <input type="hidden" name="playerId" value={p.id} />
+                      <button class="button is-small is-primary">Claim</button>
+                    </form>
+                  )
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        <Button href={`/campaigns/${encoded}/players`} color="info">Manage Players</Button>
+      </div>
+    </div>
+    <div class="column">
+      <div class="box">
+        <p class="heading">Encounters</p>
+        <p class="title">{encounters.length}</p>
+        <Button href={`/campaigns/${encoded}/encounters`} color="success">Manage Encounters</Button>
+      </div>
+    </div>
+  </div>
+
+  {encounters.length > 0 && (
+    <div class="mt-4">
+      <p class="has-text-weight-semibold mb-3">Recent Encounters</p>
+      <div class="buttons">
+        {encounters.slice(-3).reverse().map(e => (
+          <Button href={`/campaigns/${encoded}/encounters/${e.id}`} color="light">
+            {e.name}
+          </Button>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {roster.players.length === 0 && encounters.length === 0 && (
+    <Notification color="info">
+      Get started by adding players or creating an encounter.
+    </Notification>
+  )}
+</Layout>

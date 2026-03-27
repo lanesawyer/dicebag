@@ -1,0 +1,69 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { Box, Button, TextInput, Notification, Table } from 'astro-bulma';
+import { actions } from 'astro:actions';
+import { getCampaign, listEncounters } from '../../../../lib/campaigns';
+
+const campaignName = decodeURIComponent(Astro.params.name ?? '');
+const campaign = await getCampaign(campaignName);
+if (!campaign) return Astro.redirect('/campaigns');
+
+const result = Astro.getActionResult(actions.createEncounter);
+if (result && !result.error) {
+  return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/encounters/${result.data.id}`);
+}
+
+const encounters = await listEncounters(campaignName);
+---
+
+<Layout title={`${campaign.name} — Encounters`}>
+  <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+    <div>
+      <h1 class="title mb-0">{campaign.name}</h1>
+      <p class="subtitle mt-1">Encounters</p>
+    </div>
+    <div class="buttons">
+      <Button href={`/campaigns/${encodeURIComponent(campaignName)}/players`} color="light">Players</Button>
+      <Button href="/campaigns" color="light">All Campaigns</Button>
+    </div>
+  </div>
+
+  {result?.error && <Notification color="danger">{result.error.message}</Notification>}
+
+  {encounters.length === 0 ? (
+    <Notification color="info">No encounters yet. Create one below!</Notification>
+  ) : (
+    <Table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Participants</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {encounters.map(e => (
+          <tr>
+            <td>{e.name}</td>
+            <td>{e.participants.length}</td>
+            <td>
+              <Button href={`/campaigns/${encodeURIComponent(campaignName)}/encounters/${e.id}`} color="info" size="small">
+                Open
+              </Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  )}
+
+  <Box>
+    <p class="has-text-weight-semibold mb-3">New Encounter</p>
+    <form method="POST" action={actions.createEncounter}>
+      <input type="hidden" name="campaignName" value={campaignName} />
+      <input type="hidden" name="campaignId" value={campaign.id} />
+      <TextInput name="name" label="Name" placeholder="Goblin Ambush" />
+      <Button color="primary" type="submit">Create</Button>
+    </form>
+  </Box>
+</Layout>

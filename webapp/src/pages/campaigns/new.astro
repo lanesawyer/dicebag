@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Box, Button, TextInput, Notification } from 'astro-bulma';
+import { actions } from 'astro:actions';
+
+const result = Astro.getActionResult(actions.createCampaign);
+if (result && !result.error) return Astro.redirect('/campaigns');
+---
+
+<Layout title="New Campaign">
+  <h1 class="title">New Campaign</h1>
+
+  {result?.error && <Notification color="danger">{result.error.message}</Notification>}
+
+  <Box>
+    <form method="POST" action={actions.createCampaign}>
+      <TextInput name="name" label="Name" placeholder="The Lost Mine of Phandelver" />
+      <TextInput name="description" label="Description" placeholder="A short description of the campaign" />
+      <div class="field is-grouped">
+        <div class="control">
+          <Button color="primary" type="submit">Create Campaign</Button>
+        </div>
+        <div class="control">
+          <Button href="/campaigns" color="light">Cancel</Button>
+        </div>
+      </div>
+    </form>
+  </Box>
+</Layout>

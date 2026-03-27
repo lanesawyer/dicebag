@@ -1,4 +1,4 @@
-use crate::{Entity, Player, db::Persistable};
+use crate::{Entity, Player};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -137,8 +137,6 @@ impl Encounter {
         with_init
     }
 }
-
-impl Persistable for Encounter {}
 
 #[cfg(test)]
 mod tests {
