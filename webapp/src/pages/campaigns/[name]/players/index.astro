@@ -1,0 +1,66 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { Box, Button, TextInput, Notification, Table } from 'astro-bulma';
+import { actions } from 'astro:actions';
+import { getCampaign, getPlayerRoster } from '../../../../lib/campaigns';
+
+const campaignName = decodeURIComponent(Astro.params.name ?? '');
+const campaign = await getCampaign(campaignName);
+if (!campaign) return Astro.redirect('/campaigns');
+
+const result = Astro.getActionResult(actions.addPlayer);
+if (result && !result.error) {
+  return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/players`);
+}
+
+const roster = await getPlayerRoster(campaignName);
+---
+
+<Layout title={`${campaign.name} — Players`}>
+  <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+    <div>
+      <h1 class="title mb-0">{campaign.name}</h1>
+      <p class="subtitle mt-1">Players</p>
+    </div>
+    <div class="buttons">
+      <Button href={`/campaigns/${encodeURIComponent(campaignName)}/edit`} color="light">Edit Campaign</Button>
+      <Button href="/campaigns" color="light">All Campaigns</Button>
+    </div>
+  </div>
+
+  {result?.error && <Notification color="danger">{result.error.message}</Notification>}
+
+  {roster.players.length === 0 ? (
+    <Notification color="info">No players yet. Add one below!</Notification>
+  ) : (
+    <Table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {roster.players.map(p => (
+          <tr>
+            <td>{p.id}</td>
+            <td>
+              <a href={`/campaigns/${encodeURIComponent(campaignName)}/players/${p.id}`}>
+                {p.name}
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  )}
+
+  <Box>
+    <p class="has-text-weight-semibold mb-3">Add Player</p>
+    <form method="POST" action={actions.addPlayer}>
+      <input type="hidden" name="campaignName" value={campaignName} />
+      <TextInput name="name" label="Name" placeholder="Aragorn" />
+      <Button color="primary" type="submit">Add Player</Button>
+    </form>
+  </Box>
+</Layout>

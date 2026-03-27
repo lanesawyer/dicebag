@@ -1,0 +1,34 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Box, Button, Notification } from 'astro-bulma';
+import { actions } from 'astro:actions';
+
+const identity = await Astro.session!.get('identity');
+if (identity?.role === 'gm') return Astro.redirect('/campaigns');
+
+const result = Astro.getActionResult(actions.loginGm);
+if (result && !result.error) return Astro.redirect('/campaigns');
+
+const redirect = Astro.url.searchParams.get('redirect') ?? '/campaigns';
+---
+
+<Layout title="GM Login">
+  <div style="max-width: 24rem; margin: 4rem auto;">
+    <h1 class="title">GM Login</h1>
+
+    {result?.error && <Notification color="danger">{result.error.message}</Notification>}
+
+    <Box>
+      <form method="POST" action={actions.loginGm}>
+        <input type="hidden" name="redirect" value={redirect} />
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" type="password" name="password" autofocus />
+          </div>
+        </div>
+        <Button color="primary" type="submit">Login</Button>
+      </form>
+    </Box>
+  </div>
+</Layout>

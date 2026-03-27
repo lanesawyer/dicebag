@@ -1,8 +1,8 @@
 mod commands;
+mod persistence;
 mod util;
 
 use clap::Parser;
-use commands::Commands;
 
 /// Dicebag's CLI interface
 #[derive(Parser)]
@@ -10,7 +10,7 @@ use commands::Commands;
 #[command(version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Option<commands::Commands>,
 }
 
 fn main() {

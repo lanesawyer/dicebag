@@ -1,0 +1,61 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { Box, Button, TextInput, Notification } from 'astro-bulma';
+import { actions } from 'astro:actions';
+import { getCampaign, getPlayerRoster } from '../../../../lib/campaigns';
+
+const campaignName = decodeURIComponent(Astro.params.name ?? '');
+const playerId = parseInt(Astro.params.id ?? '');
+const campaign = await getCampaign(campaignName);
+if (!campaign) return Astro.redirect('/campaigns');
+
+const roster = await getPlayerRoster(campaignName);
+const player = roster.players.find(p => p.id === playerId) ?? null;
+if (!player) return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/players`);
+
+const updateResult = Astro.getActionResult(actions.updatePlayer);
+const deleteResult = Astro.getActionResult(actions.deletePlayer);
+
+if (updateResult && !updateResult.error) {
+  return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/players/${playerId}?saved=1`);
+}
+if (deleteResult && !deleteResult.error) {
+  return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/players`);
+}
+
+const success = Astro.url.searchParams.get('saved') === '1';
+---
+
+<Layout title={`${player.name} — ${campaign.name}`}>
+  <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+    <div>
+      <h1 class="title mb-0">{player.name}</h1>
+      <p class="subtitle mt-1">
+        <a href={`/campaigns/${encodeURIComponent(campaignName)}/players`}>{campaign.name}</a>
+      </p>
+    </div>
+  </div>
+
+  {updateResult?.error && <Notification color="danger">{updateResult.error.message}</Notification>}
+  {deleteResult?.error && <Notification color="danger">{deleteResult.error.message}</Notification>}
+  {success && <Notification color="success">Saved!</Notification>}
+
+  <Box>
+    <form method="POST" action={actions.updatePlayer}>
+      <input type="hidden" name="campaignName" value={campaignName} />
+      <input type="hidden" name="playerId" value={playerId} />
+      <TextInput name="name" label="Name" value={player.name} />
+      <div class="is-flex is-justify-content-space-between">
+        <Button color="primary" type="submit">Save</Button>
+      </div>
+    </form>
+  </Box>
+
+  <Box>
+    <form method="POST" action={actions.deletePlayer}>
+      <input type="hidden" name="campaignName" value={campaignName} />
+      <input type="hidden" name="playerId" value={playerId} />
+      <Button color="danger" type="submit">Delete Player</Button>
+    </form>
+  </Box>
+</Layout>

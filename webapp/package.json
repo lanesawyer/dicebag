@@ -1,0 +1,32 @@
+{
+  "name": "dicebag",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "wasm": "wasm-pack build ../wasm --target web --out-dir ../webapp/src/wasm",
+    "dev": "pnpm run wasm && astro dev --host",
+    "build": "pnpm run wasm && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "10.0.4",
+    "astro": "6.1.1",
+    "astro-bulma": "github:lanesawyer/astro-bulma",
+    "bulma": "1.0.4",
+    "ws": "^8.20.0"
+  },
+  "volta": {
+    "node": "24.14.1",
+    "pnpm": "10.33.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "@types/node": "25.5.0",
+    "@types/ws": "^8.18.1",
+    "typescript": "^6.0.2"
+  }
+}

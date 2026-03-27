@@ -1,5 +1,8 @@
 use clap::Subcommand;
-use core::{Campaign, Entity, EntityKind, Persistable, Player};
+use core::{Campaign, Entity, EntityKind, EntityRoster, Player, PlayerRoster};
+
+use crate::persistence::{data_dir, load, save};
+use crate::util::{campaign_filename, entities_filename, players_filename};
 
 #[derive(Subcommand)]
 pub enum CampaignCommands {
@@ -43,16 +46,24 @@ pub fn handle(cmd: CampaignCommands) {
     match cmd {
         CampaignCommands::New { name, description } => {
             let campaign = Campaign::new(0, name, description);
-            let filename = format!("{}.ron", campaign.name().to_lowercase().replace(' ', "-"));
-            campaign
-                .save_to_ron_file(&filename)
-                .expect("Failed to save campaign");
-            println!("Saved campaign '{}' to {}", campaign.name(), filename);
+            let filename = campaign_filename(campaign.name());
+            save(&campaign, &filename).expect("Failed to save campaign");
+            save(&PlayerRoster::new(), &players_filename(campaign.name()))
+                .expect("Failed to save player roster");
+            save(&EntityRoster::new(), &entities_filename(campaign.name()))
+                .expect("Failed to save entity roster");
+            println!(
+                "Saved campaign '{}' to {}",
+                campaign.name(),
+                data_dir().join(&filename).display()
+            );
         }
 
         CampaignCommands::AddPlayer { name, campaign } => {
-            let mut c = Campaign::load_from_ron_file(&campaign).expect("Failed to load campaign");
-            let id = c.players().len() as i32 + 1;
+            let c: Campaign = load(&campaign).expect("Failed to load campaign");
+            let roster_file = players_filename(c.name());
+            let mut roster: PlayerRoster = load(&roster_file).unwrap_or_default();
+            let id = roster.next_id();
             let player = Player::new(id, name);
             println!(
                 "Added player '{}' (id={}) to '{}'",
@@ -60,10 +71,8 @@ pub fn handle(cmd: CampaignCommands) {
                 player.id(),
                 c.name()
             );
-            c.add_player(player);
-            let filename = format!("{}.ron", c.name().to_lowercase().replace(' ', "-"));
-            c.save_to_ron_file(&filename)
-                .expect("Failed to save campaign");
+            roster.add(player);
+            save(&roster, &roster_file).expect("Failed to save player roster");
         }
 
         CampaignCommands::AddEntity {
@@ -72,12 +81,14 @@ pub fn handle(cmd: CampaignCommands) {
             max_hp,
             campaign,
         } => {
-            let mut c = Campaign::load_from_ron_file(&campaign).expect("Failed to load campaign");
+            let c: Campaign = load(&campaign).expect("Failed to load campaign");
+            let roster_file = entities_filename(c.name());
+            let mut roster: EntityRoster = load(&roster_file).unwrap_or_default();
             let entity_kind = match kind.as_str() {
                 "npc" => EntityKind::AllyNpc,
                 _ => EntityKind::Enemy,
             };
-            let id = c.entities().len() as i32 + 1;
+            let id = roster.next_id();
             let entity = Entity::new(id, name, entity_kind, max_hp);
             println!(
                 "Added entity '{}' (id={}, kind={}, max_hp={}) to '{}'",
@@ -87,15 +98,15 @@ pub fn handle(cmd: CampaignCommands) {
                 max_hp,
                 c.name()
             );
-            c.add_entity(entity);
-            let filename = format!("{}.ron", c.name().to_lowercase().replace(' ', "-"));
-            c.save_to_ron_file(&filename)
-                .expect("Failed to save campaign");
+            roster.add(entity);
+            save(&roster, &roster_file).expect("Failed to save entity roster");
         }
 
         CampaignCommands::ListEntities { campaign } => {
-            let c = Campaign::load_from_ron_file(&campaign).expect("Failed to load campaign");
-            let entities = c.entities();
+            let c: Campaign = load(&campaign).expect("Failed to load campaign");
+            let roster_file = entities_filename(c.name());
+            let roster: EntityRoster = load(&roster_file).unwrap_or_default();
+            let entities = roster.entities();
             if entities.is_empty() {
                 println!("No entities in '{}'", c.name());
             } else {
