@@ -1,16 +1,23 @@
 ---
-import Layout from '../../../../layouts/Layout.astro';
-import { Box, Button, TextInput, Notification, Table } from 'astro-bulma';
-import { actions } from 'astro:actions';
-import { getCampaign, getEncounter, getPlayerRoster } from '../../../../lib/campaigns';
+import Layout from "../../../../layouts/Layout.astro";
+import { Box, Button, TextInput, Notification, Table } from "astro-bulma";
+import { actions } from "astro:actions";
+import {
+  getCampaign,
+  getEncounter,
+  getPlayerRoster,
+} from "../../../../lib/campaigns";
 
-const campaignName = decodeURIComponent(Astro.params.name ?? '');
-const encounterId = parseInt(Astro.params.id ?? '');
+const campaignName = decodeURIComponent(Astro.params.name ?? "");
+const encounterId = parseInt(Astro.params.id ?? "");
 const campaign = await getCampaign(campaignName);
-if (!campaign) return Astro.redirect('/campaigns');
+if (!campaign) return Astro.redirect("/campaigns");
 
 const encounter = await getEncounter(campaignName, encounterId);
-if (!encounter) return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/encounters`);
+if (!encounter)
+  return Astro.redirect(
+    `/campaigns/${encodeURIComponent(campaignName)}/encounters`,
+  );
 
 const roster = await getPlayerRoster(campaignName);
 
@@ -18,13 +25,18 @@ const addResult = Astro.getActionResult(actions.addParticipant);
 const moveResult = Astro.getActionResult(actions.moveParticipant);
 
 if ((addResult && !addResult.error) || (moveResult && !moveResult.error)) {
-  return Astro.redirect(`/campaigns/${encodeURIComponent(campaignName)}/encounters/${encounterId}`);
+  return Astro.redirect(
+    `/campaigns/${encodeURIComponent(campaignName)}/encounters/${encounterId}`,
+  );
 }
 
 // Resolve participant display name from source reference
 const participantName = (source: { Player?: number; Entity?: number }) => {
-  if ('Player' in source) {
-    return roster.players.find(p => p.id === source.Player)?.name ?? `Player #${source.Player}`;
+  if ("Player" in source) {
+    return (
+      roster.players.find((p) => p.id === source.Player)?.name ??
+      `Player #${source.Player}`
+    );
   }
   return `Entity #${source.Entity}`;
 };
@@ -40,88 +52,140 @@ const ordered = [...encounter.participants].sort((a, b) => {
 // Players not yet in this encounter
 const participantPlayerIds = new Set(
   encounter.participants
-    .filter(p => 'Player' in p.source)
-    .map(p => (p.source as { Player: number }).Player)
+    .filter((p) => "Player" in p.source)
+    .map((p) => (p.source as { Player: number }).Player),
 );
-const availablePlayers = roster.players.filter(p => !participantPlayerIds.has(p.id));
+const availablePlayers = roster.players.filter(
+  (p) => !participantPlayerIds.has(p.id),
+);
 ---
 
 <Layout title={`${encounter.name} — ${campaign.name}`}>
-  <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+  <div
+    class="is-flex is-justify-content-space-between is-align-items-center mb-4"
+  >
     <div>
       <h1 class="title mb-0">{encounter.name}</h1>
       <p class="subtitle mt-1">
-        <a href={`/campaigns/${encodeURIComponent(campaignName)}/encounters`}>{campaign.name}</a>
+        <a href={`/campaigns/${encodeURIComponent(campaignName)}/encounters`}
+          >{campaign.name}</a
+        >
       </p>
     </div>
   </div>
 
-  {addResult?.error && <Notification color="danger">{addResult.error.message}</Notification>}
-  {moveResult?.error && <Notification color="danger">{moveResult.error.message}</Notification>}
+  {
+    addResult?.error && (
+      <Notification color="danger">{addResult.error.message}</Notification>
+    )
+  }
+  {
+    moveResult?.error && (
+      <Notification color="danger">{moveResult.error.message}</Notification>
+    )
+  }
 
-  {ordered.length === 0 ? (
-    <Notification color="info">No participants yet. Add players below!</Notification>
-  ) : (
-    <Table>
-      <thead>
-        <tr>
-          <th>Order</th>
-          <th>Name</th>
-          <th>HP</th>
-        </tr>
-      </thead>
-      <tbody>
-        {ordered.map((p, i) => (
+  {
+    ordered.length === 0 ? (
+      <Notification color="info">
+        No participants yet. Add players below!
+      </Notification>
+    ) : (
+      <Table>
+        <thead>
           <tr>
-            <td>
-              <div class="buttons are-small has-addons">
-                <form method="POST" action={actions.moveParticipant}>
-                  <input type="hidden" name="campaignName" value={campaignName} />
-                  <input type="hidden" name="encounterId" value={encounterId} />
-                  <input type="hidden" name="participantId" value={p.id} />
-                  <input type="hidden" name="direction" value="up" />
-                  <button class="button is-small" type="submit" disabled={i === 0}>▲</button>
-                </form>
-                <form method="POST" action={actions.moveParticipant}>
-                  <input type="hidden" name="campaignName" value={campaignName} />
-                  <input type="hidden" name="encounterId" value={encounterId} />
-                  <input type="hidden" name="participantId" value={p.id} />
-                  <input type="hidden" name="direction" value="down" />
-                  <button class="button is-small" type="submit" disabled={i === ordered.length - 1}>▼</button>
-                </form>
-              </div>
-            </td>
-            <td>{participantName(p.source)}</td>
-            <td>{p.current_hp} / {p.max_hp}</td>
+            <th>Order</th>
+            <th>Name</th>
+            <th>HP</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
-  )}
+        </thead>
+        <tbody>
+          {ordered.map((p, i) => (
+            <tr>
+              <td>
+                <div class="buttons are-small has-addons">
+                  <form method="POST" action={actions.moveParticipant}>
+                    <input
+                      type="hidden"
+                      name="campaignName"
+                      value={campaignName}
+                    />
+                    <input
+                      type="hidden"
+                      name="encounterId"
+                      value={encounterId}
+                    />
+                    <input type="hidden" name="participantId" value={p.id} />
+                    <input type="hidden" name="direction" value="up" />
+                    <button
+                      class="button is-small"
+                      type="submit"
+                      disabled={i === 0}
+                    >
+                      ▲
+                    </button>
+                  </form>
+                  <form method="POST" action={actions.moveParticipant}>
+                    <input
+                      type="hidden"
+                      name="campaignName"
+                      value={campaignName}
+                    />
+                    <input
+                      type="hidden"
+                      name="encounterId"
+                      value={encounterId}
+                    />
+                    <input type="hidden" name="participantId" value={p.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <button
+                      class="button is-small"
+                      type="submit"
+                      disabled={i === ordered.length - 1}
+                    >
+                      ▼
+                    </button>
+                  </form>
+                </div>
+              </td>
+              <td>{participantName(p.source)}</td>
+              <td>
+                {p.current_hp} / {p.max_hp}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    )
+  }
 
-  {availablePlayers.length > 0 && (
-    <Box>
-      <p class="has-text-weight-semibold mb-3">Add Player</p>
-      <form method="POST" action={actions.addParticipant}>
-        <input type="hidden" name="campaignName" value={campaignName} />
-        <input type="hidden" name="encounterId" value={encounterId} />
-        <div class="field">
-          <label class="label">Player</label>
-          <div class="control">
-            <div class="select">
-              <select name="playerId">
-                {availablePlayers.map(p => (
-                  <option value={p.id}>{p.name}</option>
-                ))}
-              </select>
+  {
+    availablePlayers.length > 0 && (
+      <Box>
+        <p class="has-text-weight-semibold mb-3">Add Player</p>
+        <form method="POST" action={actions.addParticipant}>
+          <input type="hidden" name="campaignName" value={campaignName} />
+          <input type="hidden" name="encounterId" value={encounterId} />
+          <div class="field">
+            <label class="label">Player</label>
+            <div class="control">
+              <div class="select">
+                <select name="playerId">
+                  {availablePlayers.map((p) => (
+                    <option value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-        <TextInput name="maxHp" label="Max HP" placeholder="20" />
-        <Button color="primary" type="submit">Add to Encounter</Button>
-      </form>
-    </Box>
-  )}
+          <TextInput name="maxHp" label="Max HP" placeholder="20" />
+          <Button color="primary" type="submit">
+            Add to Encounter
+          </Button>
+        </form>
+      </Box>
+    )
+  }
 </Layout>
 
 <script is:inline define:vars={{ campaignName, encounterId }}>

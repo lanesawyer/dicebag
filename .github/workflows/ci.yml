@@ -83,3 +83,97 @@ jobs:
           override: true
       - name: Run tests
         run: cargo test
+
+  webapp-build:
+    name: Webapp Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        name: Cache Cargo dependencies
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: webapp/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: webapp
+      - name: Build
+        run: pnpm build
+        working-directory: webapp
+
+  webapp-typecheck:
+    name: Webapp Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        name: Cache Cargo dependencies
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: webapp/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: webapp
+      - name: Build WASM
+        run: pnpm wasm
+        working-directory: webapp
+      - name: Typecheck
+        run: pnpm exec astro check
+        working-directory: webapp
+
+  webapp-format:
+    name: Webapp Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: webapp/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: webapp
+      - name: Check formatting
+        run: pnpm fmt:check
+        working-directory: webapp

@@ -1,53 +1,73 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { Button, Table, Notification } from 'astro-bulma';
-import { listCampaigns } from '../../lib/campaigns';
+import Layout from "../../layouts/Layout.astro";
+import { Button, Table, Notification } from "astro-bulma";
+import { listCampaigns } from "../../lib/campaigns";
 
 const campaigns = await listCampaigns();
 ---
 
 <Layout title="Campaigns">
-  <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+  <div
+    class="is-flex is-justify-content-space-between is-align-items-center mb-4"
+  >
     <h1 class="title mb-0">Campaigns</h1>
     <Button href="/campaigns/new" color="primary">New Campaign</Button>
   </div>
 
-  {campaigns.length === 0 ? (
-    <Notification color="info">
-      No campaigns yet. Create one to get started!
-    </Notification>
-  ) : (
-    <Table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {campaigns.map((c) => (
+  {
+    campaigns.length === 0 ? (
+      <Notification color="info">
+        No campaigns yet. Create one to get started!
+      </Notification>
+    ) : (
+      <Table>
+        <thead>
           <tr>
-            <td>{c.id}</td>
-            <td><a href={`/campaigns/${encodeURIComponent(c.name)}`}>{c.name}</a></td>
-            <td>{c.description}</td>
-            <td>
-              <div class="buttons are-small">
-                <Button href={`/campaigns/${encodeURIComponent(c.name)}/players`} color="info" size="small">
-                  Players
-                </Button>
-                <Button href={`/campaigns/${encodeURIComponent(c.name)}/encounters`} color="success" size="small">
-                  Encounters
-                </Button>
-                <Button href={`/campaigns/${encodeURIComponent(c.name)}/edit`} color="warning" size="small">
-                  Edit
-                </Button>
-              </div>
-            </td>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th />
           </tr>
-        ))}
-      </tbody>
-    </Table>
-  )}
+        </thead>
+        <tbody>
+          {campaigns.map((c) => (
+            <tr>
+              <td>{c.id}</td>
+              <td>
+                <a href={`/campaigns/${encodeURIComponent(c.name)}`}>
+                  {c.name}
+                </a>
+              </td>
+              <td>{c.description}</td>
+              <td>
+                <div class="buttons are-small">
+                  <Button
+                    href={`/campaigns/${encodeURIComponent(c.name)}/players`}
+                    color="info"
+                    size="small"
+                  >
+                    Players
+                  </Button>
+                  <Button
+                    href={`/campaigns/${encodeURIComponent(c.name)}/encounters`}
+                    color="success"
+                    size="small"
+                  >
+                    Encounters
+                  </Button>
+                  <Button
+                    href={`/campaigns/${encodeURIComponent(c.name)}/edit`}
+                    color="warning"
+                    size="small"
+                  >
+                    Edit
+                  </Button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    )
+  }
 </Layout>

@@ -1,20 +1,21 @@
 ---
-import 'bulma/css/bulma.min.css';
-import DiceRoller from '../components/DiceRoller.astro';
-import { actions } from 'astro:actions';
-import { getPlayerRoster } from '../lib/campaigns';
+import "bulma/css/bulma.min.css";
+import DiceRoller from "../components/DiceRoller.astro";
+import { actions } from "astro:actions";
+import { getPlayerRoster } from "../lib/campaigns";
 
 interface Props {
   title: string;
 }
 
 const { title } = Astro.props;
-const identity = await Astro.session!.get('identity');
+const identity = await Astro.session!.get("identity");
 
 let playerName: string | null = null;
-if (identity?.role === 'player') {
+if (identity?.role === "player") {
   const roster = await getPlayerRoster(identity.campaignName);
-  playerName = roster.players.find(p => p.id === identity.playerId)?.name ?? null;
+  playerName =
+    roster.players.find((p) => p.id === identity.playerId)?.name ?? null;
 }
 ---
 
@@ -29,7 +30,13 @@ if (identity?.role === 'player') {
     <nav class="navbar is-dark" aria-label="main navigation">
       <div class="navbar-brand">
         <a class="navbar-item has-text-weight-bold" href="/">🎲 Dicebag</a>
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <a
+          role="button"
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbar-menu"
+        >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -41,26 +48,34 @@ if (identity?.role === 'player') {
           <a class="navbar-item" href="/campaigns">Campaigns</a>
         </div>
         <div class="navbar-end">
-          {identity ? (
-            <div class="navbar-item">
-              <span class="has-text-grey-light mr-3">
-                {identity.role === 'gm' ? '🎲 GM' : `🧙 ${playerName ?? 'Player'}`}
-              </span>
-              <form method="POST" action={actions.logout}>
-                <button class="button is-small is-light">Logout</button>
-              </form>
-            </div>
-          ) : (
-            <a class="navbar-item" href="/login/gm">GM Login</a>
-          )}
+          {
+            identity ? (
+              <div class="navbar-item">
+                <span class="has-text-grey-light mr-3">
+                  {identity.role === "gm"
+                    ? "🎲 GM"
+                    : `🧙 ${playerName ?? "Player"}`}
+                </span>
+                <form method="POST" action={actions.logout}>
+                  <button class="button is-small is-light">Logout</button>
+                </form>
+              </div>
+            ) : (
+              <a class="navbar-item" href="/login/gm">
+                GM Login
+              </a>
+            )
+          }
         </div>
       </div>
     </nav>
     <script is:inline>
-      document.querySelector('.navbar-burger')?.addEventListener('click', function() {
-        this.classList.toggle('is-active');
-        document.getElementById('navbar-menu')?.classList.toggle('is-active');
-      });
+      document
+        .querySelector(".navbar-burger")
+        ?.addEventListener("click", function () {
+          this.classList.toggle("is-active");
+          document.getElementById("navbar-menu")?.classList.toggle("is-active");
+        });
     </script>
     <main class="section">
       <div class="container">

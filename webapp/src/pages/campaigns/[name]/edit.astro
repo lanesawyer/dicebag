@@ -1,32 +1,42 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import { Box, Button, TextInput, Notification } from 'astro-bulma';
-import { actions } from 'astro:actions';
-import { getCampaign } from '../../../lib/campaigns';
+import Layout from "../../../layouts/Layout.astro";
+import { Box, Button, TextInput, Notification } from "astro-bulma";
+import { actions } from "astro:actions";
+import { getCampaign } from "../../../lib/campaigns";
 
-const campaignName = decodeURIComponent(Astro.params.name ?? '');
+const campaignName = decodeURIComponent(Astro.params.name ?? "");
 const campaign = await getCampaign(campaignName);
-if (!campaign) return Astro.redirect('/campaigns');
+if (!campaign) return Astro.redirect("/campaigns");
 
 const result = Astro.getActionResult(actions.editCampaign);
 if (result && !result.error) {
-  return Astro.redirect(`/campaigns/${encodeURIComponent(result.data.name)}/edit?saved=1`);
+  return Astro.redirect(
+    `/campaigns/${encodeURIComponent(result.data.name)}/edit?saved=1`,
+  );
 }
 
-const success = Astro.url.searchParams.get('saved') === '1';
+const success = Astro.url.searchParams.get("saved") === "1";
 ---
 
 <Layout title={`Edit: ${campaign.name}`}>
   <h1 class="title">Edit Campaign</h1>
 
-  {result?.error && <Notification color="danger">{result.error.message}</Notification>}
+  {
+    result?.error && (
+      <Notification color="danger">{result.error.message}</Notification>
+    )
+  }
   {success && <Notification color="success">Campaign saved!</Notification>}
 
   <Box>
     <form method="POST" action={actions.editCampaign}>
       <input type="hidden" name="oldName" value={campaignName} />
       <TextInput name="name" label="Name" value={campaign.name} />
-      <TextInput name="description" label="Description" value={campaign.description} />
+      <TextInput
+        name="description"
+        label="Description"
+        value={campaign.description}
+      />
       <div class="field is-grouped">
         <div class="control">
           <Button color="primary" type="submit">Save Changes</Button>

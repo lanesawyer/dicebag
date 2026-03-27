@@ -1,12 +1,16 @@
 ---
-const dice = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
+const dice = ["d4", "d6", "d8", "d10", "d12", "d20", "d100"];
 ---
 
 <div id="dice-roller">
   <div id="dice-buttons">
-    {dice.map(d => (
-      <button class="button is-dark is-small" data-die={d}>{d}</button>
-    ))}
+    {
+      dice.map((d) => (
+        <button class="button is-dark is-small" data-die={d}>
+          {d}
+        </button>
+      ))
+    }
   </div>
   <div id="dice-result" aria-live="polite"></div>
 </div>
@@ -34,26 +38,37 @@ const dice = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
     text-align: center;
     min-width: 3rem;
     color: white;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
   }
 </style>
 
 <script>
   import init, {
-    roll_d4, roll_d6, roll_d8, roll_d10, roll_d12, roll_d20, roll_d100
-  } from '../wasm/dicebag_wasm.js';
+    roll_d4,
+    roll_d6,
+    roll_d8,
+    roll_d10,
+    roll_d12,
+    roll_d20,
+    roll_d100,
+  } from "../wasm/dicebag_wasm.js";
 
   await init();
 
   const rollers: Record<string, () => bigint> = {
-    d4: roll_d4, d6: roll_d6, d8: roll_d8,
-    d10: roll_d10, d12: roll_d12, d20: roll_d20, d100: roll_d100,
+    d4: roll_d4,
+    d6: roll_d6,
+    d8: roll_d8,
+    d10: roll_d10,
+    d12: roll_d12,
+    d20: roll_d20,
+    d100: roll_d100,
   };
 
-  const result = document.getElementById('dice-result')!;
+  const result = document.getElementById("dice-result")!;
 
-  document.getElementById('dice-buttons')!.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('button');
+  document.getElementById("dice-buttons")!.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest("button");
     if (!btn) return;
     const die = btn.dataset.die!;
     const roll = rollers[die]();

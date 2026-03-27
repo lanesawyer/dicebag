@@ -1,4 +1,4 @@
-import { WebSocketServer } from 'ws';
+import { WebSocketServer } from "ws";
 
 const WS_PORT = 4322;
 

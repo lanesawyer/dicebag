@@ -10,7 +10,9 @@
     "dev": "pnpm run wasm && astro dev --host",
     "build": "pnpm run wasm && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check ."
   },
   "dependencies": {
     "@astrojs/node": "10.0.4",
@@ -27,6 +29,8 @@
     "@astrojs/check": "^0.9.8",
     "@types/node": "25.5.0",
     "@types/ws": "^8.18.1",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.2"
   }
 }
