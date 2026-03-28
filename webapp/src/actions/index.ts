@@ -161,9 +161,9 @@ export const server = {
       if (!encounter) throw new Error("Encounter not found");
 
       const ordered = [...encounter.participants].sort((a, b) => {
-        if (a.initiative === null && b.initiative === null) return 0;
-        if (a.initiative === null) return 1;
-        if (b.initiative === null) return -1;
+        if (a.initiative == null && b.initiative == null) return 0;
+        if (a.initiative == null) return 1;
+        if (b.initiative == null) return -1;
         return b.initiative - a.initiative;
       });
 
@@ -175,7 +175,7 @@ export const server = {
         ...encounter.participants.map((p) => p.initiative ?? 0),
       );
       ordered.forEach((p, i) => {
-        if (p.initiative === null) {
+        if (p.initiative == null) {
           const actual = encounter.participants.find((ep) => ep.id === p.id)!;
           actual.initiative = maxInit - i;
         }
@@ -186,6 +186,55 @@ export const server = {
         (p) => p.id === ordered[swapIdx].id,
       )!;
       [a.initiative, b.initiative] = [b.initiative, a.initiative];
+
+      await saveEncounter(campaignName, encounter);
+      broadcast(`encounter:${campaignName}:${encounterId}`);
+    },
+  }),
+
+  endTurn: defineAction({
+    accept: "form",
+    input: z.object({
+      campaignName: z.string(),
+      encounterId: z.coerce.number(),
+      participantId: z.coerce.number().optional(),
+    }),
+    handler: async ({ campaignName, encounterId, participantId }) => {
+      const encounter = await getEncounter(campaignName, encounterId);
+      if (!encounter) throw new Error("Encounter not found");
+
+      const ordered = [...encounter.participants].sort((a, b) => {
+        if (a.initiative == null && b.initiative == null) return 0;
+        if (a.initiative == null) return 1;
+        if (b.initiative == null) return -1;
+        return b.initiative - a.initiative;
+      });
+
+      if (ordered.length < 2) return;
+
+      const target =
+        participantId != null
+          ? ordered.find((p) => p.id === participantId)
+          : ordered[0];
+      if (!target) return;
+
+      // Assign initiatives if any are null
+      const maxInit = Math.max(
+        ...encounter.participants.map((p) => p.initiative ?? 0),
+      );
+      ordered.forEach((p, i) => {
+        if (p.initiative == null) {
+          encounter.participants.find((ep) => ep.id === p.id)!.initiative =
+            maxInit - i;
+        }
+      });
+
+      // Move target to last by giving it the minimum initiative minus 1
+      const minInit = Math.min(
+        ...encounter.participants.map((p) => p.initiative!),
+      );
+      encounter.participants.find((p) => p.id === target.id)!.initiative =
+        minInit - 1;
 
       await saveEncounter(campaignName, encounter);
       broadcast(`encounter:${campaignName}:${encounterId}`);
