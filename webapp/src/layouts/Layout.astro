@@ -3,6 +3,7 @@ import "bulma/css/bulma.min.css";
 import DiceRoller from "../components/DiceRoller.astro";
 import { actions } from "astro:actions";
 import { getPlayerRoster } from "../lib/campaigns";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -25,6 +26,7 @@ if (identity?.role === "player") {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <title>{title} — Dicebag</title>
+    <ClientRouter />
   </head>
   <body>
     <nav class="navbar is-dark" aria-label="main navigation">

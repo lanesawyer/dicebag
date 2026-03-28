@@ -1,12 +1,23 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import { Box, Button, TextInput, Notification, Table } from "astro-bulma";
+import { Box, Button, TextInput, Notification } from "astro-bulma";
 import { actions } from "astro:actions";
 import {
   getCampaign,
   getEncounter,
   getPlayerRoster,
 } from "../../../../lib/campaigns";
+
+const rowSlide = {
+  forwards: {
+    old: { name: "row-slide-out-up", duration: "0.2s", easing: "ease-in", fillMode: "both" },
+    new: { name: "row-slide-in-down", duration: "0.25s", easing: "ease-out", fillMode: "both" },
+  },
+  backwards: {
+    old: { name: "row-slide-out-down", duration: "0.2s", easing: "ease-in", fillMode: "both" },
+    new: { name: "row-slide-in-up", duration: "0.25s", easing: "ease-out", fillMode: "both" },
+  },
+};
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
 const encounterId = parseInt(Astro.params.id ?? "");
@@ -24,7 +35,12 @@ const roster = await getPlayerRoster(campaignName);
 const addResult = Astro.getActionResult(actions.addParticipant);
 const moveResult = Astro.getActionResult(actions.moveParticipant);
 
-if ((addResult && !addResult.error) || (moveResult && !moveResult.error)) {
+if (addResult && !addResult.error) {
+  return Astro.redirect(
+    `/campaigns/${encodeURIComponent(campaignName)}/encounters/${encounterId}`,
+  );
+}
+if (moveResult && !moveResult.error) {
   return Astro.redirect(
     `/campaigns/${encodeURIComponent(campaignName)}/encounters/${encounterId}`,
   );
@@ -43,9 +59,9 @@ const participantName = (source: { Player?: number; Entity?: number }) => {
 
 // Sort by initiative descending; no initiative goes to end
 const ordered = [...encounter.participants].sort((a, b) => {
-  if (a.initiative === null && b.initiative === null) return 0;
-  if (a.initiative === null) return 1;
-  if (b.initiative === null) return -1;
+  if (a.initiative == null && b.initiative == null) return 0;
+  if (a.initiative == null) return 1;
+  if (b.initiative == null) return -1;
   return b.initiative - a.initiative;
 });
 
@@ -72,6 +88,13 @@ const availablePlayers = roster.players.filter(
         >
       </p>
     </div>
+    {ordered.length > 1 && (
+      <form method="POST" action={actions.endTurn} id="end-turn-form">
+        <input type="hidden" name="campaignName" value={campaignName} />
+        <input type="hidden" name="encounterId" value={encounterId} />
+        <button class="button is-warning" type="submit">End Turn</button>
+      </form>
+    )}
   </div>
 
   {
@@ -91,71 +114,52 @@ const availablePlayers = roster.players.filter(
         No participants yet. Add players below!
       </Notification>
     ) : (
-      <Table>
-        <thead>
-          <tr>
-            <th>Order</th>
-            <th>Name</th>
-            <th>HP</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ordered.map((p, i) => (
-            <tr>
-              <td>
-                <div class="buttons are-small has-addons">
-                  <form method="POST" action={actions.moveParticipant}>
-                    <input
-                      type="hidden"
-                      name="campaignName"
-                      value={campaignName}
-                    />
-                    <input
-                      type="hidden"
-                      name="encounterId"
-                      value={encounterId}
-                    />
-                    <input type="hidden" name="participantId" value={p.id} />
-                    <input type="hidden" name="direction" value="up" />
-                    <button
-                      class="button is-small"
-                      type="submit"
-                      disabled={i === 0}
-                    >
-                      ▲
-                    </button>
-                  </form>
-                  <form method="POST" action={actions.moveParticipant}>
-                    <input
-                      type="hidden"
-                      name="campaignName"
-                      value={campaignName}
-                    />
-                    <input
-                      type="hidden"
-                      name="encounterId"
-                      value={encounterId}
-                    />
-                    <input type="hidden" name="participantId" value={p.id} />
-                    <input type="hidden" name="direction" value="down" />
-                    <button
-                      class="button is-small"
-                      type="submit"
-                      disabled={i === ordered.length - 1}
-                    >
-                      ▼
-                    </button>
-                  </form>
-                </div>
-              </td>
-              <td>{participantName(p.source)}</td>
-              <td>
-                {p.current_hp} / {p.max_hp}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <div class="participant-list">
+        <div class="participant-header">
+          <span>Order</span>
+          <span>Name</span>
+          <span>HP</span>
+        </div>
+        {ordered.map((p, i) => (
+          <div
+            class="participant-row"
+            id={`participant-${p.id}`}
+            transition:name={`participant-${p.id}`}
+            transition:animate={rowSlide}
+          >
+            <span>
+              <div class="buttons are-small has-addons">
+                <form method="POST" action={actions.moveParticipant} data-move>
+                  <input type="hidden" name="campaignName" value={campaignName} />
+                  <input type="hidden" name="encounterId" value={encounterId} />
+                  <input type="hidden" name="participantId" value={p.id} />
+                  <input type="hidden" name="direction" value="up" />
+                  <button class="button is-small" type="submit" disabled={i === 0}>▲</button>
+                </form>
+                <form method="POST" action={actions.moveParticipant} data-move>
+                  <input type="hidden" name="campaignName" value={campaignName} />
+                  <input type="hidden" name="encounterId" value={encounterId} />
+                  <input type="hidden" name="participantId" value={p.id} />
+                  <input type="hidden" name="direction" value="down" />
+                  <button class="button is-small" type="submit" disabled={i === ordered.length - 1}>▼</button>
+                </form>
+              </div>
+            </span>
+            <span>
+              {participantName(p.source)}
+              {ordered.length > 1 && (
+                <form method="POST" action={actions.endTurn} data-took-turn style="display:inline">
+                  <input type="hidden" name="campaignName" value={campaignName} />
+                  <input type="hidden" name="encounterId" value={encounterId} />
+                  <input type="hidden" name="participantId" value={p.id} />
+                  <button class="button is-small is-light ml-2" type="submit">Took Turn</button>
+                </form>
+              )}
+            </span>
+            <span>{p.current_hp} / {p.max_hp}</span>
+          </div>
+        ))}
+      </div>
     )
   }
 
@@ -188,10 +192,180 @@ const availablePlayers = roster.players.filter(
   }
 </Layout>
 
+<style is:global>
+  @keyframes row-slide-out-up {
+    to { transform: translateY(-1.5rem); opacity: 0; }
+  }
+  @keyframes row-slide-in-down {
+    from { transform: translateY(1.5rem); opacity: 0; }
+  }
+  @keyframes row-slide-out-down {
+    to { transform: translateY(1.5rem); opacity: 0; }
+  }
+  @keyframes row-slide-in-up {
+    from { transform: translateY(-1.5rem); opacity: 0; }
+  }
+  @keyframes row-highlight {
+    0%   { background-color: rgba(50, 115, 220, 0.45); outline: 3px solid #3273dc; outline-offset: -2px; }
+    100% { background-color: transparent; outline: 3px solid transparent; outline-offset: -2px; }
+  }
+  .row-moved {
+    animation: row-highlight 900ms ease-out forwards;
+  }
+</style>
+
+<style>
+  .participant-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .participant-header,
+  .participant-row {
+    display: grid;
+    grid-template-columns: 6rem 1fr 6rem;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    gap: 1rem;
+  }
+
+  .participant-header {
+    font-weight: 600;
+    border-bottom: 2px solid #dbdbdb;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7a7a7a;
+  }
+
+  .participant-row {
+    border-bottom: 1px solid #ededed;
+    border-radius: 4px;
+  }
+
+
+</style>
+
 <script is:inline define:vars={{ campaignName, encounterId }}>
   const expected = `encounter:${campaignName}:${encounterId}`;
+  const cleanUrl = location.pathname;
+  window._encounterTransitioning = false;
+
   const ws = new WebSocket(`ws://${location.hostname}:4322`);
-  ws.onmessage = (e) => {
-    if (e.data === expected) location.reload();
+  ws.onmessage = async (e) => {
+    if (e.data !== expected) return;
+    if (window._encounterTransitioning) return;
+    window._encounterTransitioning = true;
+    try {
+      const html = await fetch(cleanUrl).then((r) => r.text());
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const newList = doc.querySelector(".participant-list");
+      const oldList = document.querySelector(".participant-list");
+      if (!newList || !oldList) { location.reload(); return; }
+      await document.startViewTransition(() => {
+        oldList.replaceWith(newList);
+        document.dispatchEvent(new CustomEvent("encounter:reattach"));
+      }).finished;
+    } finally {
+      window._encounterTransitioning = false;
+    }
   };
+</script>
+
+<script>
+  function updateDisabled() {
+    const list = document.querySelector(".participant-list");
+    if (!list) return;
+    const rows = [...list.querySelectorAll(".participant-row")];
+    rows.forEach((row, i) => {
+      const forms = row.querySelectorAll<HTMLFormElement>("form[data-move]");
+      const upBtn = forms[0]?.querySelector("button");
+      const downBtn = forms[1]?.querySelector("button");
+      if (upBtn) upBtn.disabled = i === 0;
+      if (downBtn) downBtn.disabled = i === rows.length - 1;
+    });
+  }
+
+  async function sendToBottom(form: HTMLFormElement, rowEl: HTMLElement) {
+    const list = document.querySelector(".participant-list");
+    if (!list) return;
+    fetch(form.action, { method: "POST", body: new FormData(form) });
+    (window as any)._encounterTransitioning = true;
+    const t = document.startViewTransition(() => {
+      list.appendChild(rowEl);
+      updateDisabled();
+    });
+    await t.finished;
+    (window as any)._encounterTransitioning = false;
+    rowEl.classList.add("row-moved");
+    rowEl.addEventListener("animationend", () => rowEl.classList.remove("row-moved"), { once: true });
+  }
+
+  function attachEndTurnHandler() {
+    const form = document.getElementById("end-turn-form") as HTMLFormElement | null;
+    if (!form) return;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const list = document.querySelector(".participant-list");
+      if (!list) return;
+      const rows = [...list.querySelectorAll(".participant-row")];
+      if (rows.length < 2) return;
+      await sendToBottom(form, rows[0] as HTMLElement);
+    });
+  }
+
+  function attachTookTurnHandlers() {
+    document.querySelectorAll("form[data-took-turn]").forEach((form) => {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const rowEl = form.closest(".participant-row") as HTMLElement | null;
+        if (!rowEl) return;
+        await sendToBottom(form as HTMLFormElement, rowEl);
+      });
+    });
+  }
+
+  function attachMoveHandlers() {
+    updateDisabled();
+    attachEndTurnHandler();
+    attachTookTurnHandlers();
+    document.querySelectorAll("form[data-move]").forEach((form) => {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const f = form as HTMLFormElement;
+        const direction = (f.querySelector("[name=direction]") as HTMLInputElement).value;
+        const rowEl = f.closest(".participant-row") as HTMLElement | null;
+        const list = document.querySelector(".participant-list");
+        if (!rowEl || !list) return;
+
+        // Find the sibling to swap with
+        const rows = [...list.querySelectorAll(".participant-row")];
+        const idx = rows.indexOf(rowEl);
+        const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= rows.length) return;
+        const swapEl = rows[swapIdx] as HTMLElement;
+
+        fetch(f.action, { method: "POST", body: new FormData(f) });
+
+        (window as any)._encounterTransitioning = true;
+        const t = document.startViewTransition(() => {
+          if (direction === "up") {
+            list.insertBefore(rowEl, swapEl);
+          } else {
+            list.insertBefore(swapEl, rowEl);
+          }
+          updateDisabled();
+        });
+        await t.finished;
+        (window as any)._encounterTransitioning = false;
+        rowEl.classList.add("row-moved");
+        rowEl.addEventListener("animationend", () => rowEl.classList.remove("row-moved"), { once: true });
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", attachMoveHandlers);
+  document.addEventListener("encounter:reattach", attachMoveHandlers);
 </script>
