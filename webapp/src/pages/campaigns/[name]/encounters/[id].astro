@@ -1,23 +1,12 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import { Box, Button, TextInput, Notification } from "astro-bulma";
+import { Box, Button, TextInput, Notification, Table } from "astro-bulma";
 import { actions } from "astro:actions";
 import {
   getCampaign,
   getEncounter,
   getPlayerRoster,
 } from "../../../../lib/campaigns";
-
-const rowSlide = {
-  forwards: {
-    old: { name: "row-slide-out-up", duration: "0.2s", easing: "ease-in", fillMode: "both" },
-    new: { name: "row-slide-in-down", duration: "0.25s", easing: "ease-out", fillMode: "both" },
-  },
-  backwards: {
-    old: { name: "row-slide-out-down", duration: "0.2s", easing: "ease-in", fillMode: "both" },
-    new: { name: "row-slide-in-up", duration: "0.25s", easing: "ease-out", fillMode: "both" },
-  },
-};
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
 const encounterId = parseInt(Astro.params.id ?? "");
@@ -31,6 +20,8 @@ if (!encounter)
   );
 
 const roster = await getPlayerRoster(campaignName);
+const identity = await Astro.session!.get("identity");
+const myPlayerId = identity?.role === "player" ? identity.playerId : null;
 
 const addResult = Astro.getActionResult(actions.addParticipant);
 const moveResult = Astro.getActionResult(actions.moveParticipant);
@@ -88,13 +79,17 @@ const availablePlayers = roster.players.filter(
         >
       </p>
     </div>
-    {ordered.length > 1 && (
-      <form method="POST" action={actions.endTurn} id="end-turn-form">
-        <input type="hidden" name="campaignName" value={campaignName} />
-        <input type="hidden" name="encounterId" value={encounterId} />
-        <button class="button is-warning" type="submit">End Turn</button>
-      </form>
-    )}
+    {
+      ordered.length > 1 && (
+        <form method="POST" action={actions.endTurn} id="end-turn-form">
+          <input type="hidden" name="campaignName" value={campaignName} />
+          <input type="hidden" name="encounterId" value={encounterId} />
+          <button class="button is-warning" type="submit">
+            End Turn
+          </button>
+        </form>
+      )
+    }
   </div>
 
   {
@@ -114,52 +109,116 @@ const availablePlayers = roster.players.filter(
         No participants yet. Add players below!
       </Notification>
     ) : (
-      <div class="participant-list">
-        <div class="participant-header">
-          <span>Order</span>
-          <span>Name</span>
-          <span>HP</span>
-        </div>
-        {ordered.map((p, i) => (
-          <div
-            class="participant-row"
-            id={`participant-${p.id}`}
-            transition:name={`participant-${p.id}`}
-            transition:animate={rowSlide}
-          >
-            <span>
-              <div class="buttons are-small has-addons">
-                <form method="POST" action={actions.moveParticipant} data-move>
-                  <input type="hidden" name="campaignName" value={campaignName} />
-                  <input type="hidden" name="encounterId" value={encounterId} />
-                  <input type="hidden" name="participantId" value={p.id} />
-                  <input type="hidden" name="direction" value="up" />
-                  <button class="button is-small" type="submit" disabled={i === 0}>▲</button>
-                </form>
-                <form method="POST" action={actions.moveParticipant} data-move>
-                  <input type="hidden" name="campaignName" value={campaignName} />
-                  <input type="hidden" name="encounterId" value={encounterId} />
-                  <input type="hidden" name="participantId" value={p.id} />
-                  <input type="hidden" name="direction" value="down" />
-                  <button class="button is-small" type="submit" disabled={i === ordered.length - 1}>▼</button>
-                </form>
-              </div>
-            </span>
-            <span>
-              {participantName(p.source)}
-              {ordered.length > 1 && (
-                <form method="POST" action={actions.endTurn} data-took-turn style="display:inline">
-                  <input type="hidden" name="campaignName" value={campaignName} />
-                  <input type="hidden" name="encounterId" value={encounterId} />
-                  <input type="hidden" name="participantId" value={p.id} />
-                  <button class="button is-small is-light ml-2" type="submit">Took Turn</button>
-                </form>
-              )}
-            </span>
-            <span>{p.current_hp} / {p.max_hp}</span>
-          </div>
-        ))}
-      </div>
+      <Table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Name</th>
+            <th>HP</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody class="participant-list">
+          {ordered.map((p, i) => (
+            <tr
+              class="participant-row"
+              id={`participant-${p.id}`}
+              data-player-id={
+                "Player" in p.source
+                  ? (p.source as { Player: number }).Player
+                  : undefined
+              }
+            >
+              <td>
+                <div class="buttons are-small has-addons">
+                  <form
+                    method="POST"
+                    action={actions.moveParticipant}
+                    data-move
+                  >
+                    <input
+                      type="hidden"
+                      name="campaignName"
+                      value={campaignName}
+                    />
+                    <input
+                      type="hidden"
+                      name="encounterId"
+                      value={encounterId}
+                    />
+                    <input type="hidden" name="participantId" value={p.id} />
+                    <input type="hidden" name="direction" value="up" />
+                    <button
+                      class="button is-small"
+                      type="submit"
+                      disabled={i === 0}
+                    >
+                      ▲
+                    </button>
+                  </form>
+                  <form
+                    method="POST"
+                    action={actions.moveParticipant}
+                    data-move
+                  >
+                    <input
+                      type="hidden"
+                      name="campaignName"
+                      value={campaignName}
+                    />
+                    <input
+                      type="hidden"
+                      name="encounterId"
+                      value={encounterId}
+                    />
+                    <input type="hidden" name="participantId" value={p.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <button
+                      class="button is-small"
+                      type="submit"
+                      disabled={i === ordered.length - 1}
+                    >
+                      ▼
+                    </button>
+                  </form>
+                </div>
+              </td>
+              <td>
+                {participantName(p.source)}
+                {"Player" in p.source &&
+                  (p.source as { Player: number }).Player === myPlayerId && (
+                    <span class="tag is-success is-light is-small ml-1">
+                      You
+                    </span>
+                  )}
+              </td>
+              <td>
+                {p.current_hp} / {p.max_hp}
+              </td>
+              <td>
+                {ordered.length > 1 && (
+                  <form method="POST" action={actions.endTurn} data-took-turn>
+                    <input
+                      type="hidden"
+                      name="campaignName"
+                      value={campaignName}
+                    />
+                    <input
+                      type="hidden"
+                      name="encounterId"
+                      value={encounterId}
+                    />
+                    <input type="hidden" name="participantId" value={p.id} />
+                    <button class="button is-small is-light" type="submit">
+                      Took Turn
+                    </button>
+                  </form>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     )
   }
 
@@ -193,65 +252,42 @@ const availablePlayers = roster.players.filter(
 </Layout>
 
 <style is:global>
-  @keyframes row-slide-out-up {
-    to { transform: translateY(-1.5rem); opacity: 0; }
+  @keyframes row-highlight-you {
+    0% {
+      background-color: rgba(50, 205, 50, 0.4);
+      outline: 3px solid #48c774;
+      outline-offset: -2px;
+    }
+    100% {
+      background-color: transparent;
+      outline: 3px solid transparent;
+      outline-offset: -2px;
+    }
   }
-  @keyframes row-slide-in-down {
-    from { transform: translateY(1.5rem); opacity: 0; }
-  }
-  @keyframes row-slide-out-down {
-    to { transform: translateY(1.5rem); opacity: 0; }
-  }
-  @keyframes row-slide-in-up {
-    from { transform: translateY(-1.5rem); opacity: 0; }
-  }
-  @keyframes row-highlight {
-    0%   { background-color: rgba(50, 115, 220, 0.45); outline: 3px solid #3273dc; outline-offset: -2px; }
-    100% { background-color: transparent; outline: 3px solid transparent; outline-offset: -2px; }
-  }
-  .row-moved {
-    animation: row-highlight 900ms ease-out forwards;
+  .row-you {
+    animation: row-highlight-you 900ms ease-out forwards;
   }
 </style>
 
-<style>
-  .participant-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin-bottom: 1.5rem;
-  }
-
-  .participant-header,
-  .participant-row {
-    display: grid;
-    grid-template-columns: 6rem 1fr 6rem;
-    align-items: center;
-    padding: 0.5rem 0.75rem;
-    gap: 1rem;
-  }
-
-  .participant-header {
-    font-weight: 600;
-    border-bottom: 2px solid #dbdbdb;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #7a7a7a;
-  }
-
-  .participant-row {
-    border-bottom: 1px solid #ededed;
-    border-radius: 4px;
-  }
-
-
-</style>
-
-<script is:inline define:vars={{ campaignName, encounterId }}>
+<script is:inline define:vars={{ campaignName, encounterId, myPlayerId }}>
   const expected = `encounter:${campaignName}:${encounterId}`;
   const cleanUrl = location.pathname;
   window._encounterTransitioning = false;
+
+  function flashYourRow() {
+    if (myPlayerId == null) return;
+    const row = document.querySelector(`[data-player-id="${myPlayerId}"]`);
+    if (!row) return;
+    row.classList.remove("row-you");
+    void row.offsetWidth;
+    row.classList.add("row-you");
+    row.addEventListener(
+      "animationend",
+      () => row.classList.remove("row-you"),
+      { once: true },
+    );
+  }
+  window._flashYourRow = flashYourRow;
 
   const ws = new WebSocket(`ws://${location.hostname}:4322`);
   ws.onmessage = async (e) => {
@@ -263,11 +299,15 @@ const availablePlayers = roster.players.filter(
       const doc = new DOMParser().parseFromString(html, "text/html");
       const newList = doc.querySelector(".participant-list");
       const oldList = document.querySelector(".participant-list");
-      if (!newList || !oldList) { location.reload(); return; }
+      if (!newList || !oldList) {
+        location.reload();
+        return;
+      }
       await document.startViewTransition(() => {
         oldList.replaceWith(newList);
         document.dispatchEvent(new CustomEvent("encounter:reattach"));
       }).finished;
+      flashYourRow();
     } finally {
       window._encounterTransitioning = false;
     }
@@ -299,12 +339,13 @@ const availablePlayers = roster.players.filter(
     });
     await t.finished;
     (window as any)._encounterTransitioning = false;
-    rowEl.classList.add("row-moved");
-    rowEl.addEventListener("animationend", () => rowEl.classList.remove("row-moved"), { once: true });
+    (window as any)._flashYourRow?.();
   }
 
   function attachEndTurnHandler() {
-    const form = document.getElementById("end-turn-form") as HTMLFormElement | null;
+    const form = document.getElementById(
+      "end-turn-form",
+    ) as HTMLFormElement | null;
     if (!form) return;
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -335,7 +376,9 @@ const availablePlayers = roster.players.filter(
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const f = form as HTMLFormElement;
-        const direction = (f.querySelector("[name=direction]") as HTMLInputElement).value;
+        const direction = (
+          f.querySelector("[name=direction]") as HTMLInputElement
+        ).value;
         const rowEl = f.closest(".participant-row") as HTMLElement | null;
         const list = document.querySelector(".participant-list");
         if (!rowEl || !list) return;
@@ -360,8 +403,7 @@ const availablePlayers = roster.players.filter(
         });
         await t.finished;
         (window as any)._encounterTransitioning = false;
-        rowEl.classList.add("row-moved");
-        rowEl.addEventListener("animationend", () => rowEl.classList.remove("row-moved"), { once: true });
+        (window as any)._flashYourRow?.();
       });
     });
   }

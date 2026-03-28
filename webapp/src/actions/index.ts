@@ -212,22 +212,29 @@ export const server = {
 
       if (ordered.length < 2) return;
 
-      const target = participantId != null
-        ? ordered.find((p) => p.id === participantId)
-        : ordered[0];
+      const target =
+        participantId != null
+          ? ordered.find((p) => p.id === participantId)
+          : ordered[0];
       if (!target) return;
 
       // Assign initiatives if any are null
-      const maxInit = Math.max(...encounter.participants.map((p) => p.initiative ?? 0));
+      const maxInit = Math.max(
+        ...encounter.participants.map((p) => p.initiative ?? 0),
+      );
       ordered.forEach((p, i) => {
         if (p.initiative == null) {
-          encounter.participants.find((ep) => ep.id === p.id)!.initiative = maxInit - i;
+          encounter.participants.find((ep) => ep.id === p.id)!.initiative =
+            maxInit - i;
         }
       });
 
       // Move target to last by giving it the minimum initiative minus 1
-      const minInit = Math.min(...encounter.participants.map((p) => p.initiative!));
-      encounter.participants.find((p) => p.id === target.id)!.initiative = minInit - 1;
+      const minInit = Math.min(
+        ...encounter.participants.map((p) => p.initiative!),
+      );
+      encounter.participants.find((p) => p.id === target.id)!.initiative =
+        minInit - 1;
 
       await saveEncounter(campaignName, encounter);
       broadcast(`encounter:${campaignName}:${encounterId}`);
