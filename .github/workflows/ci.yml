@@ -154,7 +154,7 @@ jobs:
         run: pnpm wasm
         working-directory: webapp
       - name: Typecheck
-        run: pnpm exec astro check
+        run: pnpm typecheck
         working-directory: webapp
 
   webapp-format:
