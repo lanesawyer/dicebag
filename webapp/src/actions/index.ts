@@ -1,4 +1,5 @@
-import { defineAction } from "astro:actions";
+import { defineAction, ActionError } from "astro:actions";
+import type { ActionAPIContext } from "astro:actions";
 import { z } from "astro:schema";
 import {
   getCampaign,
@@ -14,6 +15,13 @@ import {
 import { broadcast } from "../lib/ws";
 import { getClaim, setClaim, releaseClaim } from "../lib/claims";
 
+async function requireGm(ctx: ActionAPIContext) {
+  const identity = await ctx.session!.get("identity");
+  if (identity?.role !== "gm") {
+    throw new ActionError({ code: "FORBIDDEN", message: "GM access required" });
+  }
+}
+
 export const server = {
   // Campaign actions
   createCampaign: defineAction({
@@ -22,7 +30,8 @@ export const server = {
       name: z.string().min(1, "Name is required."),
       description: z.string().default(""),
     }),
-    handler: async ({ name, description }) => {
+    handler: async ({ name, description }, ctx) => {
+      await requireGm(ctx);
       const id = await nextCampaignId();
       await saveCampaign({ id, name, description });
     },
@@ -35,7 +44,8 @@ export const server = {
       name: z.string().min(1, "Name is required."),
       description: z.string().default(""),
     }),
-    handler: async ({ oldName, name, description }) => {
+    handler: async ({ oldName, name, description }, ctx) => {
+      await requireGm(ctx);
       const campaign = await getCampaign(oldName);
       if (!campaign) throw new Error("Campaign not found");
       await renameCampaign(oldName, { ...campaign, name, description });
@@ -50,7 +60,8 @@ export const server = {
       campaignName: z.string(),
       name: z.string().min(1, "Name is required."),
     }),
-    handler: async ({ campaignName, name }) => {
+    handler: async ({ campaignName, name }, ctx) => {
+      await requireGm(ctx);
       const roster = await getPlayerRoster(campaignName);
       const id =
         roster.players.length > 0
@@ -69,7 +80,8 @@ export const server = {
       playerId: z.coerce.number(),
       name: z.string().min(1, "Name is required."),
     }),
-    handler: async ({ campaignName, playerId, name }) => {
+    handler: async ({ campaignName, playerId, name }, ctx) => {
+      await requireGm(ctx);
       const roster = await getPlayerRoster(campaignName);
       await savePlayerRoster(campaignName, {
         players: roster.players.map((p) =>
@@ -85,7 +97,8 @@ export const server = {
       campaignName: z.string(),
       playerId: z.coerce.number(),
     }),
-    handler: async ({ campaignName, playerId }) => {
+    handler: async ({ campaignName, playerId }, ctx) => {
+      await requireGm(ctx);
       const roster = await getPlayerRoster(campaignName);
       await savePlayerRoster(campaignName, {
         players: roster.players.filter((p) => p.id !== playerId),
@@ -101,7 +114,8 @@ export const server = {
       campaignId: z.coerce.number(),
       name: z.string().min(1, "Name is required."),
     }),
-    handler: async ({ campaignName, campaignId, name }) => {
+    handler: async ({ campaignName, campaignId, name }, ctx) => {
+      await requireGm(ctx);
       const id = await nextEncounterId(campaignName);
       await saveEncounter(campaignName, {
         id,
@@ -121,7 +135,8 @@ export const server = {
       playerId: z.coerce.number(),
       maxHp: z.coerce.number().int().positive(),
     }),
-    handler: async ({ campaignName, encounterId, playerId, maxHp }) => {
+    handler: async ({ campaignName, encounterId, playerId, maxHp }, ctx) => {
+      await requireGm(ctx);
       const roster = await getPlayerRoster(campaignName);
       const player = roster.players.find((p) => p.id === playerId);
       if (!player) throw new Error("Player not found");
@@ -151,12 +166,11 @@ export const server = {
       participantId: z.coerce.number(),
       direction: z.enum(["up", "down"]),
     }),
-    handler: async ({
-      campaignName,
-      encounterId,
-      participantId,
-      direction,
-    }) => {
+    handler: async (
+      { campaignName, encounterId, participantId, direction },
+      ctx,
+    ) => {
+      await requireGm(ctx);
       const encounter = await getEncounter(campaignName, encounterId);
       if (!encounter) throw new Error("Encounter not found");
 
@@ -199,7 +213,8 @@ export const server = {
       encounterId: z.coerce.number(),
       participantId: z.coerce.number().optional(),
     }),
-    handler: async ({ campaignName, encounterId, participantId }) => {
+    handler: async ({ campaignName, encounterId, participantId }, ctx) => {
+      await requireGm(ctx);
       const encounter = await getEncounter(campaignName, encounterId);
       if (!encounter) throw new Error("Encounter not found");
 

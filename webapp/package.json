@@ -12,25 +12,26 @@
     "preview": "astro preview",
     "astro": "astro",
     "fmt": "prettier --write .",
-    "fmt:check": "prettier --check ."
+    "fmt:check": "prettier --check .",
+    "typecheck": "astro check"
   },
   "dependencies": {
     "@astrojs/node": "10.0.4",
     "astro": "6.1.1",
     "astro-bulma": "github:lanesawyer/astro-bulma",
     "bulma": "1.0.4",
-    "ws": "^8.20.0"
+    "ws": "8.20.0"
   },
   "volta": {
     "node": "24.14.1",
     "pnpm": "10.33.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.8",
+    "@astrojs/check": "0.9.8",
     "@types/node": "25.5.0",
-    "@types/ws": "^8.18.1",
-    "prettier": "^3.8.1",
-    "prettier-plugin-astro": "^0.14.1",
-    "typescript": "^6.0.2"
+    "@types/ws": "8.18.1",
+    "prettier": "3.8.1",
+    "prettier-plugin-astro": "0.14.1",
+    "typescript": "6.0.2"
   }
 }

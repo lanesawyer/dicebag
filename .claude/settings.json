@@ -13,6 +13,16 @@
             "type": "command",
             "command": "cargo clippy --all 2>&1 || true",
             "statusMessage": "Linting..."
+          },
+          {
+            "type": "command",
+            "command": "cd webapp && pnpm fmt 2>/dev/null || true",
+            "statusMessage": "Formatting webapp..."
+          },
+          {
+            "type": "command",
+            "command": "cd webapp && pnpm typecheck 2>&1 || true",
+            "statusMessage": "Typechecking webapp..."
           }
         ]
       }
