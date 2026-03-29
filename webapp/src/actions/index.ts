@@ -166,12 +166,10 @@ export const server = {
       participantId: z.coerce.number(),
       direction: z.enum(["up", "down"]),
     }),
-    handler: async ({
-      campaignName,
-      encounterId,
-      participantId,
-      direction,
-    }, ctx) => {
+    handler: async (
+      { campaignName, encounterId, participantId, direction },
+      ctx,
+    ) => {
       await requireGm(ctx);
       const encounter = await getEncounter(campaignName, encounterId);
       if (!encounter) throw new Error("Encounter not found");
