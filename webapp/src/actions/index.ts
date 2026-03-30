@@ -2,7 +2,7 @@ import { defineAction, ActionError } from "astro:actions";
 import type { ActionAPIContext } from "astro:actions";
 import { z } from "astro:schema";
 import {
-  getCampaign,
+  getCampaignByName,
   getPlayerRoster,
   savePlayerRoster,
   getEncounter,
@@ -14,6 +14,7 @@ import {
   getAudioCatalog,
   saveAudioCatalog,
   audioFile,
+  campaignDirPath,
 } from "../lib/campaigns";
 import fs from "node:fs/promises";
 import { broadcast } from "../lib/ws";
@@ -44,15 +45,16 @@ export const server = {
   editCampaign: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       oldName: z.string(),
       name: z.string().min(1, "Name is required."),
       description: z.string().default(""),
     }),
-    handler: async ({ oldName, name, description }, ctx) => {
+    handler: async ({ campaignId, oldName, name, description }, ctx) => {
       await requireGm(ctx);
-      const campaign = await getCampaign(oldName);
+      const campaign = await getCampaignByName(oldName);
       if (!campaign) throw new Error("Campaign not found");
-      await renameCampaign(oldName, { ...campaign, name, description });
+      await renameCampaign(campaign, { ...campaign, name, description });
       return { name };
     },
   }),
@@ -61,17 +63,18 @@ export const server = {
   addPlayer: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       name: z.string().min(1, "Name is required."),
     }),
-    handler: async ({ campaignName, name }, ctx) => {
+    handler: async ({ campaignId, campaignName, name }, ctx) => {
       await requireGm(ctx);
-      const roster = await getPlayerRoster(campaignName);
+      const roster = await getPlayerRoster(campaignId, campaignName);
       const id =
         roster.players.length > 0
           ? Math.max(...roster.players.map((p) => p.id)) + 1
           : 1;
-      await savePlayerRoster(campaignName, {
+      await savePlayerRoster(campaignId, campaignName, {
         players: [...roster.players, { id, name }],
       });
     },
@@ -80,14 +83,15 @@ export const server = {
   updatePlayer: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       playerId: z.coerce.number(),
       name: z.string().min(1, "Name is required."),
     }),
-    handler: async ({ campaignName, playerId, name }, ctx) => {
+    handler: async ({ campaignId, campaignName, playerId, name }, ctx) => {
       await requireGm(ctx);
-      const roster = await getPlayerRoster(campaignName);
-      await savePlayerRoster(campaignName, {
+      const roster = await getPlayerRoster(campaignId, campaignName);
+      await savePlayerRoster(campaignId, campaignName, {
         players: roster.players.map((p) =>
           p.id === playerId ? { ...p, name } : p,
         ),
@@ -98,13 +102,14 @@ export const server = {
   deletePlayer: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       playerId: z.coerce.number(),
     }),
-    handler: async ({ campaignName, playerId }, ctx) => {
+    handler: async ({ campaignId, campaignName, playerId }, ctx) => {
       await requireGm(ctx);
-      const roster = await getPlayerRoster(campaignName);
-      await savePlayerRoster(campaignName, {
+      const roster = await getPlayerRoster(campaignId, campaignName);
+      await savePlayerRoster(campaignId, campaignName, {
         players: roster.players.filter((p) => p.id !== playerId),
       });
     },
@@ -114,14 +119,14 @@ export const server = {
   createEncounter: defineAction({
     accept: "form",
     input: z.object({
-      campaignName: z.string(),
       campaignId: z.coerce.number(),
+      campaignName: z.string(),
       name: z.string().min(1, "Name is required."),
     }),
-    handler: async ({ campaignName, campaignId, name }, ctx) => {
+    handler: async ({ campaignId, campaignName, name }, ctx) => {
       await requireGm(ctx);
-      const id = await nextEncounterId(campaignName);
-      await saveEncounter(campaignName, {
+      const id = await nextEncounterId(campaignId, campaignName);
+      await saveEncounter(campaignId, campaignName, {
         id,
         name,
         campaign_id: campaignId,
@@ -134,17 +139,25 @@ export const server = {
   addParticipant: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       encounterId: z.coerce.number(),
       playerId: z.coerce.number(),
       maxHp: z.coerce.number().int().positive(),
     }),
-    handler: async ({ campaignName, encounterId, playerId, maxHp }, ctx) => {
+    handler: async (
+      { campaignId, campaignName, encounterId, playerId, maxHp },
+      ctx,
+    ) => {
       await requireGm(ctx);
-      const roster = await getPlayerRoster(campaignName);
+      const roster = await getPlayerRoster(campaignId, campaignName);
       const player = roster.players.find((p) => p.id === playerId);
       if (!player) throw new Error("Player not found");
-      const encounter = await getEncounter(campaignName, encounterId);
+      const encounter = await getEncounter(
+        campaignId,
+        campaignName,
+        encounterId,
+      );
       if (!encounter) throw new Error("Encounter not found");
       const nextId =
         encounter.participants.length > 0
@@ -157,7 +170,7 @@ export const server = {
         current_hp: maxHp,
         initiative: null,
       });
-      await saveEncounter(campaignName, encounter);
+      await saveEncounter(campaignId, campaignName, encounter);
       broadcast(`encounter:${campaignName}:${encounterId}`);
     },
   }),
@@ -165,17 +178,22 @@ export const server = {
   moveParticipant: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       encounterId: z.coerce.number(),
       participantId: z.coerce.number(),
       direction: z.enum(["up", "down"]),
     }),
     handler: async (
-      { campaignName, encounterId, participantId, direction },
+      { campaignId, campaignName, encounterId, participantId, direction },
       ctx,
     ) => {
       await requireGm(ctx);
-      const encounter = await getEncounter(campaignName, encounterId);
+      const encounter = await getEncounter(
+        campaignId,
+        campaignName,
+        encounterId,
+      );
       if (!encounter) throw new Error("Encounter not found");
 
       const ordered = [...encounter.participants].sort((a, b) => {
@@ -205,7 +223,7 @@ export const server = {
       )!;
       [a.initiative, b.initiative] = [b.initiative, a.initiative];
 
-      await saveEncounter(campaignName, encounter);
+      await saveEncounter(campaignId, campaignName, encounter);
       broadcast(`encounter:${campaignName}:${encounterId}`);
     },
   }),
@@ -213,13 +231,21 @@ export const server = {
   endTurn: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       encounterId: z.coerce.number(),
       participantId: z.coerce.number().optional(),
     }),
-    handler: async ({ campaignName, encounterId, participantId }, ctx) => {
+    handler: async (
+      { campaignId, campaignName, encounterId, participantId },
+      ctx,
+    ) => {
       await requireGm(ctx);
-      const encounter = await getEncounter(campaignName, encounterId);
+      const encounter = await getEncounter(
+        campaignId,
+        campaignName,
+        encounterId,
+      );
       if (!encounter) throw new Error("Encounter not found");
 
       const ordered = [...encounter.participants].sort((a, b) => {
@@ -255,7 +281,7 @@ export const server = {
       encounter.participants.find((p) => p.id === target.id)!.initiative =
         minInit - 1;
 
-      await saveEncounter(campaignName, encounter);
+      await saveEncounter(campaignId, campaignName, encounter);
       broadcast(`encounter:${campaignName}:${encounterId}`);
     },
   }),
@@ -269,6 +295,7 @@ export const server = {
   saveAudioRecording: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       label: z.string().min(1, "Label is required."),
       subjectType: z.enum(["Player", "Entity"]),
@@ -276,7 +303,7 @@ export const server = {
       notes: z.string().default(""),
     }),
     handler: async (
-      { campaignName, label, subjectType, subjectId, notes },
+      { campaignId, campaignName, label, subjectType, subjectId, notes },
       ctx,
     ) => {
       const identity = await ctx.session!.get("identity");
@@ -289,20 +316,21 @@ export const server = {
       if (!isGm && !isOwnPlayer) {
         throw new ActionError({ code: "FORBIDDEN", message: "Not authorized" });
       }
-      const catalog = await getAudioCatalog(campaignName);
+      const catalog = await getAudioCatalog(campaignId, campaignName);
       const id =
         catalog.recordings.length > 0
           ? Math.max(...catalog.recordings.map((r) => r.id)) + 1
           : 1;
-      const filename = campaignName.replace(/ /g, "-") + `-audio-${id}.webm`;
-      const filePath = audioFile(campaignName, id);
+      const filename = `audio-${id}.webm`;
+      const dir = campaignDirPath(campaignId, campaignName);
+      const filePath = audioFile(dir, id);
 
       // Read raw audio bytes from the multipart request
       const formData = await ctx.request.formData();
       const blob = formData.get("audio");
       if (!(blob instanceof Blob)) throw new Error("No audio blob in request");
       const buffer = Buffer.from(await blob.arrayBuffer());
-      await fs.mkdir(filePath.replace(/[^/\\]+$/, ""), { recursive: true });
+      await fs.mkdir(dir, { recursive: true });
       await fs.writeFile(filePath, buffer);
 
       const subject =
@@ -310,7 +338,7 @@ export const server = {
           ? { Player: subjectId }
           : { Entity: subjectId };
       catalog.recordings.push({ id, label, filename, subject, notes });
-      await saveAudioCatalog(campaignName, catalog);
+      await saveAudioCatalog(campaignId, campaignName, catalog);
       return { id };
     },
   }),
@@ -318,13 +346,14 @@ export const server = {
   deleteAudioRecording: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       recordingId: z.coerce.number().int(),
     }),
-    handler: async ({ campaignName, recordingId }, ctx) => {
+    handler: async ({ campaignId, campaignName, recordingId }, ctx) => {
       const identity = await ctx.session!.get("identity");
       const isGm = identity?.role === "gm";
-      const catalog = await getAudioCatalog(campaignName);
+      const catalog = await getAudioCatalog(campaignId, campaignName);
       const rec = catalog.recordings.find((r) => r.id === recordingId);
       if (!rec) throw new Error("Recording not found");
       const isOwnPlayer =
@@ -338,9 +367,10 @@ export const server = {
       catalog.recordings = catalog.recordings.filter(
         (r) => r.id !== recordingId,
       );
-      await saveAudioCatalog(campaignName, catalog);
+      await saveAudioCatalog(campaignId, campaignName, catalog);
       // Best-effort deletion of the audio file
-      await fs.unlink(audioFile(campaignName, recordingId)).catch(() => {});
+      const dir = campaignDirPath(campaignId, campaignName);
+      await fs.unlink(audioFile(dir, recordingId)).catch(() => {});
     },
   }),
 
@@ -361,16 +391,17 @@ export const server = {
   claimPlayer: defineAction({
     accept: "form",
     input: z.object({
+      campaignId: z.coerce.number(),
       campaignName: z.string(),
       playerId: z.coerce.number(),
     }),
-    handler: async ({ campaignName, playerId }, ctx) => {
-      const roster = await getPlayerRoster(campaignName);
+    handler: async ({ campaignId, campaignName, playerId }, ctx) => {
+      const roster = await getPlayerRoster(campaignId, campaignName);
       const player = roster.players.find((p) => p.id === playerId);
       if (!player) throw new Error("Player not found");
-      const existing = await getClaim(campaignName, playerId);
+      const existing = await getClaim(campaignId, campaignName, playerId);
       if (existing) throw new Error(`${player.name} has already been claimed`);
-      await setClaim(campaignName, playerId);
+      await setClaim(campaignId, campaignName, playerId);
       await ctx.session!.set("identity", {
         role: "player",
         campaignName,
@@ -385,7 +416,14 @@ export const server = {
     handler: async (_input, ctx) => {
       const identity = await ctx.session!.get("identity");
       if (identity?.role === "player") {
-        await releaseClaim(identity.campaignName, identity.playerId);
+        const campaign = await getCampaignByName(identity.campaignName);
+        if (campaign) {
+          await releaseClaim(
+            campaign.id,
+            identity.campaignName,
+            identity.playerId,
+          );
+        }
       }
       await ctx.session!.destroy();
     },

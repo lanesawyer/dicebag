@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use core::{CombatantRef, EntityRoster, PlayerRoster};
 
 pub fn resolve_name<'a>(
@@ -17,31 +19,26 @@ pub fn resolve_name<'a>(
     }
 }
 
-pub fn encounter_filename(name: &str) -> String {
-    format!("{}.ron", name.to_lowercase().replace(' ', "-"))
+pub fn campaign_file(dir: &PathBuf) -> PathBuf {
+    dir.join("campaign.ron")
 }
 
-pub fn campaign_filename(name: &str) -> String {
-    format!("{}.ron", name.to_lowercase().replace(' ', "-"))
+pub fn players_file(dir: &PathBuf) -> PathBuf {
+    dir.join("players.ron")
 }
 
-pub fn players_filename(campaign_name: &str) -> String {
-    format!(
-        "{}-players.ron",
-        campaign_name.to_lowercase().replace(' ', "-")
-    )
+pub fn entities_file(dir: &PathBuf) -> PathBuf {
+    dir.join("entities.ron")
 }
 
-pub fn entities_filename(campaign_name: &str) -> String {
-    format!(
-        "{}-entities.ron",
-        campaign_name.to_lowercase().replace(' ', "-")
-    )
+pub fn encounter_file(dir: &PathBuf, encounter_id: i32) -> PathBuf {
+    dir.join(format!("encounter-{}.ron", encounter_id))
 }
 
-pub fn audio_catalog_filename(campaign_name: &str) -> String {
-    format!(
-        "{}-audio-catalog.ron",
-        campaign_name.to_lowercase().replace(' ', "-")
-    )
+pub fn audio_catalog_file(dir: &PathBuf) -> PathBuf {
+    dir.join("audio-catalog.ron")
+}
+
+pub fn audio_file(dir: &PathBuf, recording_id: i32) -> PathBuf {
+    dir.join(format!("audio-{}.webm", recording_id))
 }

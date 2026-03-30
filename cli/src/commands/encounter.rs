@@ -1,9 +1,8 @@
 use clap::Subcommand;
 use core::{Campaign, Encounter, EntityRoster, Participant, PlayerRoster};
 
-use crate::persistence::load;
-use crate::persistence::save;
-use crate::util::{encounter_filename, entities_filename, players_filename, resolve_name};
+use crate::persistence::{find_campaign_dir, load, save};
+use crate::util::{campaign_file, encounter_file, entities_file, players_file, resolve_name};
 
 #[derive(Subcommand)]
 pub enum EncounterCommands {
@@ -11,18 +10,18 @@ pub enum EncounterCommands {
     New {
         #[arg(short, long)]
         name: String,
-        /// Campaign file (e.g. my-campaign.ron)
+        /// Campaign name (e.g. "My Campaign")
         #[arg(short, long)]
         campaign: String,
     },
     /// Add a participant to an encounter (player or entity by id)
     AddParticipant {
-        /// Encounter file (e.g. my-encounter.ron)
-        #[arg(short, long)]
-        encounter: String,
-        /// Campaign file (needed to look up player/entity names)
+        /// Campaign name (e.g. "My Campaign")
         #[arg(short, long)]
         campaign: String,
+        /// Encounter id
+        #[arg(short, long)]
+        encounter: i32,
         /// ID of the player or entity to add
         #[arg(long)]
         id: i32,
@@ -35,9 +34,12 @@ pub enum EncounterCommands {
     },
     /// Set initiative for a participant in an encounter
     SetInitiative {
-        /// Encounter file (e.g. my-encounter.ron)
+        /// Campaign name (e.g. "My Campaign")
         #[arg(short, long)]
-        encounter: String,
+        campaign: String,
+        /// Encounter id
+        #[arg(short, long)]
+        encounter: i32,
         /// Participant id
         #[arg(long)]
         id: i32,
@@ -46,9 +48,12 @@ pub enum EncounterCommands {
     },
     /// Apply damage or healing to a participant (positive = damage, negative = healing)
     HpChange {
-        /// Encounter file (e.g. my-encounter.ron)
+        /// Campaign name (e.g. "My Campaign")
         #[arg(short, long)]
-        encounter: String,
+        campaign: String,
+        /// Encounter id
+        #[arg(short, long)]
+        encounter: i32,
         /// Participant id
         #[arg(long)]
         id: i32,
@@ -58,36 +63,47 @@ pub enum EncounterCommands {
     },
     /// Show encounter status (participants, HP, initiative order)
     Show {
-        /// Encounter file (e.g. my-encounter.ron)
-        #[arg(short, long)]
-        encounter: String,
-        /// Campaign file (needed to resolve names)
+        /// Campaign name (e.g. "My Campaign")
         #[arg(short, long)]
         campaign: String,
+        /// Encounter id
+        #[arg(short, long)]
+        encounter: i32,
     },
 }
 
 pub fn handle(cmd: EncounterCommands) {
     match cmd {
         EncounterCommands::New { name, campaign } => {
-            let c: Campaign = load(&campaign).expect("Failed to load campaign");
-            let enc = Encounter::new(0, name.clone(), c.id());
-            let filename = encounter_filename(&name);
-            save(&enc, &filename).expect("Failed to save encounter");
-            println!("Saved encounter '{}' to {}", name, filename);
+            let dir = find_campaign_dir(&campaign)
+                .unwrap_or_else(|| panic!("No campaign named '{}'", campaign));
+            let c: Campaign = load(&campaign_file(&dir)).expect("Failed to load campaign");
+            // Determine next encounter id by scanning existing encounter files
+            let next_id: i32 = next_encounter_id(&dir);
+            let enc = Encounter::new(next_id, name.clone(), c.id());
+            let path = encounter_file(&dir, next_id);
+            save(&enc, &path).expect("Failed to save encounter");
+            println!(
+                "Saved encounter '{}' (id={}) to {}",
+                name,
+                next_id,
+                path.display()
+            );
         }
 
         EncounterCommands::AddParticipant {
-            encounter,
             campaign,
+            encounter,
             id,
             kind,
             max_hp,
         } => {
-            let c: Campaign = load(&campaign).expect("Failed to load campaign");
-            let players: PlayerRoster = load(&players_filename(c.name())).unwrap_or_default();
-            let entities: EntityRoster = load(&entities_filename(c.name())).unwrap_or_default();
-            let mut enc: Encounter = load(&encounter).expect("Failed to load encounter");
+            let dir = find_campaign_dir(&campaign)
+                .unwrap_or_else(|| panic!("No campaign named '{}'", campaign));
+            let players: PlayerRoster = load(&players_file(&dir)).unwrap_or_default();
+            let entities: EntityRoster = load(&entities_file(&dir)).unwrap_or_default();
+            let enc_path = encounter_file(&dir, encounter);
+            let mut enc: Encounter = load(&enc_path).expect("Failed to load encounter");
             let participant_id = enc.participants().len() as i32 + 1;
             let participant = match kind.as_str() {
                 "player" => {
@@ -112,29 +128,37 @@ pub fn handle(cmd: EncounterCommands) {
                 participant.id()
             );
             enc.add_participant(participant);
-            save(&enc, &encounter).expect("Failed to save encounter");
+            save(&enc, &enc_path).expect("Failed to save encounter");
         }
 
         EncounterCommands::SetInitiative {
+            campaign,
             encounter,
             id,
             initiative,
         } => {
-            let mut enc: Encounter = load(&encounter).expect("Failed to load encounter");
+            let dir = find_campaign_dir(&campaign)
+                .unwrap_or_else(|| panic!("No campaign named '{}'", campaign));
+            let enc_path = encounter_file(&dir, encounter);
+            let mut enc: Encounter = load(&enc_path).expect("Failed to load encounter");
             let p = enc
                 .participant_mut(id)
                 .unwrap_or_else(|| panic!("No participant with id={}", id));
             p.set_initiative(initiative);
             println!("Set initiative {} for participant id={}", initiative, id);
-            save(&enc, &encounter).expect("Failed to save encounter");
+            save(&enc, &enc_path).expect("Failed to save encounter");
         }
 
         EncounterCommands::HpChange {
+            campaign,
             encounter,
             id,
             delta,
         } => {
-            let mut enc: Encounter = load(&encounter).expect("Failed to load encounter");
+            let dir = find_campaign_dir(&campaign)
+                .unwrap_or_else(|| panic!("No campaign named '{}'", campaign));
+            let enc_path = encounter_file(&dir, encounter);
+            let mut enc: Encounter = load(&enc_path).expect("Failed to load encounter");
             let p = enc
                 .participant_mut(id)
                 .unwrap_or_else(|| panic!("No participant with id={}", id));
@@ -152,17 +176,19 @@ pub fn handle(cmd: EncounterCommands) {
                 p.max_hp(),
                 if !p.is_alive() { " [DEAD]" } else { "" }
             );
-            save(&enc, &encounter).expect("Failed to save encounter");
+            save(&enc, &enc_path).expect("Failed to save encounter");
         }
 
         EncounterCommands::Show {
-            encounter,
             campaign,
+            encounter,
         } => {
-            let c: Campaign = load(&campaign).expect("Failed to load campaign");
-            let players: PlayerRoster = load(&players_filename(c.name())).unwrap_or_default();
-            let entities: EntityRoster = load(&entities_filename(c.name())).unwrap_or_default();
-            let enc: Encounter = load(&encounter).expect("Failed to load encounter");
+            let dir = find_campaign_dir(&campaign)
+                .unwrap_or_else(|| panic!("No campaign named '{}'", campaign));
+            let players: PlayerRoster = load(&players_file(&dir)).unwrap_or_default();
+            let entities: EntityRoster = load(&entities_file(&dir)).unwrap_or_default();
+            let enc: Encounter =
+                load(&encounter_file(&dir, encounter)).expect("Failed to load encounter");
             println!("Encounter: {}", enc.name());
             println!("Initiative order:");
             for p in enc.initiative_order() {
@@ -184,4 +210,23 @@ pub fn handle(cmd: EncounterCommands) {
             }
         }
     }
+}
+
+fn next_encounter_id(dir: &std::path::PathBuf) -> i32 {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return 0;
+    };
+    let mut max_id: Option<i32> = None;
+    for entry in entries.flatten() {
+        let fname = entry.file_name();
+        let fname = fname.to_string_lossy();
+        if let Some(rest) = fname.strip_prefix("encounter-") {
+            if let Some(id_str) = rest.strip_suffix(".ron") {
+                if let Ok(id) = id_str.parse::<i32>() {
+                    max_id = Some(max_id.map_or(id, |m: i32| m.max(id)));
+                }
+            }
+        }
+    }
+    max_id.map_or(0, |m| m + 1)
 }

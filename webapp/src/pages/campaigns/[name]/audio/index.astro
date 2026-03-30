@@ -3,7 +3,7 @@ import Layout from "../../../../layouts/Layout.astro";
 import { Box, Button, Notification, Table } from "astro-bulma";
 import { actions } from "astro:actions";
 import {
-  getCampaign,
+  getCampaignByName,
   getPlayerRoster,
   getEntityRoster,
   getAudioCatalog,
@@ -11,7 +11,7 @@ import {
 } from "../../../../lib/campaigns";
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
-const campaign = await getCampaign(campaignName);
+const campaign = await getCampaignByName(campaignName);
 if (!campaign) return Astro.redirect("/campaigns");
 
 const encoded = encodeURIComponent(campaignName);
@@ -21,9 +21,9 @@ if (deleteResult && !deleteResult.error) {
   return Astro.redirect(`/campaigns/${encoded}/audio`);
 }
 
-const catalog = await getAudioCatalog(campaignName);
-const roster = await getPlayerRoster(campaignName);
-const entityRoster = await getEntityRoster(campaignName);
+const catalog = await getAudioCatalog(campaign.id, campaignName);
+const roster = await getPlayerRoster(campaign.id, campaignName);
+const entityRoster = await getEntityRoster(campaign.id, campaignName);
 
 function subjectLabel(subject: AudioSubject): string {
   if ("Player" in subject) {
@@ -93,6 +93,11 @@ const isGm = identity?.role === "gm";
                   <form method="POST" action={actions.deleteAudioRecording}>
                     <input
                       type="hidden"
+                      name="campaignId"
+                      value={campaign.id}
+                    />
+                    <input
+                      type="hidden"
                       name="campaignName"
                       value={campaignName}
                     />
@@ -119,7 +124,11 @@ const isGm = identity?.role === "gm";
             Add players or entities to the campaign before recording.
           </Notification>
         ) : (
-          <div id="recorder-app" data-campaign={campaignName}>
+          <div
+            id="recorder-app"
+            data-campaign={campaignName}
+            data-campaign-id={campaign.id}
+          >
             <div class="field">
               <label class="label">Label</label>
               <div class="control">
@@ -194,7 +203,7 @@ const isGm = identity?.role === "gm";
   }
 </Layout>
 
-<script is:inline define:vars={{ campaignName }}>
+<script is:inline>
   const app = document.getElementById("recorder-app");
   const btnRecord = document.getElementById("btn-record");
   const btnStop = document.getElementById("btn-stop");
@@ -204,6 +213,8 @@ const isGm = identity?.role === "gm";
   const status = document.getElementById("rec-status");
 
   if (app && btnRecord && btnStop && btnSave && preview && saveArea && status) {
+    const campaignName = app.dataset.campaign;
+    const campaignId = app.dataset.campaignId;
     let mediaRecorder = null;
     let chunks = [];
     let blob = null;
@@ -259,6 +270,7 @@ const isGm = identity?.role === "gm";
       const notes = document.getElementById("rec-notes").value.trim();
 
       const fd = new FormData();
+      fd.append("campaignId", campaignId);
       fd.append("campaignName", campaignName);
       fd.append("label", label);
       fd.append("subjectType", subjectType);

@@ -2,7 +2,7 @@
 import Layout from "../../../layouts/Layout.astro";
 import { Button, Notification } from "astro-bulma";
 import {
-  getCampaign,
+  getCampaignByName,
   listEncounters,
   getPlayerRoster,
 } from "../../../lib/campaigns";
@@ -10,10 +10,10 @@ import { getClaim } from "../../../lib/claims";
 import { actions } from "astro:actions";
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
-const campaign = await getCampaign(campaignName);
+const campaign = await getCampaignByName(campaignName);
 if (!campaign) return Astro.redirect("/campaigns");
 
-const encounters = await listEncounters(campaignName);
+const encounters = await listEncounters(campaign.id, campaignName);
 const encoded = encodeURIComponent(campaignName);
 const identity = await Astro.session!.get("identity");
 
@@ -22,11 +22,11 @@ if (claimResult && !claimResult.error) {
   return Astro.redirect(`/campaigns/${encoded}`);
 }
 
-const roster = await getPlayerRoster(campaignName);
+const roster = await getPlayerRoster(campaign.id, campaignName);
 const players = await Promise.all(
   roster.players.map(async (p) => ({
     ...p,
-    claimed: await getClaim(campaignName, p.id),
+    claimed: await getClaim(campaign.id, campaignName, p.id),
   })),
 );
 ---
@@ -74,6 +74,11 @@ const players = await Promise.all(
                       <span class="tag">Taken</span>
                     ) : (
                       <form method="POST" action={actions.claimPlayer}>
+                        <input
+                          type="hidden"
+                          name="campaignId"
+                          value={campaign.id}
+                        />
                         <input
                           type="hidden"
                           name="campaignName"

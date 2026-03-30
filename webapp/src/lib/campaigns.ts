@@ -111,24 +111,36 @@ function defaultDataDir(): string {
 }
 
 const DATA_DIR = process.env.DICEBAG_DATA_DIR ?? defaultDataDir();
+console.log("[dicebag] DATA_DIR:", DATA_DIR);
 
-function campaignFile(name: string): string {
-  return path.join(DATA_DIR, name.replace(/ /g, "-") + ".ron");
+/** Returns the subdirectory path for a campaign: `<DATA_DIR>/<id>-<name-slug>/` */
+function campaignDir(campaignId: number, campaignName: string): string {
+  const slug = campaignName.toLowerCase().replace(/ /g, "-");
+  return path.join(DATA_DIR, `${campaignId}-${slug}`);
 }
 
-function playerRosterFile(campaignName: string): string {
-  return path.join(DATA_DIR, campaignName.replace(/ /g, "-") + "-players.ron");
+/** Finds an existing campaign directory by scanning DATA_DIR for `<id>-<slug>` folders. */
+async function findCampaignDir(
+  campaignId: number,
+  campaignName: string,
+): Promise<string> {
+  return campaignDir(campaignId, campaignName);
 }
 
-function entityRosterFile(campaignName: string): string {
-  return path.join(DATA_DIR, campaignName.replace(/ /g, "-") + "-entities.ron");
+function campaignFile(dir: string): string {
+  return path.join(dir, "campaign.ron");
 }
 
-function encounterFile(campaignName: string, encounterId: number): string {
-  return path.join(
-    DATA_DIR,
-    campaignName.replace(/ /g, "-") + `-encounter-${encounterId}.ron`,
-  );
+function playerRosterFile(dir: string): string {
+  return path.join(dir, "players.ron");
+}
+
+function entityRosterFile(dir: string): string {
+  return path.join(dir, "entities.ron");
+}
+
+function encounterFile(dir: string, encounterId: number): string {
+  return path.join(dir, `encounter-${encounterId}.ron`);
 }
 
 // --- Campaigns ---
@@ -136,64 +148,71 @@ function encounterFile(campaignName: string, encounterId: number): string {
 export async function listCampaigns(): Promise<Campaign[]> {
   const { parse_campaign } = await getWasm();
   await fs.mkdir(DATA_DIR, { recursive: true });
-  const entries = await fs.readdir(DATA_DIR);
+  const entries = await fs.readdir(DATA_DIR, { withFileTypes: true });
   const campaigns: Campaign[] = [];
   for (const entry of entries) {
-    if (!entry.endsWith(".ron")) continue;
-    if (entry.includes("-")) continue; // skip rosters, encounters, claims
+    if (!entry.isDirectory()) continue;
+    const dir = path.join(DATA_DIR, entry.name);
     try {
-      const content = await fs.readFile(path.join(DATA_DIR, entry), "utf-8");
+      const content = await fs.readFile(campaignFile(dir), "utf-8");
       campaigns.push(parse_campaign(content) as Campaign);
     } catch {
-      // skip malformed files
+      // skip malformed or incomplete directories
     }
   }
   return campaigns.sort((a, b) => a.id - b.id);
 }
 
-export async function getCampaign(name: string): Promise<Campaign | null> {
+export async function getCampaign(
+  campaignId: number,
+  campaignName: string,
+): Promise<Campaign | null> {
   const { parse_campaign } = await getWasm();
+  const dir = await findCampaignDir(campaignId, campaignName);
   try {
     return parse_campaign(
-      await fs.readFile(campaignFile(name), "utf-8"),
+      await fs.readFile(campaignFile(dir), "utf-8"),
     ) as Campaign;
   } catch {
     return null;
   }
 }
 
+/**
+ * Finds a campaign by name alone by scanning all campaign directories.
+ * Use this when only the name is available (e.g. from URL params).
+ */
+export async function getCampaignByName(
+  name: string,
+): Promise<Campaign | null> {
+  const campaigns = await listCampaigns();
+  return campaigns.find((c) => c.name === name) ?? null;
+}
+
 export async function saveCampaign(campaign: Campaign): Promise<void> {
   const { campaign_to_ron } = await getWasm();
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(
-    campaignFile(campaign.name),
-    campaign_to_ron(campaign),
-    "utf-8",
-  );
+  const dir = campaignDir(campaign.id, campaign.name);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(campaignFile(dir), campaign_to_ron(campaign), "utf-8");
 }
 
 export async function renameCampaign(
-  oldName: string,
-  campaign: Campaign,
+  oldCampaign: Campaign,
+  newCampaign: Campaign,
 ): Promise<void> {
-  await saveCampaign(campaign);
-  const oldFile = campaignFile(oldName);
-  const newFile = campaignFile(campaign.name);
-  if (oldFile !== newFile) {
-    await fs.unlink(oldFile).catch(() => {});
-    // Also move roster files
-    for (const [oldSuffix, newSuffix] of [
-      ["-players.ron", "-players.ron"],
-      ["-entities.ron", "-entities.ron"],
-    ]) {
-      const o = path.join(DATA_DIR, oldName.replace(/ /g, "-") + oldSuffix);
-      const n = path.join(
-        DATA_DIR,
-        campaign.name.replace(/ /g, "-") + newSuffix,
-      );
-      await fs.rename(o, n).catch(() => {});
-    }
+  const oldDir = campaignDir(oldCampaign.id, oldCampaign.name);
+  const newDir = campaignDir(newCampaign.id, newCampaign.name);
+  if (oldDir !== newDir) {
+    await fs.rename(oldDir, newDir).catch(() => {});
   }
+  // Write updated campaign file into (possibly renamed) directory
+  const { campaign_to_ron } = await getWasm();
+  await fs.mkdir(newDir, { recursive: true });
+  await fs.writeFile(
+    campaignFile(newDir),
+    campaign_to_ron(newCampaign),
+    "utf-8",
+  );
 }
 
 export async function nextCampaignId(): Promise<number> {
@@ -205,12 +224,14 @@ export async function nextCampaignId(): Promise<number> {
 // --- Player roster ---
 
 export async function getPlayerRoster(
+  campaignId: number,
   campaignName: string,
 ): Promise<PlayerRoster> {
   const { parse_player_roster } = await getWasm();
+  const dir = await findCampaignDir(campaignId, campaignName);
   try {
     return parse_player_roster(
-      await fs.readFile(playerRosterFile(campaignName), "utf-8"),
+      await fs.readFile(playerRosterFile(dir), "utf-8"),
     ) as PlayerRoster;
   } catch {
     return { players: [] };
@@ -218,13 +239,15 @@ export async function getPlayerRoster(
 }
 
 export async function savePlayerRoster(
+  campaignId: number,
   campaignName: string,
   roster: PlayerRoster,
 ): Promise<void> {
   const { player_roster_to_ron } = await getWasm();
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  const dir = campaignDir(campaignId, campaignName);
+  await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(
-    playerRosterFile(campaignName),
+    playerRosterFile(dir),
     player_roster_to_ron(roster),
     "utf-8",
   );
@@ -233,12 +256,14 @@ export async function savePlayerRoster(
 // --- Entity roster ---
 
 export async function getEntityRoster(
+  campaignId: number,
   campaignName: string,
 ): Promise<EntityRoster> {
   const { parse_entity_roster } = await getWasm();
+  const dir = await findCampaignDir(campaignId, campaignName);
   try {
     return parse_entity_roster(
-      await fs.readFile(entityRosterFile(campaignName), "utf-8"),
+      await fs.readFile(entityRosterFile(dir), "utf-8"),
     ) as EntityRoster;
   } catch {
     return { entities: [] };
@@ -246,13 +271,15 @@ export async function getEntityRoster(
 }
 
 export async function saveEntityRoster(
+  campaignId: number,
   campaignName: string,
   roster: EntityRoster,
 ): Promise<void> {
   const { entity_roster_to_ron } = await getWasm();
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  const dir = campaignDir(campaignId, campaignName);
+  await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(
-    entityRosterFile(campaignName),
+    entityRosterFile(dir),
     entity_roster_to_ron(roster),
     "utf-8",
   );
@@ -261,17 +288,18 @@ export async function saveEntityRoster(
 // --- Encounters ---
 
 export async function listEncounters(
+  campaignId: number,
   campaignName: string,
 ): Promise<Encounter[]> {
   const { parse_encounter } = await getWasm();
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  const prefix = campaignName.replace(/ /g, "-") + "-encounter-";
-  const entries = await fs.readdir(DATA_DIR);
+  const dir = await findCampaignDir(campaignId, campaignName);
+  await fs.mkdir(dir, { recursive: true });
+  const entries = await fs.readdir(dir);
   const encounters: Encounter[] = [];
   for (const entry of entries) {
-    if (!entry.endsWith(".ron") || !entry.startsWith(prefix)) continue;
+    if (!entry.startsWith("encounter-") || !entry.endsWith(".ron")) continue;
     try {
-      const content = await fs.readFile(path.join(DATA_DIR, entry), "utf-8");
+      const content = await fs.readFile(path.join(dir, entry), "utf-8");
       encounters.push(parse_encounter(content) as Encounter);
     } catch {
       // skip malformed files
@@ -281,13 +309,15 @@ export async function listEncounters(
 }
 
 export async function getEncounter(
+  campaignId: number,
   campaignName: string,
   id: number,
 ): Promise<Encounter | null> {
   const { parse_encounter } = await getWasm();
+  const dir = await findCampaignDir(campaignId, campaignName);
   try {
     return parse_encounter(
-      await fs.readFile(encounterFile(campaignName, id), "utf-8"),
+      await fs.readFile(encounterFile(dir, id), "utf-8"),
     ) as Encounter;
   } catch {
     return null;
@@ -295,47 +325,55 @@ export async function getEncounter(
 }
 
 export async function saveEncounter(
+  campaignId: number,
   campaignName: string,
   encounter: Encounter,
 ): Promise<void> {
   const { encounter_to_ron } = await getWasm();
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  const dir = campaignDir(campaignId, campaignName);
+  await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(
-    encounterFile(campaignName, encounter.id),
+    encounterFile(dir, encounter.id),
     encounter_to_ron(encounter),
     "utf-8",
   );
 }
 
-export async function nextEncounterId(campaignName: string): Promise<number> {
-  const encounters = await listEncounters(campaignName);
+export async function nextEncounterId(
+  campaignId: number,
+  campaignName: string,
+): Promise<number> {
+  const encounters = await listEncounters(campaignId, campaignName);
   if (encounters.length === 0) return 0;
   return Math.max(...encounters.map((e) => e.id)) + 1;
 }
 
 // --- Audio catalog ---
 
-function audioCatalogFile(campaignName: string): string {
-  return path.join(
-    DATA_DIR,
-    campaignName.replace(/ /g, "-") + "-audio-catalog.ron",
-  );
+function audioCatalogFile(dir: string): string {
+  return path.join(dir, "audio-catalog.ron");
 }
 
-export function audioFile(campaignName: string, recordingId: number): string {
-  return path.join(
-    DATA_DIR,
-    campaignName.replace(/ /g, "-") + `-audio-${recordingId}.webm`,
-  );
+export function audioFile(dir: string, recordingId: number): string {
+  return path.join(dir, `audio-${recordingId}.webm`);
+}
+
+export function campaignDirPath(
+  campaignId: number,
+  campaignName: string,
+): string {
+  return campaignDir(campaignId, campaignName);
 }
 
 export async function getAudioCatalog(
+  campaignId: number,
   campaignName: string,
 ): Promise<AudioCatalog> {
   const { parse_audio_catalog } = await getWasm();
+  const dir = await findCampaignDir(campaignId, campaignName);
   try {
     return parse_audio_catalog(
-      await fs.readFile(audioCatalogFile(campaignName), "utf-8"),
+      await fs.readFile(audioCatalogFile(dir), "utf-8"),
     ) as AudioCatalog;
   } catch {
     return { recordings: [] };
@@ -343,13 +381,15 @@ export async function getAudioCatalog(
 }
 
 export async function saveAudioCatalog(
+  campaignId: number,
   campaignName: string,
   catalog: AudioCatalog,
 ): Promise<void> {
   const { audio_catalog_to_ron } = await getWasm();
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  const dir = campaignDir(campaignId, campaignName);
+  await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(
-    audioCatalogFile(campaignName),
+    audioCatalogFile(dir),
     audio_catalog_to_ron(catalog),
     "utf-8",
   );

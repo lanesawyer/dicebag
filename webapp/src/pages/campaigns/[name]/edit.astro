@@ -2,10 +2,10 @@
 import Layout from "../../../layouts/Layout.astro";
 import { Box, Button, TextInput, Notification } from "astro-bulma";
 import { actions } from "astro:actions";
-import { getCampaign } from "../../../lib/campaigns";
+import { getCampaignByName } from "../../../lib/campaigns";
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
-const campaign = await getCampaign(campaignName);
+const campaign = await getCampaignByName(campaignName);
 if (!campaign) return Astro.redirect("/campaigns");
 
 const result = Astro.getActionResult(actions.editCampaign);
@@ -30,6 +30,7 @@ const success = Astro.url.searchParams.get("saved") === "1";
 
   <Box>
     <form method="POST" action={actions.editCampaign}>
+      <input type="hidden" name="campaignId" value={campaign.id} />
       <input type="hidden" name="oldName" value={campaignName} />
       <TextInput name="name" label="Name" value={campaign.name} />
       <TextInput
