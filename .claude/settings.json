@@ -14,6 +14,11 @@
             "command": "cargo clippy --all 2>&1 || true",
             "statusMessage": "Linting..."
           },
+        {
+            "type": "command",
+            "command": "INPUT=$(cat); FILE=$(echo \"$INPUT\" | jq -r '.tool_input.file_path // empty'); if [[ \"$FILE\" == *.rs ]]; then cargo test 2>&1; fi",
+            "statusMessage": "Testing..."
+          },
           {
             "type": "command",
             "command": "cd webapp && pnpm fmt 2>/dev/null || true",

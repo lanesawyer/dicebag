@@ -59,8 +59,15 @@ Files are saved as `<name-with-dashes>.ron` in the XDG data directory (`~/.local
 
 ### All crates
 - When adding new types or features to `core/`, always wire up CLI commands for them in `cli/src/main.rs` in the same task — don't leave new core functionality unreachable from the CLI.
+- **CLI and webapp must stay in parity.** When adding a webapp action (create, update, delete), a matching CLI command must exist too — and vice versa. Never leave a feature reachable from one interface but not the other.
+
+### Core
+- **Before writing any data transformation in TypeScript, grep `core/` for an existing method.** Logic that already exists in core (e.g. `initiative_order()`, `next_id()`) must not be reimplemented inline in TypeScript.
+- When a webapp action mutates more than one field on a struct, that mutation belongs in a `core/` method exposed via WASM — not done inline in TypeScript then serialized.
+- Prefer generic WASM bindings over per-variant functions. For example, `roll_dice(die_type)` instead of `roll_d4()`, `roll_d6()`, etc.
 
 ### Webapp
 - Use **Astro Actions** for all form mutations (create, update, delete). Do not handle POST logic with `if (Astro.request.method === 'POST')` checks in page frontmatter.
 - **TypeScript/JavaScript is only allowed for I/O** (reading/writing files, sessions, HTTP). All business logic — data structures, validation, mutations, derived state, anything that could be reused in another app — belongs in `core/` (Rust) and is exposed via WASM. If you find yourself writing logic in TypeScript, stop and put it in `core/` instead.
 - All data parsing and serialization goes through the WASM module. Never reimplement in TypeScript what `core` already does or should do.
+- When core types change, update the corresponding TypeScript interfaces in `webapp/src/lib/campaigns.ts` in the same task.
