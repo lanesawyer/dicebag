@@ -13,7 +13,9 @@
     "astro": "astro",
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@astrojs/node": "10.0.4",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.8",
+    "@playwright/test": "1.58.2",
     "@types/node": "25.5.0",
     "@types/ws": "8.18.1",
     "prettier": "3.8.1",

@@ -33,7 +33,11 @@ export const server = {
     accept: "form",
     input: z.object({
       name: z.string().min(1, "Name is required."),
-      description: z.string().default(""),
+      description: z
+        .string()
+        .nullable()
+        .default("")
+        .transform((v) => v ?? ""),
     }),
     handler: async ({ name, description }, ctx) => {
       await requireGm(ctx);
@@ -48,7 +52,11 @@ export const server = {
       campaignId: z.coerce.number(),
       oldName: z.string(),
       name: z.string().min(1, "Name is required."),
-      description: z.string().default(""),
+      description: z
+        .string()
+        .nullable()
+        .default("")
+        .transform((v) => v ?? ""),
     }),
     handler: async ({ campaignId, oldName, name, description }, ctx) => {
       await requireGm(ctx);
