@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use core::{CombatantRef, EntityRoster, PlayerRoster};
 
@@ -19,26 +19,26 @@ pub fn resolve_name<'a>(
     }
 }
 
-pub fn campaign_file(dir: &PathBuf) -> PathBuf {
+pub fn campaign_file(dir: &Path) -> PathBuf {
     dir.join("campaign.ron")
 }
 
-pub fn players_file(dir: &PathBuf) -> PathBuf {
+pub fn players_file(dir: &Path) -> PathBuf {
     dir.join("players.ron")
 }
 
-pub fn entities_file(dir: &PathBuf) -> PathBuf {
+pub fn entities_file(dir: &Path) -> PathBuf {
     dir.join("entities.ron")
 }
 
-pub fn encounter_file(dir: &PathBuf, encounter_id: i32) -> PathBuf {
+pub fn encounter_file(dir: &Path, encounter_id: i32) -> PathBuf {
     dir.join(format!("encounter-{}.ron", encounter_id))
 }
 
-pub fn audio_catalog_file(dir: &PathBuf) -> PathBuf {
+pub fn audio_catalog_file(dir: &Path) -> PathBuf {
     dir.join("audio-catalog.ron")
 }
 
-pub fn audio_file(dir: &PathBuf, recording_id: i32) -> PathBuf {
+pub fn audio_file(dir: &Path, recording_id: i32) -> PathBuf {
     dir.join(format!("audio-{}.webm", recording_id))
 }

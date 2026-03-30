@@ -33,12 +33,12 @@ pub fn find_campaign_dir(campaign_name: &str) -> Option<PathBuf> {
         let fname = entry.file_name();
         let fname = fname.to_string_lossy();
         // Directory name format: <id>-<slug>
-        if let Some(pos) = fname.find('-') {
-            if &fname[pos + 1..] == slug {
-                let path = entry.path();
-                if path.is_dir() {
-                    return Some(path);
-                }
+        if let Some(pos) = fname.find('-')
+            && fname[pos + 1..] == *slug
+        {
+            let path = entry.path();
+            if path.is_dir() {
+                return Some(path);
             }
         }
     }

@@ -220,12 +220,11 @@ fn next_encounter_id(dir: &std::path::PathBuf) -> i32 {
     for entry in entries.flatten() {
         let fname = entry.file_name();
         let fname = fname.to_string_lossy();
-        if let Some(rest) = fname.strip_prefix("encounter-") {
-            if let Some(id_str) = rest.strip_suffix(".ron") {
-                if let Ok(id) = id_str.parse::<i32>() {
-                    max_id = Some(max_id.map_or(id, |m: i32| m.max(id)));
-                }
-            }
+        if let Some(rest) = fname.strip_prefix("encounter-")
+            && let Some(id_str) = rest.strip_suffix(".ron")
+            && let Ok(id) = id_str.parse::<i32>()
+        {
+            max_id = Some(max_id.map_or(id, |m: i32| m.max(id)));
         }
     }
     max_id.map_or(0, |m| m + 1)
