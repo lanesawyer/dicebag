@@ -123,28 +123,50 @@ const encoded = encodeURIComponent(campaignName);
       )
     }
 
-    {playerRecordings.length > 0 && <table class="table is-fullwidth mb-4">
-      <thead><tr>
-        <th>Label</th>
-        <th>Notes</th>
-        <th>Play</th>
-        {canEdit && <th></th>}
-      </tr></thead>
-      <tbody>
-        {playerRecordings.map((r) => <tr>
-          <td>{r.label}</td>
-          <td>{r.notes}</td>
-          <td><audio controls src={`/campaigns/${encoded}/audio/${r.id}/file`} style="height:2rem" /></td>
-          {canEdit && <td>
-            <form method="POST" action={actions.deleteAudioRecording}>
-              <input type="hidden" name="campaignName" value={campaignName} />
-              <input type="hidden" name="recordingId" value={r.id} />
-              <button class="button is-danger is-small" type="submit">Delete</button>
-            </form>
-          </td>}
-        </tr>)}
-      </tbody>
-    </table>}
+    {
+      playerRecordings.length > 0 && (
+        <table class="table is-fullwidth mb-4">
+          <thead>
+            <tr>
+              <th>Label</th>
+              <th>Notes</th>
+              <th>Play</th>
+              {canEdit && <th />}
+            </tr>
+          </thead>
+          <tbody>
+            {playerRecordings.map((r) => (
+              <tr>
+                <td>{r.label}</td>
+                <td>{r.notes}</td>
+                <td>
+                  <audio
+                    controls
+                    src={`/campaigns/${encoded}/audio/${r.id}/file`}
+                    style="height:2rem"
+                  />
+                </td>
+                {canEdit && (
+                  <td>
+                    <form method="POST" action={actions.deleteAudioRecording}>
+                      <input
+                        type="hidden"
+                        name="campaignName"
+                        value={campaignName}
+                      />
+                      <input type="hidden" name="recordingId" value={r.id} />
+                      <button class="button is-danger is-small" type="submit">
+                        Delete
+                      </button>
+                    </form>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )
+    }
 
     {
       canEdit && (
@@ -199,7 +221,7 @@ const encoded = encodeURIComponent(campaignName);
             </button>
           </div>
 
-          <p id="rec-status" class="has-text-grey is-size-7 mt-2"></p>
+          <p id="rec-status" class="has-text-grey is-size-7 mt-2" />
         </div>
       )
     }
