@@ -19,6 +19,8 @@ export async function getWasm() {
       claims_is_claimed,
       claims_add,
       claims_remove,
+      parse_audio_catalog,
+      audio_catalog_to_ron,
     } = await import("../wasm/dicebag_wasm.js");
     const wasmPath = new URL("../wasm/dicebag_wasm_bg.wasm", import.meta.url);
     const wasmBytes = await fs.readFile(wasmPath);
@@ -36,6 +38,8 @@ export async function getWasm() {
       claims_is_claimed,
       claims_add,
       claims_remove,
+      parse_audio_catalog,
+      audio_catalog_to_ron,
     } as typeof import("../wasm/dicebag_wasm.js");
   }
   return wasmModule;
@@ -81,6 +85,20 @@ export interface Encounter {
   name: string;
   campaign_id: number;
   participants: Participant[];
+}
+
+export type AudioSubject = { Player: number } | { Entity: number };
+
+export interface AudioRecording {
+  id: number;
+  label: string;
+  filename: string;
+  subject: AudioSubject;
+  notes: string;
+}
+
+export interface AudioCatalog {
+  recordings: AudioRecording[];
 }
 
 function defaultDataDir(): string {
@@ -293,4 +311,46 @@ export async function nextEncounterId(campaignName: string): Promise<number> {
   const encounters = await listEncounters(campaignName);
   if (encounters.length === 0) return 0;
   return Math.max(...encounters.map((e) => e.id)) + 1;
+}
+
+// --- Audio catalog ---
+
+function audioCatalogFile(campaignName: string): string {
+  return path.join(
+    DATA_DIR,
+    campaignName.replace(/ /g, "-") + "-audio-catalog.ron",
+  );
+}
+
+export function audioFile(campaignName: string, recordingId: number): string {
+  return path.join(
+    DATA_DIR,
+    campaignName.replace(/ /g, "-") + `-audio-${recordingId}.webm`,
+  );
+}
+
+export async function getAudioCatalog(
+  campaignName: string,
+): Promise<AudioCatalog> {
+  const { parse_audio_catalog } = await getWasm();
+  try {
+    return parse_audio_catalog(
+      await fs.readFile(audioCatalogFile(campaignName), "utf-8"),
+    ) as AudioCatalog;
+  } catch {
+    return { recordings: [] };
+  }
+}
+
+export async function saveAudioCatalog(
+  campaignName: string,
+  catalog: AudioCatalog,
+): Promise<void> {
+  const { audio_catalog_to_ron } = await getWasm();
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(
+    audioCatalogFile(campaignName),
+    audio_catalog_to_ron(catalog),
+    "utf-8",
+  );
 }

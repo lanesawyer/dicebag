@@ -42,6 +42,7 @@ Cargo workspace with three crates plus a webapp:
 - **`player.rs`** — `Player` struct (minimal; intended to grow into a character sheet).
 - **`entity.rs`** — `Entity` struct with kind (Player/Monster).
 - **`encounter.rs`** — `Encounter` struct with participants and combatant references.
+- **`audio.rs`** — `AudioRecording` struct (id, label, filename, subject, notes) and `AudioCatalog` collection. Stored as `<campaign>-audio-catalog.ron`; audio files as `<campaign>-audio-<id>.webm`.
 
 ### CLI commands
 
@@ -50,6 +51,8 @@ Cargo workspace with three crates plus a webapp:
 | `campaign` | `--name`, `--description` | Creates a campaign, saves to RON file |
 | `player` | `--name` | Currently prints a greeting (persistence is a TODO) |
 | `roll` | `--dice`, `--number` | Rolls dice, prints individual results and total |
+| `audio list` | `--campaign` | Lists all audio recordings for a campaign |
+| `audio delete` | `--campaign`, `--id` | Deletes a recording's metadata and its audio file |
 
 ### Persistence
 

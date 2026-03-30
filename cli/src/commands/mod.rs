@@ -1,3 +1,4 @@
+pub mod audio;
 pub mod campaign;
 pub mod dice;
 pub mod encounter;
@@ -15,6 +16,9 @@ pub enum Commands {
     /// Dice rolling
     #[command(subcommand)]
     Dice(dice::DiceCommands),
+    /// Audio recording management
+    #[command(subcommand)]
+    Audio(audio::AudioCommands),
 }
 
 pub fn handle(command: Commands) {
@@ -22,5 +26,6 @@ pub fn handle(command: Commands) {
         Commands::Campaign(cmd) => campaign::handle(cmd),
         Commands::Encounter(cmd) => encounter::handle(cmd),
         Commands::Dice(cmd) => dice::handle(cmd),
+        Commands::Audio(cmd) => audio::handle(cmd),
     }
 }

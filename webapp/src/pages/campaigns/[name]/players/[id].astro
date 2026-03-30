@@ -2,7 +2,11 @@
 import Layout from "../../../../layouts/Layout.astro";
 import { Box, Button, TextInput, Notification } from "astro-bulma";
 import { actions } from "astro:actions";
-import { getCampaign, getPlayerRoster } from "../../../../lib/campaigns";
+import {
+  getCampaign,
+  getPlayerRoster,
+  getAudioCatalog,
+} from "../../../../lib/campaigns";
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
 const playerId = parseInt(Astro.params.id ?? "");
@@ -18,6 +22,7 @@ if (!player)
 
 const updateResult = Astro.getActionResult(actions.updatePlayer);
 const deleteResult = Astro.getActionResult(actions.deletePlayer);
+const deleteAudioResult = Astro.getActionResult(actions.deleteAudioRecording);
 
 if (updateResult && !updateResult.error) {
   return Astro.redirect(
@@ -31,6 +36,20 @@ if (deleteResult && !deleteResult.error) {
 }
 
 const success = Astro.url.searchParams.get("saved") === "1";
+
+const identity = await Astro.session!.get("identity");
+const isGm = identity?.role === "gm";
+const isOwnPlayer =
+  identity?.role === "player" &&
+  identity.campaignName === campaignName &&
+  identity.playerId === playerId;
+const canEdit = isGm || isOwnPlayer;
+
+const catalog = await getAudioCatalog(campaignName);
+const playerRecordings = catalog.recordings.filter(
+  (r) => "Player" in r.subject && r.subject.Player === playerId,
+);
+const encoded = encodeURIComponent(campaignName);
 ---
 
 <Layout title={`${player.name} — ${campaign.name}`}>
@@ -40,9 +59,7 @@ const success = Astro.url.searchParams.get("saved") === "1";
     <div>
       <h1 class="title mb-0">{player.name}</h1>
       <p class="subtitle mt-1">
-        <a href={`/campaigns/${encodeURIComponent(campaignName)}/players`}
-          >{campaign.name}</a
-        >
+        <a href={`/campaigns/${encoded}/players`}>{campaign.name}</a>
       </p>
     </div>
   </div>
@@ -57,24 +74,224 @@ const success = Astro.url.searchParams.get("saved") === "1";
       <Notification color="danger">{deleteResult.error.message}</Notification>
     )
   }
+  {
+    deleteAudioResult?.error && (
+      <Notification color="danger">
+        {deleteAudioResult.error.message}
+      </Notification>
+    )
+  }
   {success && <Notification color="success">Saved!</Notification>}
 
-  <Box>
-    <form method="POST" action={actions.updatePlayer}>
-      <input type="hidden" name="campaignName" value={campaignName} />
-      <input type="hidden" name="playerId" value={playerId} />
-      <TextInput name="name" label="Name" value={player.name} />
-      <div class="is-flex is-justify-content-space-between">
-        <Button color="primary" type="submit">Save</Button>
-      </div>
-    </form>
-  </Box>
+  {
+    isGm && (
+      <Box>
+        <form method="POST" action={actions.updatePlayer}>
+          <input type="hidden" name="campaignName" value={campaignName} />
+          <input type="hidden" name="playerId" value={playerId} />
+          <TextInput name="name" label="Name" value={player.name} />
+          <div class="is-flex is-justify-content-space-between">
+            <Button color="primary" type="submit">
+              Save
+            </Button>
+          </div>
+        </form>
+      </Box>
+    )
+  }
+
+  {
+    isGm && (
+      <Box>
+        <form method="POST" action={actions.deletePlayer}>
+          <input type="hidden" name="campaignName" value={campaignName} />
+          <input type="hidden" name="playerId" value={playerId} />
+          <Button color="danger" type="submit">
+            Delete Player
+          </Button>
+        </form>
+      </Box>
+    )
+  }
 
   <Box>
-    <form method="POST" action={actions.deletePlayer}>
-      <input type="hidden" name="campaignName" value={campaignName} />
-      <input type="hidden" name="playerId" value={playerId} />
-      <Button color="danger" type="submit">Delete Player</Button>
-    </form>
+    <p class="has-text-weight-semibold mb-3">Audio Recordings</p>
+
+    {
+      playerRecordings.length === 0 && (
+        <p class="has-text-grey mb-3">No recordings yet.</p>
+      )
+    }
+
+    {playerRecordings.length > 0 && <table class="table is-fullwidth mb-4">
+      <thead><tr>
+        <th>Label</th>
+        <th>Notes</th>
+        <th>Play</th>
+        {canEdit && <th></th>}
+      </tr></thead>
+      <tbody>
+        {playerRecordings.map((r) => <tr>
+          <td>{r.label}</td>
+          <td>{r.notes}</td>
+          <td><audio controls src={`/campaigns/${encoded}/audio/${r.id}/file`} style="height:2rem" /></td>
+          {canEdit && <td>
+            <form method="POST" action={actions.deleteAudioRecording}>
+              <input type="hidden" name="campaignName" value={campaignName} />
+              <input type="hidden" name="recordingId" value={r.id} />
+              <button class="button is-danger is-small" type="submit">Delete</button>
+            </form>
+          </td>}
+        </tr>)}
+      </tbody>
+    </table>}
+
+    {
+      canEdit && (
+        <div
+          id="recorder-app"
+          data-campaign={campaignName}
+          data-player-id={playerId}
+        >
+          <div class="field">
+            <label class="label">Label</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                id="rec-label"
+                placeholder='e.g. "Battle cry"'
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Notes</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                id="rec-notes"
+                placeholder="Optional"
+              />
+            </div>
+          </div>
+
+          <div class="buttons mb-3">
+            <button class="button is-danger" id="btn-record">
+              Record
+            </button>
+            <button class="button is-warning" id="btn-stop" disabled>
+              Stop
+            </button>
+          </div>
+
+          <audio
+            id="preview"
+            controls
+            class="mb-3"
+            style="display:none;width:100%"
+          />
+
+          <div id="save-area" style="display:none">
+            <button class="button is-primary" id="btn-save">
+              Save Recording
+            </button>
+          </div>
+
+          <p id="rec-status" class="has-text-grey is-size-7 mt-2"></p>
+        </div>
+      )
+    }
   </Box>
 </Layout>
+
+<script is:inline>
+  const app = document.getElementById("recorder-app");
+  const btnRecord = document.getElementById("btn-record");
+  const btnStop = document.getElementById("btn-stop");
+  const btnSave = document.getElementById("btn-save");
+  const preview = document.getElementById("preview");
+  const saveArea = document.getElementById("save-area");
+  const status = document.getElementById("rec-status");
+
+  if (app && btnRecord && btnStop && btnSave && preview && saveArea && status) {
+    const campaignName = app.dataset.campaign;
+    const playerId = parseInt(app.dataset.playerId);
+    let mediaRecorder = null;
+    let chunks = [];
+    let blob = null;
+
+    btnRecord.addEventListener("click", async () => {
+      chunks = [];
+      blob = null;
+      saveArea.style.display = "none";
+      preview.style.display = "none";
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) chunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+          stream.getTracks().forEach((t) => t.stop());
+          blob = new Blob(chunks, { type: "audio/webm" });
+          preview.src = URL.createObjectURL(blob);
+          preview.style.display = "block";
+          saveArea.style.display = "block";
+          status.textContent =
+            "Recorded " + (blob.size / 1024).toFixed(1) + " KB";
+        };
+        mediaRecorder.start();
+        btnRecord.disabled = true;
+        btnStop.disabled = false;
+        status.textContent = "Recording...";
+      } catch (err) {
+        status.textContent = "Mic error: " + err.message;
+      }
+    });
+
+    btnStop.addEventListener("click", () => {
+      mediaRecorder && mediaRecorder.stop();
+      btnRecord.disabled = false;
+      btnStop.disabled = true;
+    });
+
+    btnSave.addEventListener("click", async () => {
+      if (!blob) return;
+      const label = document.getElementById("rec-label").value.trim();
+      if (!label) {
+        status.textContent = "Please enter a label.";
+        return;
+      }
+      const notes = document.getElementById("rec-notes").value.trim();
+
+      const fd = new FormData();
+      fd.append("campaignName", campaignName);
+      fd.append("label", label);
+      fd.append("subjectType", "Player");
+      fd.append("subjectId", playerId);
+      fd.append("notes", notes);
+      fd.append("audio", blob, "recording.webm");
+
+      btnSave.disabled = true;
+      status.textContent = "Saving...";
+      try {
+        const res = await fetch("/_actions/saveAudioRecording", {
+          method: "POST",
+          body: fd,
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text);
+        }
+        window.location.reload();
+      } catch (err) {
+        status.textContent = "Save failed: " + err.message;
+        btnSave.disabled = false;
+      }
+    });
+  }
+</script>

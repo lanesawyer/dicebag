@@ -1,4 +1,6 @@
-use core::{Campaign, CampaignClaims, DiceType, Encounter, EntityRoster, PlayerRoster, Roll};
+use core::{
+    AudioCatalog, Campaign, CampaignClaims, DiceType, Encounter, EntityRoster, PlayerRoster, Roll,
+};
 use ron::ser::PrettyConfig;
 use wasm_bindgen::prelude::*;
 
@@ -102,6 +104,26 @@ pub fn encounter_to_ron(val: JsValue) -> Result<String, JsValue> {
     let encounter: Encounter =
         serde_wasm_bindgen::from_value(val).map_err(|e| JsValue::from_str(&e.to_string()))?;
     ron::ser::to_string_pretty(&encounter, PrettyConfig::default())
+        .map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Parse RON audio catalog file into a JS object. Accepts empty string for a fresh catalog.
+#[wasm_bindgen]
+pub fn parse_audio_catalog(ron_str: &str) -> Result<JsValue, JsValue> {
+    let catalog: AudioCatalog = if ron_str.is_empty() {
+        AudioCatalog::new()
+    } else {
+        ron::from_str(ron_str).map_err(|e| JsValue::from_str(&e.to_string()))?
+    };
+    serde_wasm_bindgen::to_value(&catalog).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Serialize a JS audio catalog back to RON string.
+#[wasm_bindgen]
+pub fn audio_catalog_to_ron(val: JsValue) -> Result<String, JsValue> {
+    let catalog: AudioCatalog =
+        serde_wasm_bindgen::from_value(val).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    ron::ser::to_string_pretty(&catalog, PrettyConfig::default())
         .map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

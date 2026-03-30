@@ -11,7 +11,11 @@ import {
   renameCampaign,
   nextCampaignId,
   nextEncounterId,
+  getAudioCatalog,
+  saveAudioCatalog,
+  audioFile,
 } from "../lib/campaigns";
+import fs from "node:fs/promises";
 import { broadcast } from "../lib/ws";
 import { getClaim, setClaim, releaseClaim } from "../lib/claims";
 
@@ -253,6 +257,90 @@ export const server = {
 
       await saveEncounter(campaignName, encounter);
       broadcast(`encounter:${campaignName}:${encounterId}`);
+    },
+  }),
+
+  // Audio actions
+
+  // Called by the webapp after the browser finishes recording. The raw audio
+  // bytes are uploaded as a multipart field named "audio"; this action saves
+  // the file to disk and appends a metadata entry to the campaign's
+  // AudioCatalog RON file.
+  saveAudioRecording: defineAction({
+    accept: "form",
+    input: z.object({
+      campaignName: z.string(),
+      label: z.string().min(1, "Label is required."),
+      subjectType: z.enum(["Player", "Entity"]),
+      subjectId: z.coerce.number().int(),
+      notes: z.string().default(""),
+    }),
+    handler: async (
+      { campaignName, label, subjectType, subjectId, notes },
+      ctx,
+    ) => {
+      const identity = await ctx.session!.get("identity");
+      const isGm = identity?.role === "gm";
+      const isOwnPlayer =
+        identity?.role === "player" &&
+        identity.campaignName === campaignName &&
+        subjectType === "Player" &&
+        identity.playerId === subjectId;
+      if (!isGm && !isOwnPlayer) {
+        throw new ActionError({ code: "FORBIDDEN", message: "Not authorized" });
+      }
+      const catalog = await getAudioCatalog(campaignName);
+      const id =
+        catalog.recordings.length > 0
+          ? Math.max(...catalog.recordings.map((r) => r.id)) + 1
+          : 1;
+      const filename = campaignName.replace(/ /g, "-") + `-audio-${id}.webm`;
+      const filePath = audioFile(campaignName, id);
+
+      // Read raw audio bytes from the multipart request
+      const formData = await ctx.request.formData();
+      const blob = formData.get("audio");
+      if (!(blob instanceof Blob)) throw new Error("No audio blob in request");
+      const buffer = Buffer.from(await blob.arrayBuffer());
+      await fs.mkdir(filePath.replace(/[^/\\]+$/, ""), { recursive: true });
+      await fs.writeFile(filePath, buffer);
+
+      const subject =
+        subjectType === "Player"
+          ? { Player: subjectId }
+          : { Entity: subjectId };
+      catalog.recordings.push({ id, label, filename, subject, notes });
+      await saveAudioCatalog(campaignName, catalog);
+      return { id };
+    },
+  }),
+
+  deleteAudioRecording: defineAction({
+    accept: "form",
+    input: z.object({
+      campaignName: z.string(),
+      recordingId: z.coerce.number().int(),
+    }),
+    handler: async ({ campaignName, recordingId }, ctx) => {
+      const identity = await ctx.session!.get("identity");
+      const isGm = identity?.role === "gm";
+      const catalog = await getAudioCatalog(campaignName);
+      const rec = catalog.recordings.find((r) => r.id === recordingId);
+      if (!rec) throw new Error("Recording not found");
+      const isOwnPlayer =
+        identity?.role === "player" &&
+        identity.campaignName === campaignName &&
+        "Player" in rec.subject &&
+        rec.subject.Player === identity.playerId;
+      if (!isGm && !isOwnPlayer) {
+        throw new ActionError({ code: "FORBIDDEN", message: "Not authorized" });
+      }
+      catalog.recordings = catalog.recordings.filter(
+        (r) => r.id !== recordingId,
+      );
+      await saveAudioCatalog(campaignName, catalog);
+      // Best-effort deletion of the audio file
+      await fs.unlink(audioFile(campaignName, recordingId)).catch(() => {});
     },
   }),
 
