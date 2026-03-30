@@ -3,17 +3,17 @@ import Layout from "../../../../layouts/Layout.astro";
 import { Box, Button, TextInput, Notification } from "astro-bulma";
 import { actions } from "astro:actions";
 import {
-  getCampaign,
+  getCampaignByName,
   getPlayerRoster,
   getAudioCatalog,
 } from "../../../../lib/campaigns";
 
 const campaignName = decodeURIComponent(Astro.params.name ?? "");
 const playerId = parseInt(Astro.params.id ?? "");
-const campaign = await getCampaign(campaignName);
+const campaign = await getCampaignByName(campaignName);
 if (!campaign) return Astro.redirect("/campaigns");
 
-const roster = await getPlayerRoster(campaignName);
+const roster = await getPlayerRoster(campaign.id, campaignName);
 const player = roster.players.find((p) => p.id === playerId) ?? null;
 if (!player)
   return Astro.redirect(
@@ -45,7 +45,7 @@ const isOwnPlayer =
   identity.playerId === playerId;
 const canEdit = isGm || isOwnPlayer;
 
-const catalog = await getAudioCatalog(campaignName);
+const catalog = await getAudioCatalog(campaign.id, campaignName);
 const playerRecordings = catalog.recordings.filter(
   (r) => "Player" in r.subject && r.subject.Player === playerId,
 );
@@ -87,6 +87,7 @@ const encoded = encodeURIComponent(campaignName);
     isGm && (
       <Box>
         <form method="POST" action={actions.updatePlayer}>
+          <input type="hidden" name="campaignId" value={campaign.id} />
           <input type="hidden" name="campaignName" value={campaignName} />
           <input type="hidden" name="playerId" value={playerId} />
           <TextInput name="name" label="Name" value={player.name} />
@@ -104,6 +105,7 @@ const encoded = encodeURIComponent(campaignName);
     isGm && (
       <Box>
         <form method="POST" action={actions.deletePlayer}>
+          <input type="hidden" name="campaignId" value={campaign.id} />
           <input type="hidden" name="campaignName" value={campaignName} />
           <input type="hidden" name="playerId" value={playerId} />
           <Button color="danger" type="submit">
@@ -151,6 +153,11 @@ const encoded = encodeURIComponent(campaignName);
                     <form method="POST" action={actions.deleteAudioRecording}>
                       <input
                         type="hidden"
+                        name="campaignId"
+                        value={campaign.id}
+                      />
+                      <input
+                        type="hidden"
                         name="campaignName"
                         value={campaignName}
                       />
@@ -173,6 +180,7 @@ const encoded = encodeURIComponent(campaignName);
         <div
           id="recorder-app"
           data-campaign={campaignName}
+          data-campaign-id={campaign.id}
           data-player-id={playerId}
         >
           <div class="field">
@@ -239,6 +247,7 @@ const encoded = encodeURIComponent(campaignName);
 
   if (app && btnRecord && btnStop && btnSave && preview && saveArea && status) {
     const campaignName = app.dataset.campaign;
+    const campaignId = app.dataset.campaignId;
     const playerId = parseInt(app.dataset.playerId);
     let mediaRecorder = null;
     let chunks = [];
@@ -291,6 +300,7 @@ const encoded = encodeURIComponent(campaignName);
       const notes = document.getElementById("rec-notes").value.trim();
 
       const fd = new FormData();
+      fd.append("campaignId", campaignId);
       fd.append("campaignName", campaignName);
       fd.append("label", label);
       fd.append("subjectType", "Player");

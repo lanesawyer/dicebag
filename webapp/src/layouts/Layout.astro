@@ -2,7 +2,7 @@
 import "bulma/css/bulma.min.css";
 import DiceRoller from "../components/DiceRoller.astro";
 import { actions } from "astro:actions";
-import { getPlayerRoster } from "../lib/campaigns";
+import { getCampaignByName, getPlayerRoster } from "../lib/campaigns";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
@@ -14,9 +14,12 @@ const identity = await Astro.session!.get("identity");
 
 let playerName: string | null = null;
 if (identity?.role === "player") {
-  const roster = await getPlayerRoster(identity.campaignName);
-  playerName =
-    roster.players.find((p) => p.id === identity.playerId)?.name ?? null;
+  const campaign = await getCampaignByName(identity.campaignName);
+  if (campaign) {
+    const roster = await getPlayerRoster(campaign.id, identity.campaignName);
+    playerName =
+      roster.players.find((p) => p.id === identity.playerId)?.name ?? null;
+  }
 }
 ---
 

@@ -1,6 +1,10 @@
 import type { APIRoute } from "astro";
 import fs from "node:fs/promises";
-import { getCampaign, audioFile } from "../../../../../lib/campaigns";
+import {
+  getCampaignByName,
+  audioFile,
+  campaignDirPath,
+} from "../../../../../lib/campaigns";
 
 export const GET: APIRoute = async ({ params }) => {
   const campaignName = decodeURIComponent(params.name ?? "");
@@ -8,10 +12,11 @@ export const GET: APIRoute = async ({ params }) => {
   if (!campaignName || isNaN(id))
     return new Response("Not found", { status: 404 });
 
-  const campaign = await getCampaign(campaignName);
+  const campaign = await getCampaignByName(campaignName);
   if (!campaign) return new Response("Not found", { status: 404 });
 
-  const filePath = audioFile(campaignName, id);
+  const dir = campaignDirPath(campaign.id, campaignName);
+  const filePath = audioFile(dir, id);
   try {
     const data = await fs.readFile(filePath);
     return new Response(data, {
