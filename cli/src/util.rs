@@ -38,3 +38,10 @@ pub fn entities_filename(campaign_name: &str) -> String {
         campaign_name.to_lowercase().replace(' ', "-")
     )
 }
+
+pub fn audio_catalog_filename(campaign_name: &str) -> String {
+    format!(
+        "{}-audio-catalog.ron",
+        campaign_name.to_lowercase().replace(' ', "-")
+    )
+}

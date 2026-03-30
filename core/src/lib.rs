@@ -1,3 +1,4 @@
+mod audio;
 mod campaign;
 mod claims;
 mod dice;
@@ -5,6 +6,7 @@ mod encounter;
 mod entity;
 mod player;
 
+pub use audio::{AudioCatalog, AudioRecording, AudioSubject};
 pub use campaign::Campaign;
 pub use claims::CampaignClaims;
 pub use dice::{DiceType, Roll};
